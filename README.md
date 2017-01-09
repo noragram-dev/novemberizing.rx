@@ -4,6 +4,6 @@
 
 ![i.rx.Func](doc/ClassDiagram_i_rx_Func.jpg)
 
-novemberizing.rx
+### i.rx.func.Single
 
 
