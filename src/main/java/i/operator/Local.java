@@ -6,7 +6,7 @@ import novemberizing.util.Log;
 /**
  *
  * @author novemberizing, i@novemberizing.net
- * @since 2017. 1. 10.
+ * @since 2017. 1. 9.
  */
 public class Local<T> {
     private static final String Tag = "Local";

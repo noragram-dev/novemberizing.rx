@@ -3,11 +3,11 @@ package i.operator;
 /**
  *
  * @author novemberizing, i@novemberizing.net
- * @since 2017. 1. 10.
+ * @since 2017. 1. 9.
  */
-public enum Iteration {
-    In,
-    On,
-    Out,
-    Done,
+public class Iteration {
+    public static final int IN = 0;
+    public static final int ON = 1;
+    public static final int OUT = 2;
+    public static final int DONE = 0;
 }

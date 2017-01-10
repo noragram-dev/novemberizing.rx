@@ -1,86 +1,123 @@
 package i.operator;
 
 import com.google.gson.annotations.Expose;
+import i.Command;
+import i.Scheduler;
 import novemberizing.util.Debug;
 import novemberizing.util.Log;
 
 /**
  *
  * @author novemberizing, i@novemberizing.net
- * @since 2017. 1. 10.
+ * @since 2017. 1. 9.
  */
-public class Task<T> {
-    private static final String Tag = "Task";
-
+public class Task<T> extends Command {
+    private static final String Tag = "task";
     @Expose protected T __in;
-    @Expose protected Iteration __it;
+    @Expose protected int __it;
+    @Expose protected i.Operator<T, ?> __op;
     @Expose protected i.tuple.Single<Object> __out;
-    @Expose protected Throwable __e;
-    @Expose public  Local<T> v;
+    @Expose protected Throwable __exception;
+    @Expose protected Scheduler __scheduler;
+    @Expose protected Task<?> __previous;
+    @Expose public Local<T> v;
 
-    public Task(T o){
+    public Task(T in, i.Operator<T, ?> op, Scheduler scheduler){
         Log.f(Tag, "");
-        __in = o;
-        __it = Iteration.In;
-        __out = null;
-        __e = null;
+        __in = in;
+        __it = Iteration.IN;
+        __op = op;
         v = null;
+        __out = null;
+        __exception = null;
+        __scheduler = scheduler;
+        __previous = null;
     }
 
-    public Iteration it(){ return __it; }
+    public Task(T in, i.Operator<T, ?> op, Scheduler scheduler , Task<?> previous){
+        Log.f(Tag, "");
+        __in = in;
+        __it = Iteration.IN;
+        __op = op;
+        v = null;
+        __out = null;
+        __exception = null;
+        __scheduler = scheduler;
+        __previous = previous;
+    }
+
+    public void out(){
+        Log.f(Tag, "");
+        synchronized (this) {
+            if (__it == Iteration.DONE) {
+                Debug.On(new RuntimeException(""));
+            } else {
+                __it = Iteration.DONE;
+                complete();
+            }
+        }
+    }
+
+    public void out(Object o){
+        Log.f(Tag, "");
+        synchronized (this) {
+            if (__it == Iteration.DONE) {
+                Debug.On(new RuntimeException(""));
+            } else {
+                __it = Iteration.DONE;
+                __out = new i.tuple.Single<>(o);
+                complete();
+            }
+        }
+    }
+
+    public void error(Throwable e){
+        Log.f(Tag, "");
+        synchronized (this) {
+            if (__it == Iteration.DONE) {
+                Debug.On(new RuntimeException(""));
+            } else {
+                __it = Iteration.DONE;
+                __exception = e;
+                complete();
+            }
+        }
+    }
 
     public T i(){ return __in; }
 
-    public Object o(){
-        Log.f(Tag, "");
-        if(__out==null){ Debug.On(new RuntimeException("")); }
-        return __out!=null ? __out.first : null;
-    }
+    public Throwable e(){ return __exception; }
 
-    public <O> O o(Class<O> c){
+    public Object o(){ return __out; }
+
+    public <U> U o(Class<U> c){
         Log.f(Tag, "");
-        if(__out==null){ Debug.On(new RuntimeException("")); }
-        try {
-            return __out!=null ? c.cast(__out.first) : null;
-        } catch(ClassCastException e){
-            Debug.On(e);
-            return null;
+        if(!done()) {
+            try {
+                return c.cast(__out.first);
+            } catch (Exception e) {
+                Debug.On(e);
+            }
         }
+        return null;
     }
 
-    public Throwable e(){ return __e; }
-
-    synchronized public boolean done(){ return __it==Iteration.Done; }
-
-    synchronized protected void it(Iteration it){ __it = it; }
-
-    synchronized protected void out(Object o){
+    public void next(){
         Log.f(Tag, "");
-        if(__it!=Iteration.Done){
-            __it = Iteration.Done;
-            __out = new i.tuple.Single<>(o);
-
+        if(++__it==Iteration.DONE){
+            complete();
         } else {
-            Debug.On(new RuntimeException(""));
+            executed();
         }
     }
 
-    synchronized protected void out(){
-        Log.f(Tag, "");
-        if(__it!=Iteration.Done){
-            __it = Iteration.Done;
-        } else {
-            Debug.On(new RuntimeException(""));
-        }
-    }
+    synchronized protected int it(){ return __it; }
+    synchronized protected void it(int it){ __it = it; }
+    synchronized public boolean done(){ return __it==Iteration.DONE; }
 
-    synchronized protected void error(Throwable e){
+    @Override
+    public void execute() {
         Log.f(Tag, "");
-        if(__it!=Iteration.Done){
-            __it = Iteration.Done;
-            __e = e;
-        } else {
-            Debug.On(new RuntimeException(""));
-        }
+        __op.in(this);
     }
 }
