@@ -10,8 +10,9 @@ import novemberizing.util.Log;
  * @since 2017. 1. 9.
  */
 public class Example {
+    private static int count = 0;
     public static void main(String[] args){
         Log.disable(Log.FLOW | Log.HEADER);
-        Scheduler.Exec(Operator.Just(o-> Log.i("just(f) >",o)), "0");
+        Scheduler.Foreach(Operator.Just(o-> Log.i("just(f) " + (count++) + ">",o)), args);
     }
 }

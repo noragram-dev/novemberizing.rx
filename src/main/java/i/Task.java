@@ -1,8 +1,6 @@
-package i.operator;
+package i;
 
 import com.google.gson.annotations.Expose;
-import i.Command;
-import i.Scheduler;
 import novemberizing.util.Debug;
 import novemberizing.util.Log;
 
@@ -88,36 +86,53 @@ public class Task<T> extends Command {
 
     public Throwable e(){ return __exception; }
 
-    public Object o(){ return __out; }
-
-    public <U> U o(Class<U> c){
+    public Object o(){
         Log.f(Tag, "");
-        if(!done()) {
-            try {
-                return c.cast(__out.first);
-            } catch (Exception e) {
-                Debug.On(e);
+        if (done()) {
+            if(__out!=null) {
+                return __out.first;
             }
+        } else {
+            Debug.On(new RuntimeException(""));
         }
         return null;
     }
 
-    public void next(){
+    public <U> U o(Class<U> c){
         Log.f(Tag, "");
-        if(++__it==Iteration.DONE){
-            complete();
+        if(done()) {
+            try {
+                if(__out!=null) {
+                    return c.cast(__out.first);
+                }
+            } catch (Exception e) {
+                Debug.On(e);
+            }
         } else {
-            executed();
+            Debug.On(new RuntimeException(""));
         }
+        return null;
+    }
+
+    synchronized public void next(){
+        synchronized (this){ __it = (v!=null ? ++v.next : __it); }
+        super.executed();
     }
 
     synchronized protected int it(){ return __it; }
-    synchronized protected void it(int it){ __it = it; }
     synchronized public boolean done(){ return __it==Iteration.DONE; }
+
+    public Scheduler scheduler(){ return __scheduler; }
 
     @Override
     public void execute() {
         Log.f(Tag, "");
-        __op.in(this);
+        __op.exec(this);
     }
+
+//    @Override
+//    public void executed(){
+//        synchronized (this){ __it = (v!=null ? v.next : __it); }
+//        super.executed();
+//    }
 }
