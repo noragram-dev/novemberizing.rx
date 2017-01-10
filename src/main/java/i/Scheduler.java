@@ -11,6 +11,9 @@ import java.util.LinkedList;
  * @since 2017. 1. 10.
  */
 public class Scheduler extends Executor {
+    private static int __DefaultSyncSleepMillisecond = 10;
+
+    public static int DefaultSyncSleepMillisecond(){ return __DefaultSyncSleepMillisecond; }
 
     public static Scheduler Local(){ return Local.Get(); }
 
@@ -33,6 +36,30 @@ public class Scheduler extends Executor {
         Task<T> task = new Task<>(o, op, scheduler, previous);
         scheduler.dispatch(task);
         return task;
+    }
+
+    public static <T> Task<T> Sync(Task<T> task){
+        while(task!=null && !task.done()){
+            try {
+                Thread.sleep(Scheduler.DefaultSyncSleepMillisecond());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        return task;
+    }
+
+    public static <T> Collection<Task<T>> Sync(Collection<Task<T>> tasks){
+        for(Task<T> task : tasks){
+            while(task!=null && !task.done()){
+                try {
+                    Thread.sleep(Scheduler.DefaultSyncSleepMillisecond());
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return tasks;
     }
 
     public static <T> Collection<Task<T>> Foreach(Operator<T, ?> op, T[] items){ return Foreach(Scheduler.Local(), op, items); }

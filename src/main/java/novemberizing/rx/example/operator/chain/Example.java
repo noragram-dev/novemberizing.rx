@@ -13,9 +13,9 @@ public class Example {
     private static int count = 0;
     public static void main(String[] args){
         Log.disable(Log.FLOW | Log.HEADER);
-        Scheduler.Foreach(Operator.Op((String o)->(Integer.parseInt(o)),
+        Scheduler.Sync(Scheduler.Foreach(Operator.Op((String o)->(Integer.parseInt(o)),
                 (Integer o)->(o+10),
                 (Integer o)->(Integer.toString(o)),
-                (String o)->Log.i("chain(...) " + (count++) + ">", o)),args);
+                (String o)->Log.i("chain(...) " + (count++) + ">", o)),args));
     }
 }

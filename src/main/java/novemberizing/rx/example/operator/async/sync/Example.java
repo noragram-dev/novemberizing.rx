@@ -20,16 +20,6 @@ public class Example {
         Log.disable(Log.HEADER | Log.FLOW);
         Log.depth(3);
 
-        Collection<Task<String>> tasks = Scheduler.Foreach(Sync.New(1000, o -> Log.i("async(sync(f)) " + (count++) + ">", o)), args);
-
-        for(Task<String> o : tasks){
-            while(!o.done()){
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+        Scheduler.Sync(Scheduler.Foreach(Sync.New(1000, o -> Log.i("async(sync(f)) " + (count++) + ">", o)), args));
     }
 }
