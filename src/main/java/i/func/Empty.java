@@ -1,4 +1,6 @@
-package i.rx;
+package i.func;
+
+import i.Func;
 
 /**
  *
@@ -6,4 +8,4 @@ package i.rx;
  * @since 2017. 1. 9.
  */
 @SuppressWarnings("unused")
-public interface Run {}
+public interface Empty<Z> extends Func<Z> { Z call(); }

@@ -1,4 +1,6 @@
-package i.rx.run;
+package i.run;
+
+import i.Run;
 
 /**
  *
@@ -6,4 +8,4 @@ package i.rx.run;
  * @since 2017. 1. 9.
  */
 @SuppressWarnings("unused")
-public interface Pair<A, B> extends i.rx.Run { void run(A first, B second); }
+public interface Empty extends Run { void run(); }

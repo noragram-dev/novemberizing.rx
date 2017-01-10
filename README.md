@@ -1,9 +1,9 @@
 # novemberizing.rx
 
-## i.rx.Func
+## i.Func
 
-![i.rx.Func](doc/ClassDiagram_i_rx_Func.jpg)
+![i.Func](doc/ClassDiagram_i_rx_Func.jpg)
 
-### i.rx.func.Single
+### i.func.Single
 
 

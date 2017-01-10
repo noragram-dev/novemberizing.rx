@@ -1,4 +1,6 @@
-package i.rx.run;
+package i.on;
+
+import i.On;
 
 /**
  *
@@ -6,4 +8,4 @@ package i.rx.run;
  * @since 2017. 1. 9.
  */
 @SuppressWarnings("unused")
-public interface Single<A> extends i.rx.Run { void run(A first); }
+public interface Empty extends On {}

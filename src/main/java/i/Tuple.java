@@ -1,4 +1,4 @@
-package i.rx.func;
+package i;
 
 /**
  *
@@ -6,4 +6,4 @@ package i.rx.func;
  * @since 2017. 1. 9.
  */
 @SuppressWarnings("unused")
-public interface Empty<Z> extends i.rx.Func<Z> { Z call(); }
+public interface Tuple {}

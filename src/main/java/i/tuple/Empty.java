@@ -1,4 +1,6 @@
-package i.rx.run;
+package i.tuple;
+
+import i.Tuple;
 
 /**
  *
@@ -6,4 +8,4 @@ package i.rx.run;
  * @since 2017. 1. 9.
  */
 @SuppressWarnings("unused")
-public interface Empty extends i.rx.Run { void run(); }
+public class Empty implements Tuple {}

@@ -1,4 +1,6 @@
-package i.rx;
+package i.run;
+
+import i.Run;
 
 /**
  *
@@ -6,4 +8,4 @@ package i.rx;
  * @since 2017. 1. 9.
  */
 @SuppressWarnings("unused")
-public interface Func<Z> {}
+public interface Single<A> extends Run { void run(A first); }

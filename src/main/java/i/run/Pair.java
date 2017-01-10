@@ -1,4 +1,6 @@
-package i.rx.func;
+package i.run;
+
+import i.Run;
 
 /**
  *
@@ -6,4 +8,4 @@ package i.rx.func;
  * @since 2017. 1. 9.
  */
 @SuppressWarnings("unused")
-public interface Pair<A, B, Z> extends i.rx.Func<Z> { Z call(A first, B second); }
+public interface Pair<A, B> extends Run { void run(A first, B second); }
