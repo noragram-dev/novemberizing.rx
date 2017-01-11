@@ -7,8 +7,6 @@ import novemberizing.util.Debug;
 import novemberizing.util.Log;
 
 import static i.Iteration.IN;
-import static i.Iteration.ON;
-import static i.Iteration.OUT;
 
 /**
  *
@@ -16,10 +14,11 @@ import static i.Iteration.OUT;
  * @since 2017. 1. 10.
  */
 public abstract class Operator<T, U> implements i.func.Single<T, U> {
+    private static final String Tag = "Operator";
 
     public interface Func<T, U> extends i.func.Single<T, U> {}
 
-    private static final String Tag = "Operator";
+
 
     public static <T> Operator<T, T> Just(){ return new Just<>(); }
 
@@ -32,9 +31,8 @@ public abstract class Operator<T, U> implements i.func.Single<T, U> {
         }
         return new Just<T>(){
             @Override
-            protected Task<T> on(Task<T> task) {
-                task.v.out(task.v.in = f.call(task.v.in));
-                return task;
+            protected Task<T> in(Task<T> task, T o) {
+                return task.set(o, f.call(o));
             }
         };
     }
@@ -45,9 +43,8 @@ public abstract class Operator<T, U> implements i.func.Single<T, U> {
         } else if(f!=null){
             return new Sync<T, U>(){
                 @Override
-                protected Task<T> on(Task<T> task) {
-                    task.v.out(f.call(task.v.in));
-                    return task;
+                protected Task<T> in(Task<T> task, T o) {
+                    return task.set(o, f.call(o));
                 }
             };
         } else {
@@ -62,9 +59,8 @@ public abstract class Operator<T, U> implements i.func.Single<T, U> {
         } else if (f != null) {
             return new Operator<T, U>() {
                 @Override
-                protected Task<T> on(Task<T> task) {
-                    task.v.out(f.call(task.v.in));
-                    return task;
+                protected Task<T> in(Task<T> task, T o) {
+                    return task.set(o, f.call(o));
                 }
             };
         } else {
@@ -92,37 +88,25 @@ public abstract class Operator<T, U> implements i.func.Single<T, U> {
 
     public Task<T> exec(Task<T> task) {
         Task<T> current = task;
-        if(current!=null && current.__it==IN){
-            current = in(task);
-            if(current!=null) {
-                current.__it = ++task.v.next;
-            }
+        if(current!=null && current.it()== IN){
+            current = in(task, task.v.in);
+            if(current!=null){ current.it(current.it()+1); }
         }
-        if(current!=null && current.__it==ON){
-            current = on(task);
-            if(current!=null) {
-                current.__it = ++task.v.next;
-            }
-        }
-        if(current!=null && current.__it==OUT){
-            out(task);
+        if(current!=null && current.it()== IN +1){
+            out(task, task.v.get(current.it()));
         }
         return task;
     }
 
-    protected Task<T> in(Task<T> task){
-        task.v = new Local<>(task.i());
-        return task;
-    }
+    protected abstract Task<T> in(Task<T> task, T o);
 
-    protected abstract Task<T> on(Task<T> task);
-
-    protected void out(Task<T> task){
-        task.out(task.v.o());
+    protected void out(Task<T> task, Object o){
+        Log.f("", this, task, o);
+        task.out(o);
         if (__next != null) {
             __next(task);
         } else {
-            __up(task);
+            task.up(task.i(), task.o());
         }
     }
 
@@ -131,14 +115,6 @@ public abstract class Operator<T, U> implements i.func.Single<T, U> {
         Scheduler scheduler = task.__scheduler;
         if(scheduler==null){ scheduler = Scheduler.Local(); }
         scheduler.dispatch(new Task<>((U) task.o(), __next, scheduler, task.__previous));
-    }
-
-    protected void __up(Task<T> task){
-        Log.f(Tag, "");
-        if(task.__previous!=null){
-            task.__previous.v.out(task.o());
-            task.__previous.executed();
-        }
     }
 
     protected Operator<?, ?> last(){
@@ -186,6 +162,12 @@ public abstract class Operator<T, U> implements i.func.Single<T, U> {
         }
         return current;
     }
+
+    public Local<T> declare(Task<T> task){
+        return new Local<>(task.i());
+    }
+
+    public int done(){ return IN + 2; }
 
     @Override
     public U call(T first) {

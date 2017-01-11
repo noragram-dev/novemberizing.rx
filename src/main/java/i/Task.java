@@ -4,6 +4,8 @@ import com.google.gson.annotations.Expose;
 import novemberizing.util.Debug;
 import novemberizing.util.Log;
 
+import static i.Iteration.IN;
+
 /**
  *
  * @author novemberizing, i@novemberizing.net
@@ -23,9 +25,9 @@ public class Task<T> extends Command {
     public Task(T in, i.Operator<T, ?> op, Scheduler scheduler){
         Log.f(Tag, "");
         __in = in;
-        __it = Iteration.IN;
+        __it = IN;
         __op = op;
-        v = null;
+        v = __op.declare(this);
         __out = null;
         __exception = null;
         __scheduler = scheduler;
@@ -35,9 +37,9 @@ public class Task<T> extends Command {
     public Task(T in, i.Operator<T, ?> op, Scheduler scheduler , Task<?> previous){
         Log.f(Tag, "");
         __in = in;
-        __it = Iteration.IN;
+        __it = IN;
         __op = op;
-        v = null;
+        v = __op.declare(this);
         __out = null;
         __exception = null;
         __scheduler = scheduler;
@@ -47,10 +49,10 @@ public class Task<T> extends Command {
     public void out(){
         Log.f(Tag, "");
         synchronized (this) {
-            if (__it == Iteration.DONE) {
-                Debug.On(new RuntimeException(""));
+            if (__it == __op.done()) {
+                Log.e("" ,new RuntimeException(""));
             } else {
-                __it = Iteration.DONE;
+                __it = __op.done();
                 complete();
             }
         }
@@ -59,10 +61,10 @@ public class Task<T> extends Command {
     public void out(Object o){
         Log.f(Tag, "");
         synchronized (this) {
-            if (__it == Iteration.DONE) {
-                Debug.On(new RuntimeException(""));
+            if (__it == __op.done()) {
+                Log.e("" ,new RuntimeException(""));
             } else {
-                __it = Iteration.DONE;
+                __it = __op.done();
                 __out = new i.tuple.Single<>(o);
                 complete();
             }
@@ -72,10 +74,10 @@ public class Task<T> extends Command {
     public void error(Throwable e){
         Log.f(Tag, "");
         synchronized (this) {
-            if (__it == Iteration.DONE) {
-                Debug.On(new RuntimeException(""));
+            if (__it == __op.done()) {
+                Log.e("" ,new RuntimeException(""));
             } else {
-                __it = Iteration.DONE;
+                __it = __op.done();
                 __exception = e;
                 complete();
             }
@@ -115,24 +117,58 @@ public class Task<T> extends Command {
     }
 
     synchronized public void next(){
-        synchronized (this){ __it = (v!=null ? ++v.next : __it); }
-        super.executed();
+        __it++;
+        move();
     }
 
-    synchronized protected int it(){ return __it; }
-    synchronized public boolean done(){ return __it==Iteration.DONE; }
+    synchronized public void next(Object in, Object out){
+        __it++;
+        v.set(__it, in, out);
+        move();
+    }
+
+    synchronized public void back(){
+        __it--;
+        if(__it< IN){ __it = IN; }
+        move();
+    }
+
+    synchronized public void back(Object in, Object out){
+        __it--;
+        if(__it< IN){ __it = IN; }
+        v.set(__it, in, out);
+        move();
+    }
+
+    synchronized public void up(){
+        if(__previous!=null){
+            __previous.executed();
+        }
+    }
+
+    synchronized public void up(Object in, Object out){
+        if(__previous!=null){
+            __previous.v.set(__previous.it(), in, out);
+            __previous.executed();
+        }
+    }
+
+    public Task<T> set(Object in, Object out){
+        v.set(__it, in, out);
+        return this;
+    }
+
+    private void move(){ executed(); }
+
+    synchronized public int it(){ return __it; }
+    synchronized public void it(int it){ __it = it; }
+    synchronized public boolean done(){ return __it==__op.done(); }
 
     public Scheduler scheduler(){ return __scheduler; }
 
     @Override
     public void execute() {
-        Log.f(Tag, "");
+        Log.f("", this);
         __op.exec(this);
     }
-
-//    @Override
-//    public void executed(){
-//        synchronized (this){ __it = (v!=null ? v.next : __it); }
-//        super.executed();
-//    }
 }
