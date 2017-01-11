@@ -1,6 +1,7 @@
 package novemberizing.rx;
 
 import com.google.gson.annotations.Expose;
+import novemberizing.rx.tuple.Single;
 import novemberizing.util.Debug;
 import novemberizing.util.Log;
 
@@ -82,6 +83,33 @@ public class Task<T> extends Command {
                 __exception = e;
                 complete();
             }
+        }
+        Task<?> previous = __previous;
+        while(previous!=null){
+            previous.__exception = e;
+            previous.__done = true;
+            previous = previous.__previous;
+        }
+    }
+
+    public void exit(){
+        Task<?> previous = __previous;
+        while(previous!=null){
+            previous.__done = true;
+            previous = previous.__previous;
+        }
+    }
+
+    public void exit(Object o){
+        Task<?> previous = __previous;
+        while(previous!=null){
+            if(previous.__previous!=null){
+                previous.__done = true;
+            } else {
+                previous.__done = true;
+                previous.__out = new Single<>(o);
+            }
+            previous = previous.__previous;
         }
     }
 

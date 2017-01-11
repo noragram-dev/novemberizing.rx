@@ -67,10 +67,10 @@ public class CompletionPort<T, U> extends Operator<Collection<T>, Collection<U>>
     @Override
     synchronized public Task<Collection<T>> exec(Task<Collection<T>> task) {
         Task<Collection<T>> current = task;
-        if(current!=null && current.it()==IN){
+        if(current!=null && !current.done() && current.it()==IN){
             current = __iterate(in(task, task.v.in));
         }
-        if(current!=null && current.it()==IN+1){
+        if(current!=null && !current.done() && current.it()==IN+1){
             current = __iterate(on(task, task.v.in));
             Collection<Task<T>> tasks = Scheduler.Foreach(task, __op, (T[]) task.i().toArray());
             CompletionPort.Local<Collection<T>> v = (CompletionPort.Local<Collection<T>>) task.v;
@@ -79,10 +79,10 @@ public class CompletionPort<T, U> extends Operator<Collection<T>, Collection<U>>
                 current = __iterate(current);
             }
         }
-        if(current!=null && current.it()==IN+2){
+        if(current!=null && !current.done() && current.it()==IN+2){
             current = __iterate(__on(current, (Local<Collection<T>>) current.v));
         }
-        if(current!=null && current.it()==IN+3){
+        if(current!=null && !current.done() && current.it()==IN+3){
             out(task, task.v.out);
         }
         return task;

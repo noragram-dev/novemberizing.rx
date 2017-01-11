@@ -115,13 +115,13 @@ public abstract class Operator<T, U> implements novemberizing.rx.func.Single<T, 
 
     synchronized public Task<T> exec(Task<T> task) {
         Task<T> current = task;
-        if(current!=null && current.it()==IN){
+        if(current!=null && !current.done() && current.it()==IN){
             current = __iterate(in(task, task.v.in));
         }
-        if(current!=null && current.__it==IN+1){
+        if(current!=null && !current.done() && current.__it==IN+1){
             current = __iterate(on(task, task.v.in));
         }
-        if(current!=null && current.__it==IN+2){
+        if(current!=null && !current.done() && current.__it==IN+2){
             out(task, task.v.out);
         }
         return task;
@@ -147,6 +147,10 @@ public abstract class Operator<T, U> implements novemberizing.rx.func.Single<T, 
         } else {
             __up(task);
         }
+    }
+
+    protected void error(Task<T> task, Throwable e){
+        task.error(e);
     }
 
     protected void __next(Task<T> task){

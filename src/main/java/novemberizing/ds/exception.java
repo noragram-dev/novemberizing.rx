@@ -10,5 +10,24 @@ import static novemberizing.Constant.Unknown;
  * @since 2017. 1. 12
  */
 public class exception extends Throwable {
-    @Expose private int id = Unknown;
+    @Expose private int __id;
+    public int id(){ return __id; }
+
+    public exception(){
+        __id = Unknown;
+    }
+
+    public exception(int id){
+        __id = id;
+    }
+
+    public exception(String msg){
+        super(msg);
+        __id = Unknown;
+    }
+
+    public exception(int id, String msg){
+        super(msg);
+        __id = id;
+    }
 }
