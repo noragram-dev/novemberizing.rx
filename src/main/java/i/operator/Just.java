@@ -17,7 +17,8 @@ public class Just<T> extends Operator<T, T> {
     }
 
     @Override
-    protected Task<T> in(Task<T> task, T o) {
-        return task.set(o, o);
+    protected Task<T> on(Task<T> task) {
+        task.v.out(task.v.in);
+        return task;
     }
 }

@@ -2,9 +2,8 @@ package novemberizing.rx.example.operator.async.sync;
 
 import i.Operator;
 import i.Task;
-import novemberizing.util.Log;
 
-import java.util.Random;
+import static i.Iteration.OUT;
 
 /**
  *
@@ -25,16 +24,17 @@ public class Sync<T, U> extends i.operator.Sync<T, U>  {
     }
 
     @Override
-    protected Task<T> in(Task<T> task, T o) {
-        new Thread(() -> {
-            Random r = new Random();
+    protected Task<T> on(Task<T> task) {
+        Thread thread = new Thread(() -> {
             try {
-                Thread.sleep(__second + ((Math.abs(r.nextInt(4096))) % 100) * 10);
+                Thread.sleep(__second);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            task.next(o, __func != null ? __func.call(o) : null);
-        }).start();
+            task.v.out(__func!=null ? __func.call(task.v.in) : null);
+            task.next();
+        });
+        thread.start();
         return null;
     }
 }
