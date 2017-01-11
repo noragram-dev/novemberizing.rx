@@ -1,8 +1,6 @@
 package i;
 
-import i.operator.CompletionPort;
-import i.operator.Just;
-import i.operator.Sync;
+import i.operator.*;
 import novemberizing.util.Debug;
 import novemberizing.util.Log;
 
@@ -16,8 +14,6 @@ import static i.Iteration.IN;
 public abstract class Operator<T, U> implements i.func.Single<T, U> {
 
     public interface Func<T, U> extends i.func.Single<T, U> {}
-
-    private static final String Tag = "Operator";
 
     public static <T> Operator<T, T> Just(){ return new Just<>(); }
 
@@ -83,6 +79,22 @@ public abstract class Operator<T, U> implements i.func.Single<T, U> {
         return new CompletionPort<>(f);
     }
 
+    public static <T, U> Block<T, U> Block(i.func.Single<?, ?>[] functions){
+        return (Block<T, U>) new Block<>(Op(functions));
+    }
+
+    public static <T, U> Block<T, ?> Block(i.func.Single<T, U> f) {
+        return new Block<>(Op(f));
+    }
+
+    public static <T, U> Block<T, ?> Block(i.func.Single<T, U> f, i.func.Single<?, ?>... functions){
+        return new Block<>(Op(f, functions));
+    }
+
+    public static <T, U> If<T, U> If(Operator.Func<T,Boolean> condition, i.func.Single<T, U> f){
+        return new If<>(condition, f);
+    }
+
     protected Operator<U, ?> __next;
 
     synchronized public Task<T> exec(Task<T> task) {
@@ -122,14 +134,14 @@ public abstract class Operator<T, U> implements i.func.Single<T, U> {
     }
 
     protected void __next(Task<T> task){
-        Log.f(Tag, "");
+        Log.f("", this);
         Scheduler scheduler = task.__scheduler;
         if(scheduler==null){ scheduler = Scheduler.Local(); }
         scheduler.dispatch(new Task<>((U) task.o(), __next, scheduler, task.__previous));
     }
 
     protected void __up(Task<T> task){
-        Log.i(Tag, "");
+        Log.f("", this);
         if(task.__previous!=null){
             task.__previous.up(task.i(), task.o());
         }
@@ -187,7 +199,7 @@ public abstract class Operator<T, U> implements i.func.Single<T, U> {
 
     @Override
     public U call(T first) {
-        Log.f(Tag, "");
+        Log.f("", this);
         Debug.On(new RuntimeException(""));
         return null;
     }

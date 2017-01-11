@@ -137,6 +137,13 @@ public class Task<T> extends Command {
         return move();
     }
 
+    synchronized public <C> Task<C> down(Operator<C, ?> op, C o){
+        Scheduler scheduler = __scheduler==null ? Scheduler.Local() : __scheduler;
+        Task<C> down = new Task<>(o, op, scheduler, this);
+        scheduler.dispatch(down);
+        return down;
+    }
+
     private Task<T> move() {
         if(__done){
             complete();
