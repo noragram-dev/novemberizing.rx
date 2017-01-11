@@ -58,7 +58,11 @@ public class If<T, U> extends Operator<T, U> {
         }
         task.set(o, null);
         __iterate(task);
-        task.down(__else, o);
+        if(__else!=null) {
+            task.down(__else, o);
+        } else {
+            task.out(null);
+        }
         return null;
     }
 }

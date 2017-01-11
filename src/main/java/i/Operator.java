@@ -95,6 +95,10 @@ public abstract class Operator<T, U> implements i.func.Single<T, U> {
         return new If<>(condition, f);
     }
 
+    public static <T, U> Switch<T, U> Switch(Operator.Func<T, Integer> f){
+        return new Switch<>(f);
+    }
+
     protected Operator<U, ?> __next;
 
     synchronized public Task<T> exec(Task<T> task) {
