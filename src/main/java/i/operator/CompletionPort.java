@@ -3,12 +3,10 @@ package i.operator;
 import i.Operator;
 import i.Scheduler;
 import i.Task;
-import novemberizing.util.Log;
 
 import java.util.Collection;
 import java.util.LinkedList;
 
-import static i.Iteration.ON;
 
 /**
  *

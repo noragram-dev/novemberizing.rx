@@ -7,8 +7,6 @@ import novemberizing.util.Log;
 
 import java.util.LinkedList;
 
-import static i.Iteration.ON;
-
 /**
  *
  * @author novemberizing, i@novemberizing.net

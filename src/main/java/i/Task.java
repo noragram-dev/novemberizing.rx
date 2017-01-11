@@ -19,6 +19,7 @@ public class Task<T> extends Command {
     @Expose protected Scheduler __scheduler;
     @Expose protected Task<?> __previous;
     @Expose public Local<T> v;
+    @Expose protected boolean __done;
 
     public Task(T in, i.Operator<T, ?> op, Scheduler scheduler){
         Log.f(Tag, "");
@@ -30,6 +31,7 @@ public class Task<T> extends Command {
         __exception = null;
         __scheduler = scheduler;
         __previous = null;
+        __done = false;
     }
 
     public Task(T in, i.Operator<T, ?> op, Scheduler scheduler , Task<?> previous){
@@ -42,15 +44,16 @@ public class Task<T> extends Command {
         __exception = null;
         __scheduler = scheduler;
         __previous = previous;
+        __done = false;
     }
 
     public void out(){
         Log.f(Tag, "");
         synchronized (this) {
-            if (__it == Iteration.DONE) {
+            if (__done) {
                 Debug.On(new RuntimeException(""));
             } else {
-                __it = Iteration.DONE;
+                __done = true;
                 complete();
             }
         }
@@ -59,10 +62,10 @@ public class Task<T> extends Command {
     public void out(Object o){
         Log.f(Tag, "");
         synchronized (this) {
-            if (__it == Iteration.DONE) {
+            if (__done) {
                 Debug.On(new RuntimeException(""));
             } else {
-                __it = Iteration.DONE;
+                __done = true;
                 __out = new i.tuple.Single<>(o);
                 complete();
             }
@@ -72,10 +75,10 @@ public class Task<T> extends Command {
     public void error(Throwable e){
         Log.f(Tag, "");
         synchronized (this) {
-            if (__it == Iteration.DONE) {
+            if (__done) {
                 Debug.On(new RuntimeException(""));
             } else {
-                __it = Iteration.DONE;
+                __done = true;
                 __exception = e;
                 complete();
             }
@@ -116,11 +119,14 @@ public class Task<T> extends Command {
 
     synchronized public void next(){
         synchronized (this){ __it = (v!=null ? ++v.next : __it); }
-        super.executed();
+        move();
+    }
+
+    private static void move() {
     }
 
     synchronized protected int it(){ return __it; }
-    synchronized public boolean done(){ return __it==Iteration.DONE; }
+    synchronized public boolean done(){ return __done; }
 
     public Scheduler scheduler(){ return __scheduler; }
 
@@ -129,10 +135,4 @@ public class Task<T> extends Command {
         Log.f(Tag, "");
         __op.exec(this);
     }
-
-//    @Override
-//    public void executed(){
-//        synchronized (this){ __it = (v!=null ? v.next : __it); }
-//        super.executed();
-//    }
 }

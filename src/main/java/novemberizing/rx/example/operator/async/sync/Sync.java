@@ -3,8 +3,6 @@ package novemberizing.rx.example.operator.async.sync;
 import i.Operator;
 import i.Task;
 
-import static i.Iteration.OUT;
-
 /**
  *
  * @author novemberizing, i@novemberizing.net

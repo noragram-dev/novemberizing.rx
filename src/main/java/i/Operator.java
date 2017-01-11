@@ -7,8 +7,6 @@ import novemberizing.util.Debug;
 import novemberizing.util.Log;
 
 import static i.Iteration.IN;
-import static i.Iteration.ON;
-import static i.Iteration.OUT;
 
 /**
  *
@@ -98,13 +96,13 @@ public abstract class Operator<T, U> implements i.func.Single<T, U> {
                 current.__it = ++task.v.next;
             }
         }
-        if(current!=null && current.__it==ON){
+        if(current!=null && current.__it==IN+1){
             current = on(task);
             if(current!=null) {
                 current.__it = ++task.v.next;
             }
         }
-        if(current!=null && current.__it==OUT){
+        if(current!=null && current.__it==IN+2){
             out(task);
         }
         return task;
