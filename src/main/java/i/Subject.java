@@ -9,15 +9,24 @@ import java.util.HashSet;
  * @author novemberizing, i@novemberizing.net
  * @since 2017. 1. 11.
  */
-public class Subscriber<T> implements Observer<T> {
-    private static final String Tag = "Subscriber";
+public class Subject<T, U> extends Observable<U> implements Observer<T> {
+    private static final String Tag = "";
 
-    protected final HashSet<Observable<T>> __observables = new HashSet<>();
-    protected Scheduler __observeOn;
+    private final HashSet<Observable<T>> __observables = new HashSet<>();
+    private Scheduler __observeOn;
+    private Operator<T, ?> __op;
+    private HashSet<Task<T>> __tasks = new HashSet<>();
+
+    public Subject(Operator<T, ?> op){
+        __op = op;
+    }
 
     @Override
     synchronized public void onNext(T o) {
         Log.i(Tag, o);
+//        Scheduler scheduler = __observeOn!=null ? __observeOn : Scheduler.Local();
+//        Task<T> task = new Task<T>(o, __op, scheduler, )
+//        __op
     }
 
     @Override
