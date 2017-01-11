@@ -24,5 +24,9 @@ public class Example {
 
         observable.subscribe(new Subscriber<>());
 
+        for(String s : args) {
+            observable.update(s);
+        }
+
     }
 }
