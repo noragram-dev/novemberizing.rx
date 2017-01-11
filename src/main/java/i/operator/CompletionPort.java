@@ -1,5 +1,6 @@
 package i.operator;
 
+import com.google.gson.annotations.Expose;
 import i.Local;
 import i.Operator;
 import i.Scheduler;
@@ -7,6 +8,7 @@ import i.Task;
 import novemberizing.util.Log;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 import static i.Iteration.IN;
@@ -23,9 +25,13 @@ public class CompletionPort<T, U> extends Operator<Collection<T>, Collection<U>>
     private static final String Tag = "CompletionPort";
 
     public static class Local<T extends Collection> extends i.Local<T> {
-        public Collection<Task<T>> tasks;
-        public final Task<T> self;
-        public Collection<Object> results;
+        @Expose public Collection<Task<T>> tasks;
+        @Expose public final Task<T> self;
+        @Expose public Collection<Object> results;
+
+//        private void on(Collection<Task<T>> collection){
+//            Iterator<T> it =
+//        }
 
         @Override
         synchronized public void set(int it, Object in, Object out){
@@ -34,8 +40,17 @@ public class CompletionPort<T, U> extends Operator<Collection<T>, Collection<U>>
             } else if(it==IN+1){
                 this.in = (T) in;
                 tasks = (Collection<Task<T>>) out;
+                if(tasks!=null) {
+                    for (Task<T> task : tasks) {
+                        if (task.done()) {
+                            results.add(task.o());
+                        }
+                    }
+                    if(results.size()==tasks.size()){ this.out = results; }
+                }
             } else if(it==IN+2){
-
+                results.add(out);
+                if(results.size()==tasks.size()){ this.out = results; }
             } else if(it==IN+3){
                 this.out = out;
             }
@@ -72,12 +87,16 @@ public class CompletionPort<T, U> extends Operator<Collection<T>, Collection<U>>
             }
         }
         if(current!=null && current.it()==IN+2){
-            Log.i("", this);
+            current = __iterate(__on(current, (Local<Collection<T>>) current.v));
         }
         if(current!=null && current.it()==IN+3){
             out(task, task.v.out);
         }
         return task;
+    }
+
+    protected Task<Collection<T>> __on(Task<Collection<T>> task, Local<Collection<T>> v){
+        return v.completed() ? task : null;
     }
 
     @Override

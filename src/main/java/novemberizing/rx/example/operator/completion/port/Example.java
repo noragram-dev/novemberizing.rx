@@ -20,7 +20,7 @@ public class Example {
         Log.disable(Log.FLOW | Log.HEADER);
         LinkedList<String> collection = new LinkedList<>();
         Collections.addAll(collection, args);
-        Task task = Scheduler.Sync(Scheduler.Exec(Operator.CompletionPort(Sync.New(1000, o -> Log.i("async(sync(f)) " + (count++) + ">", o))), collection));
+        Task task = Scheduler.Sync(Scheduler.Exec(Operator.CompletionPort(Sync.New(1000, o -> Log.i("async(sync(f)) " + (count++) + ">", o) + "th")), collection));
         Log.i("async(sync(f)) >", task);
     }
 }

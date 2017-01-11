@@ -129,7 +129,7 @@ public abstract class Operator<T, U> implements i.func.Single<T, U> {
     }
 
     protected void __up(Task<T> task){
-        Log.f(Tag, "");
+        Log.i(Tag, "");
         if(task.__previous!=null){
             task.__previous.up(task.i(), task.o());
         }
