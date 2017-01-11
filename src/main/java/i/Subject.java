@@ -1,5 +1,7 @@
 package i;
 
+import i.operator.Block;
+
 import novemberizing.util.Log;
 
 import java.util.HashSet;
@@ -14,19 +16,45 @@ public class Subject<T, U> extends Observable<U> implements Observer<T> {
 
     private final HashSet<Observable<T>> __observables = new HashSet<>();
     private Scheduler __observeOn;
-    private Operator<T, ?> __op;
-    private HashSet<Task<T>> __tasks = new HashSet<>();
+    private final Block<T, U> __completionPort;
+    private final HashSet<Task<T>> __tasks = new HashSet<>();
 
-    public Subject(Operator<T, ?> op){
-        __op = op;
+    public Subject(i.func.Single<T, ?> f){
+        __completionPort = new Block<T, U>(f){
+            public Operator<?, U> back(){ return (Operator<?, U>) this.last(); }
+
+            @Override
+            protected Task<T> in(Task<T> task, T o){
+                synchronized (__tasks) {
+                    if(!__tasks.add(task)){
+                        Log.e(Tag, new Throwable(), this, task, o);
+                    }
+                }
+                return task.set(o, null);
+            }
+
+            @Override
+            protected void out(Task<T> task, Object o){
+                task.out(o);
+                synchronized (__tasks) {
+                    if(!__tasks.remove(task)){
+                        Log.e(Tag, new Throwable(), this, task, o);
+                    }
+                }
+                next((U) o);
+                if (__next != null) {
+                    __next(task);
+                } else {
+                    __up(task);
+                }
+            }
+        };
     }
 
     @Override
     synchronized public void onNext(T o) {
         Log.i(Tag, o);
-//        Scheduler scheduler = __observeOn!=null ? __observeOn : Scheduler.Local();
-//        Task<T> task = new Task<T>(o, __op, scheduler, )
-//        __op
+        Scheduler.Exec(__observeOn==null ? Scheduler.Local() : __observeOn, __completionPort, o);
     }
 
     @Override

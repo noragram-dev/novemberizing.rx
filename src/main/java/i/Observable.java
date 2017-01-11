@@ -162,6 +162,22 @@ public abstract class Observable<T> {
         return ret;
     }
 
+    public <U> Subject<T, U> subscribe(Subject<T, U> subject){
+        if(subject!=null){
+            if(__subscribe(subject)){
+                subject.onSubscribe(this);
+                synchronized (this) {
+                    if (__replayer != null) {
+                        __replayer.on(subject);
+                    }
+                }
+            }
+        } else {
+            Log.e(Tag, this, new RuntimeException("observer==null"));
+        }
+        return subject;
+    }
+
     public Observable<T> subscribe(Observer<T> observer){
         if(observer!=null){
             if(__subscribe(observer)){
@@ -194,5 +210,9 @@ public abstract class Observable<T> {
     synchronized public Observable<T> publishOn(Scheduler scheduler){
         __publishOn = scheduler;
         return this;
+    }
+
+    public <U> Subject<T, U> op(i.func.Single<T, ?> f){
+        return subscribe(new Subject<T, U>(f));
     }
 }

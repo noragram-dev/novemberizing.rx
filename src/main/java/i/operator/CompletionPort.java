@@ -29,10 +29,6 @@ public class CompletionPort<T, U> extends Operator<Collection<T>, Collection<U>>
         @Expose public final Task<T> self;
         @Expose public Collection<Object> results;
 
-//        private void on(Collection<Task<T>> collection){
-//            Iterator<T> it =
-//        }
-
         @Override
         synchronized public void set(int it, Object in, Object out){
             if(it==IN){
