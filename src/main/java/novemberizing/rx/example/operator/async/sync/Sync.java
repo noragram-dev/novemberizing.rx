@@ -15,7 +15,7 @@ public class Sync<T, U> extends i.operator.Sync<T, U>  {
         return new Sync<>(second, f);
     }
 
-    private int __second = 1000;
+    private int __second = 100;
     private Operator.Func<T, U> __func;
 
     private Sync(int second, Operator.Func<T, U> f){

@@ -4,6 +4,8 @@ import i.operator.*;
 import novemberizing.util.Debug;
 import novemberizing.util.Log;
 
+import java.util.concurrent.locks.Condition;
+
 import static i.Iteration.IN;
 
 /**
@@ -99,6 +101,14 @@ public abstract class Operator<T, U> implements i.func.Single<T, U> {
         return new Switch<>(f);
     }
 
+    public static <T> While<T> While(Operator.Func<T, Boolean> condition, i.func.Single<T, ?> op){
+        return new While<>(condition, op);
+    }
+
+    public static <T> While<T> While(i.func.Single<T, ?> op, Operator.Func<T, Boolean> condition){
+        return new While<>(op, condition);
+    }
+
     protected Operator<U, ?> __next;
 
     synchronized public Task<T> exec(Task<T> task) {
@@ -124,7 +134,7 @@ public abstract class Operator<T, U> implements i.func.Single<T, U> {
 
 
 
-    protected Task<T> in(Task<T> task, T o){ return task.set(o, o); }
+    protected Task<T> in(Task<T> task, T o){ return task.set(o, null); }
 
     protected abstract Task<T> on(Task<T> task, T o);
 
@@ -147,7 +157,7 @@ public abstract class Operator<T, U> implements i.func.Single<T, U> {
     protected void __up(Task<T> task){
         Log.f("", this);
         if(task.__previous!=null){
-            task.__previous.up(task.i(), task.o());
+            task.__previous.up(task.__previous.v.in, task.o());
         }
     }
 
