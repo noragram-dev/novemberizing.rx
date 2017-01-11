@@ -11,7 +11,7 @@
 <XPD:ATTR name="Title" type="string">novemberizing.rx</XPD:ATTR>
 <XPD:ATTR name="#OwnedElements" type="integer">1</XPD:ATTR>
 <XPD:OBJ name="OwnedElements[0]" type="UMLPackage" guid="FF1xJ4GFFUS6xH3+QR20RwAA">
-<XPD:ATTR name="Name" type="string">i</XPD:ATTR>
+<XPD:ATTR name="Name" type="string">novemberizing.rx</XPD:ATTR>
 <XPD:REF name="Namespace">k1JiRBTmP0iVQdK93YbvcAAA</XPD:REF>
 <XPD:ATTR name="#OwnedElements" type="integer">1</XPD:ATTR>
 <XPD:OBJ name="OwnedElements[0]" type="UMLPackage" guid="fNSIxMGkVEWqdikFjH+cXAAA">
