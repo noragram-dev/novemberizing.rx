@@ -85,19 +85,13 @@ public abstract class Operator<T, U> implements i.func.Single<T, U> {
 
     protected Operator<U, ?> __next;
 
-    public Task<T> exec(Task<T> task) {
+    synchronized public Task<T> exec(Task<T> task) {
         Task<T> current = task;
-        if(current!=null && current.__it==IN){
-            current = in(task, task.v.in);
-            if(current!=null) {
-                current.__it = ++task.v.next;
-            }
+        if(current!=null && current.it()==IN){
+            current = __iterate(in(task, task.v.in));
         }
         if(current!=null && current.__it==IN+1){
-            current = on(task, task.v.in);
-            if(current!=null) {
-                current.__it = ++task.v.next;
-            }
+            current = __iterate(on(task, task.v.in));
         }
         if(current!=null && current.__it==IN+2){
             out(task, task.v.out);
@@ -105,12 +99,21 @@ public abstract class Operator<T, U> implements i.func.Single<T, U> {
         return task;
     }
 
+    protected Task<T> __iterate(Task<T> task){
+        if(task!=null) {
+            task.__it++;
+        }
+        return task;
+    }
+
+
+
     protected Task<T> in(Task<T> task, T o){ return task.set(o, o); }
 
     protected abstract Task<T> on(Task<T> task, T o);
 
     protected void out(Task<T> task, Object o){
-        task.set(o, o);
+        task.out(o);
         if (__next != null) {
             __next(task);
         } else {
@@ -128,8 +131,7 @@ public abstract class Operator<T, U> implements i.func.Single<T, U> {
     protected void __up(Task<T> task){
         Log.f(Tag, "");
         if(task.__previous!=null){
-            task.__previous.v.out(task.o());
-            task.__previous.executed();
+            task.__previous.up(task.i(), task.o());
         }
     }
 

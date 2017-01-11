@@ -13,13 +13,12 @@ import static i.Iteration.IN;
  */
 public class Local<T> {
     private static final String Tag = "Local";
-    @Expose protected Task<T> task;
     @Expose public T in;
-    @Expose protected Object out;
-    @Expose protected int next;
+    @Expose public Object out;
 
-    synchronized public void out(Object o){
-        out = o;
+    synchronized public void set(int it, Object in, Object out){
+        this.in = (T) in;
+        this.out = out;
     }
 
     public Object o(){ return out; }
@@ -36,7 +35,6 @@ public class Local<T> {
     public Local(T in){
         Log.f(Tag, "");
         this.in = in;
-        this.next = IN;
         this.out = null;
     }
 }

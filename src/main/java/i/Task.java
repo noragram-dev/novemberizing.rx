@@ -117,23 +117,41 @@ public class Task<T> extends Command {
         return null;
     }
 
-    synchronized public void next(){
-        synchronized (this){ __it = (v!=null ? ++v.next : __it); }
-        move();
+    synchronized public Task<T> next(){
+        __it++;
+        return move();
     }
 
-    private static void move() {
+    synchronized public Task<T> next(Object in, Object out){
+        __it++;
+        set(in, out);
+        return move();
     }
 
-    public Task<T> next(Object in, Object out){
+    synchronized public Task<T> up(){
+        return move();
+    }
+
+    synchronized public Task<T> up(Object in, Object out){
+        set(in, out);
+        return move();
+    }
+
+    private Task<T> move() {
+        if(__done){
+            complete();
+        } else {
+            executed();
+        }
         return this;
     }
 
-    public Task<T> set(Object in, Object out){
+    synchronized public Task<T> set(Object in, Object out){
+        v.set(__it, in, out);
         return this;
     }
 
-    synchronized protected int it(){ return __it; }
+    synchronized public int it(){ return __it; }
     synchronized public boolean done(){ return __done; }
 
     public Scheduler scheduler(){ return __scheduler; }
