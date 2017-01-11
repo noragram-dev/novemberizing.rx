@@ -58,14 +58,14 @@ public class CompletionPort<T, U> extends Operator<Collection<T>, Collection<U>>
     }
 
     @Override
-    protected Task<Collection<T>> in(Task<Collection<T>> task){
+    protected Task<Collection<T>> in(Task<Collection<T>> task, Collection<T> o){
         task.v = new CompletionPort.Local<>(task.i(), task, Scheduler.Foreach(task, __op, (T[]) task.i().toArray()));
         CompletionPort.Local<Collection<T>> v = (CompletionPort.Local<Collection<T>>) task.v;
         return task;
     }
 
     @Override
-    protected Task<Collection<T>> on(Task<Collection<T>> task) {
+    protected Task<Collection<T>> on(Task<Collection<T>> task, Collection<T> o) {
         CompletionPort.Local<Collection<T>> v = (CompletionPort.Local<Collection<T>>) task.v;
         return v.completed() ? task : null;
     }

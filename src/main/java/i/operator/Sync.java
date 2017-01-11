@@ -26,10 +26,9 @@ public abstract class Sync<T, U> extends Operator<T, U> {
     synchronized boolean running(){ return __current!=null; }
 
     @Override
-    protected Task<T> in(Task<T> task){
+    protected Task<T> in(Task<T> task, T o){
         Log.f(Tag, "");
         if(task!=null) {
-            task.v = new Local<>(task.i());
             if (!running()) {
                 synchronized (this) {
                     __current = task;
@@ -45,9 +44,9 @@ public abstract class Sync<T, U> extends Operator<T, U> {
     }
 
     @Override
-    protected void out(Task<T> task){
+    protected void out(Task<T> task, Object o){
         Log.f(Tag, "");
-        super.out(task);
+        super.out(task, o);
         synchronized (this){
             __current = __tasks.size()>0 ? __tasks.pollFirst() : null;
             if(__current!=null) {

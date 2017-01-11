@@ -22,15 +22,14 @@ public class Sync<T, U> extends i.operator.Sync<T, U>  {
     }
 
     @Override
-    protected Task<T> on(Task<T> task) {
+    protected Task<T> on(Task<T> task, T o) {
         Thread thread = new Thread(() -> {
             try {
                 Thread.sleep(__second);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            task.v.out(__func!=null ? __func.call(task.v.in) : null);
-            task.next();
+            task.next(o, __func!=null ? __func.call(o) : null);
         });
         thread.start();
         return null;

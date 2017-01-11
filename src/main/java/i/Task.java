@@ -26,7 +26,7 @@ public class Task<T> extends Command {
         __in = in;
         __it = Iteration.IN;
         __op = op;
-        v = null;
+        v = op.declare(this);
         __out = null;
         __exception = null;
         __scheduler = scheduler;
@@ -39,7 +39,7 @@ public class Task<T> extends Command {
         __in = in;
         __it = Iteration.IN;
         __op = op;
-        v = null;
+        v = op.declare(this);
         __out = null;
         __exception = null;
         __scheduler = scheduler;
@@ -123,6 +123,14 @@ public class Task<T> extends Command {
     }
 
     private static void move() {
+    }
+
+    public Task<T> next(Object in, Object out){
+        return this;
+    }
+
+    public Task<T> set(Object in, Object out){
+        return this;
     }
 
     synchronized protected int it(){ return __it; }

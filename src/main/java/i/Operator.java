@@ -30,9 +30,8 @@ public abstract class Operator<T, U> implements i.func.Single<T, U> {
         }
         return new Just<T>(){
             @Override
-            protected Task<T> on(Task<T> task) {
-                task.v.out(task.v.in = f.call(task.v.in));
-                return task;
+            protected Task<T> on(Task<T> task, T o) {
+                return task.set(o, f.call(o));
             }
         };
     }
@@ -43,9 +42,8 @@ public abstract class Operator<T, U> implements i.func.Single<T, U> {
         } else if(f!=null){
             return new Sync<T, U>(){
                 @Override
-                protected Task<T> on(Task<T> task) {
-                    task.v.out(f.call(task.v.in));
-                    return task;
+                protected Task<T> on(Task<T> task, T o) {
+                    return task.set(o, f.call(o));
                 }
             };
         } else {
@@ -60,9 +58,8 @@ public abstract class Operator<T, U> implements i.func.Single<T, U> {
         } else if (f != null) {
             return new Operator<T, U>() {
                 @Override
-                protected Task<T> on(Task<T> task) {
-                    task.v.out(f.call(task.v.in));
-                    return task;
+                protected Task<T> on(Task<T> task, T o) {
+                    return task.set(o, f.call(o));
                 }
             };
         } else {
@@ -91,32 +88,29 @@ public abstract class Operator<T, U> implements i.func.Single<T, U> {
     public Task<T> exec(Task<T> task) {
         Task<T> current = task;
         if(current!=null && current.__it==IN){
-            current = in(task);
+            current = in(task, task.v.in);
             if(current!=null) {
                 current.__it = ++task.v.next;
             }
         }
         if(current!=null && current.__it==IN+1){
-            current = on(task);
+            current = on(task, task.v.in);
             if(current!=null) {
                 current.__it = ++task.v.next;
             }
         }
         if(current!=null && current.__it==IN+2){
-            out(task);
+            out(task, task.v.out);
         }
         return task;
     }
 
-    protected Task<T> in(Task<T> task){
-        task.v = new Local<>(task.i());
-        return task;
-    }
+    protected Task<T> in(Task<T> task, T o){ return task.set(o, o); }
 
-    protected abstract Task<T> on(Task<T> task);
+    protected abstract Task<T> on(Task<T> task, T o);
 
-    protected void out(Task<T> task){
-        task.out(task.v.o());
+    protected void out(Task<T> task, Object o){
+        task.set(o, o);
         if (__next != null) {
             __next(task);
         } else {
@@ -183,6 +177,10 @@ public abstract class Operator<T, U> implements i.func.Single<T, U> {
             }
         }
         return current;
+    }
+
+    public Local<T> declare(Task<T> task){
+        return new Local<>(task.i());
     }
 
     @Override
