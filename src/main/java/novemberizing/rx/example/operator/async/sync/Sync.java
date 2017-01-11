@@ -28,7 +28,7 @@ public class Sync<T, U> extends i.operator.Sync<T, U>  {
         Random r = new Random();
         Thread thread = new Thread(() -> {
             try {
-                Thread.sleep(__second + (Math.abs(r.nextInt()) % 50 + 10) * 10);
+                Thread.sleep(__second + (Math.abs(r.nextInt()) % 10 + 10) * 10);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

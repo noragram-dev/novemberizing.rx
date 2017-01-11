@@ -2,7 +2,6 @@ package i.operator;
 
 import i.Operator;
 import i.Task;
-import novemberizing.util.Log;
 
 /**
  *
@@ -10,6 +9,7 @@ import novemberizing.util.Log;
  * @since 2017. 1. 11.
  */
 public class While<T> extends Operator<T, T> {
+
     protected Operator.Func<T, Boolean> __condition;
     protected Operator<T, ?> __op;
     protected boolean __do;

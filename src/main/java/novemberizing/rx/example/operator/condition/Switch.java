@@ -1,5 +1,4 @@
-package novemberizing.rx.example.operator.switchcase;
-
+package novemberizing.rx.example.operator.condition;
 
 import i.Operator;
 import i.Scheduler;
@@ -10,7 +9,7 @@ import novemberizing.util.Log;
  * @author novemberizing, i@novemberizing.net
  * @since 2017. 1. 11.
  */
-public class Example {
+public class Switch {
     private static int count = 0;
     public static void main(String[] args){
         Log.disable(Log.FLOW | Log.HEADER);

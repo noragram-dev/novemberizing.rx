@@ -109,6 +109,10 @@ public abstract class Operator<T, U> implements i.func.Single<T, U> {
         return new While<>(op, condition);
     }
 
+    public static <T, V> For<T, V> For(Operator.Func<T, V> initializer,i.func.Pair<T, V, Boolean> condition,i.func.Pair<T, V, V> op, i.func.Single<T, ?> block){
+        return new For<>(initializer, condition, op, block);
+    }
+
     protected Operator<U, ?> __next;
 
     synchronized public Task<T> exec(Task<T> task) {

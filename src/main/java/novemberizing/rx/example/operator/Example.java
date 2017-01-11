@@ -23,12 +23,14 @@ public class Example {
         Log.i("completion.port > ", "====================================");
         novemberizing.rx.example.operator.completion.port.Example.main(args);
         Log.i("if else > ", "============================================");
-        novemberizing.rx.example.operator.ifelse.Example.main(args);
+        novemberizing.rx.example.operator.condition.If.main(args);
         Log.i("switch case > ", "=========================================");
-        novemberizing.rx.example.operator.switchcase.Example.main(args);
+        novemberizing.rx.example.operator.condition.Switch.main(args);
         Log.i("while(op) > ", "===========================================");
-        novemberizing.rx.example.operator.whileloop.Example.main(args);
+        novemberizing.rx.example.operator.loop.While.main(args);
         Log.i("do(op)while > ", "=========================================");
-        novemberizing.rx.example.operator.dowhileloop.Example.main(args);
+        novemberizing.rx.example.operator.loop.Do.main(args);
+        Log.i("for(...){} > ", "==========================================");
+        novemberizing.rx.example.operator.loop.For.main(args);
     }
 }
