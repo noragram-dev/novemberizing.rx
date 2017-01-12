@@ -215,4 +215,9 @@ public abstract class Observable<T> {
     public <U> Subject<T, U> op(novemberizing.rx.func.Single<T, ?> f){
         return subscribe(new Subject<T, U>(f));
     }
+
+    public <U> Observable<U> wrap(novemberizing.rx.func.Single<T, U> f, Observable<U> observable){
+
+        return observable;
+    }
 }
