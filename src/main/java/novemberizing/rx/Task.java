@@ -10,19 +10,46 @@ import novemberizing.util.Log;
  * @author novemberizing, novemberizing.rx@novemberizing.net
  * @since 2017. 1. 9.
  */
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class Task<T> extends Command {
     private static final String Tag = "task";
     @Expose protected T __in;
     @Expose protected int __it;
-    @Expose protected novemberizing.rx.Operator<T, ?> __op;
-    @Expose protected novemberizing.rx.tuple.Single<Object> __out;
+    @Expose protected Operator<T, ?> __op;
+    @Expose protected Single<Object> __out;
     @Expose protected Throwable __exception;
     @Expose protected Scheduler __scheduler;
     @Expose protected Task<?> __previous;
-    @Expose public Local<T> v;
     @Expose protected boolean __done;
+    @Expose public Local<T> v;
 
-    public Task(T in, novemberizing.rx.Operator<T, ?> op, Scheduler scheduler){
+    public Task(T in, Scheduler scheduler){
+        Log.f(Tag, "");
+        __in = in;
+        __it = Iteration.IN;
+        __op = null;
+        v = null;
+        __out = null;
+        __exception = null;
+        __scheduler = scheduler;
+        __previous = null;
+        __done = false;
+    }
+
+    public Task(T in, Scheduler scheduler , Task<?> previous){
+        Log.f(Tag, "");
+        __in = in;
+        __it = Iteration.IN;
+        __op = null;
+        v = null;
+        __out = null;
+        __exception = null;
+        __scheduler = scheduler;
+        __previous = previous;
+        __done = false;
+    }
+
+    public Task(T in, Operator<T, ?> op, Scheduler scheduler){
         Log.f(Tag, "");
         __in = in;
         __it = Iteration.IN;
@@ -35,7 +62,7 @@ public class Task<T> extends Command {
         __done = false;
     }
 
-    public Task(T in, novemberizing.rx.Operator<T, ?> op, Scheduler scheduler , Task<?> previous){
+    public Task(T in, Operator<T, ?> op, Scheduler scheduler , Task<?> previous){
         Log.f(Tag, "");
         __in = in;
         __it = Iteration.IN;
@@ -52,7 +79,7 @@ public class Task<T> extends Command {
         Log.f(Tag, "");
         synchronized (this) {
             if (__done) {
-                Debug.On(new RuntimeException(""));
+                Log.e(Tag, new RuntimeException(""));
             } else {
                 __done = true;
                 complete();
@@ -64,7 +91,7 @@ public class Task<T> extends Command {
         Log.f(Tag, "");
         synchronized (this) {
             if (__done) {
-                Debug.On(new RuntimeException(""));
+                Log.e(Tag, new RuntimeException(""));
             } else {
                 __done = true;
                 __out = new novemberizing.rx.tuple.Single<>(o);
@@ -77,7 +104,7 @@ public class Task<T> extends Command {
         Log.f(Tag, "");
         synchronized (this) {
             if (__done) {
-                Debug.On(new RuntimeException(""));
+                Log.e(Tag, new RuntimeException(""));
             } else {
                 __done = true;
                 __exception = e;
@@ -156,11 +183,9 @@ public class Task<T> extends Command {
         return move();
     }
 
-    synchronized public Task<T> up(){
-        return move();
-    }
+    synchronized public Task<T> up(){ return move(); }
 
-    synchronized public Task<T> up(Object in, Object out){
+    synchronized protected Task<T> up(Object in, Object out){
         set(in, out);
         return move();
     }
@@ -191,9 +216,15 @@ public class Task<T> extends Command {
 
     public Scheduler scheduler(){ return __scheduler; }
 
+    public void cancel(){}
+
     @Override
     public void execute() {
         Log.f(Tag, "");
-        __op.exec(this);
+        if(__op!=null) {
+            __op.exec(this);
+        } else {
+            complete();
+        }
     }
 }
