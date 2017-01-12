@@ -3,12 +3,14 @@
 
 namespace novemberizing { namespace ds {
 
-class queue<T>
+template <class T>
+class queue
 {
-protected:  novemberizing::concurrency::sync * __sync;
-protected:  novemberizing::concurrency::condition * __condition;
-protected:  std::queue<T> __q;
+private:    std::queue<T> __q;
+private:    Sync * __sync;
+private:    Condition * __condition;
 public:     queue(void);
+public:
 public:     virtual ~queue(void);
 };
 

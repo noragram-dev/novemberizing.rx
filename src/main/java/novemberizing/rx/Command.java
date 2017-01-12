@@ -1,9 +1,9 @@
-package novemberizing.ds;
+package novemberizing.rx;
 
 /**
  *
  * @author novemberizing, novemberizing@gmail.com
  * @since 2017. 1. 12.
  */
-public interface Executor extends Cyclable {
+public class Command {
 }
