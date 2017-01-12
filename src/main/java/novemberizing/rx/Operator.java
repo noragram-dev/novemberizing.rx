@@ -79,6 +79,10 @@ public abstract class Operator<T, U> implements novemberizing.rx.func.Single<T, 
         return new CompletionPort<>(f);
     }
 
+    public static <T, U> CompletionPort<T, U> CompletionPort(Operator<T, U> op){
+        return new CompletionPort<>(op);
+    }
+
     public static <T, U> Block<T, U> Block(novemberizing.rx.func.Single<?, ?>[] functions){
         return (Block<T, U>) new Block<>(Op(functions));
     }
