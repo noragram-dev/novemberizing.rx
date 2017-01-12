@@ -53,12 +53,14 @@ public class For<T, V> extends Operator<T, T> {
 
     @Override
     protected void out(Task<T> task, Object o){
-        ((Local<T, V>) task.v).local = __op!=null ? __op.call((T) o, ((Local<T, V>) task.v).local) : ((Local<T, V>) task.v).local;
-        if(__condition.call((T) o, ((Local<T, V>) task.v).local)){
-            task.set(task.v.in, o);
-            task.down(__block, (T) o);
-        } else {
-            super.out(task, o);
+        if (!task.done()) {
+            ((Local<T, V>) task.v).local = __op!=null ? __op.call((T) o, ((Local<T, V>) task.v).local) : ((Local<T, V>) task.v).local;
+            if(__condition.call((T) o, ((Local<T, V>) task.v).local)){
+                task.set(task.v.in, o);
+                task.down(__block, (T) o);
+            } else {
+                super.out(task, o);
+            }
         }
     }
 

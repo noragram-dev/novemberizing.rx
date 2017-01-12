@@ -141,11 +141,13 @@ public abstract class Operator<T, U> implements novemberizing.rx.func.Single<T, 
     protected abstract Task<T> on(Task<T> task, T o);
 
     protected void out(Task<T> task, Object o){
-        task.out(o);
-        if (__next != null) {
-            __next(task);
-        } else {
-            __up(task);
+        if(!task.done()) {
+            task.out(o);
+            if (__next != null) {
+                __next(task);
+            } else {
+                __up(task);
+            }
         }
     }
 

@@ -44,12 +44,14 @@ public abstract class Sync<T, U> extends Operator<T, U> {
 
     @Override
     protected void out(Task<T> task, Object o){
-        Log.f(Tag, "");
+        Log.f(Tag, this, task, o);
         super.out(task, o);
         synchronized (this){
-            __current = __tasks.size()>0 ? __tasks.pollFirst() : null;
-            if(__current!=null) {
-                __current.next();
+            if(__current==task) {
+                __current = __tasks.size() > 0 ? __tasks.pollFirst() : null;
+                if (__current != null) {
+                    __current.next();
+                }
             }
         }
     }

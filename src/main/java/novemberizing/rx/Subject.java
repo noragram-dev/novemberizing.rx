@@ -35,18 +35,12 @@ public class Subject<T, U> extends Observable<U> implements Observer<T> {
 
             @Override
             protected void out(Task<T> task, Object o){
-                task.out(o);
                 synchronized (__tasks) {
                     if(!__tasks.remove(task)){
                         Log.e(Tag, new Throwable(), this, task, o);
                     }
                 }
-                next((U) o);
-                if (__next != null) {
-                    __next(task);
-                } else {
-                    __up(task);
-                }
+                super.out(task, o);
             }
         };
     }

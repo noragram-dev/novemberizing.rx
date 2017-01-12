@@ -39,11 +39,12 @@ public class While<T> extends Operator<T, T> {
 
     @Override
     protected void out(Task<T> task, Object o) {
-//        task.set(task.v.out, task.v.out);
-        if(__condition.call((T) o)){
-            task.down(__op, (T) o);
-        } else {
-            super.out(task, o);
+        if(!task.done()) {
+            if (__condition.call((T) o)) {
+                task.down(__op, (T) o);
+            } else {
+                super.out(task, o);
+            }
         }
     }
 }

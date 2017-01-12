@@ -100,43 +100,41 @@ public class Task<T> extends Command {
         }
     }
 
-    public void error(Throwable e){
-        Log.f(Tag, "");
-        synchronized (this) {
-            if (__done) {
-                Log.e(Tag, new RuntimeException(""));
-            } else {
-                __done = true;
-                __exception = e;
-                complete();
-            }
-        }
-        Task<?> previous = __previous;
-        while(previous!=null){
-            previous.__exception = e;
-            previous.__done = true;
-            previous = previous.__previous;
-        }
-    }
-
     public void exit(){
-        Task<?> previous = __previous;
-        while(previous!=null){
-            previous.__done = true;
-            previous = previous.__previous;
+        Task<?> current = __previous;
+        while(current!=null){
+            if(!current.done()) {
+                current.__done = true;
+                if(__op!=null){ __op.out(this, null); }
+                current.complete();
+            }
+            current = current.__previous;
         }
     }
 
     public void exit(Object o){
-        Task<?> previous = __previous;
-        while(previous!=null){
-            if(previous.__previous!=null){
-                previous.__done = true;
-            } else {
-                previous.__done = true;
-                previous.__out = new Single<>(o);
+        Task<?> current = __previous;
+        while(current!=null){
+            if(!current.done()) {
+                current.__done = true;
+                if(current.__previous!=null){ current.__out = new Single<>(o); }
+                if(__op!=null){ __op.out(this, null); }
+                current.complete();
             }
-            previous = previous.__previous;
+            current = current.__previous;
+        }
+    }
+
+    public void error(Throwable e){
+        Task<?> current = __previous;
+        while(current!=null){
+            current.__exception = e;
+            if(!current.done()) {
+                current.__done = true;
+                if(__op!=null){ __op.out(this, null); }
+                current.complete();
+            }
+            current = current.__previous;
         }
     }
 
