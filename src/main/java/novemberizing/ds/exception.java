@@ -17,7 +17,18 @@ public class exception extends Throwable {
         __id = Unknown;
     }
 
+
+    public exception(Throwable cause){
+        super(cause);
+        __id = Unknown;
+    }
+
     public exception(int id){
+        __id = id;
+    }
+
+    public exception(int id, Throwable cause){
+        super(cause);
         __id = id;
     }
 
@@ -26,8 +37,19 @@ public class exception extends Throwable {
         __id = Unknown;
     }
 
+
+    public exception(String msg, Throwable cause){
+        super(msg, cause);
+        __id = Unknown;
+    }
+
     public exception(int id, String msg){
         super(msg);
+        __id = id;
+    }
+
+    public exception(int id, String msg, Throwable cause){
+        super(msg, cause);
         __id = id;
     }
 }
