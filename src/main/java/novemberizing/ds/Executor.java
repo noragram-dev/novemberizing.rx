@@ -1,10 +1,9 @@
-package novemberizing.rx;
+package novemberizing.ds;
 
 /**
  *
  * @author novemberizing, novemberizing@gmail.com
  * @since 2017. 1. 12.
  */
-public class Task {
-    public Operator op(){ return null; }
+public interface Executor extends Cyclable {
 }
