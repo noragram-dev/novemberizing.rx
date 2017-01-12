@@ -125,7 +125,7 @@ public class Task<T> extends Command {
         }
     }
 
-    public void error(Throwable e){
+    public Throwable error(Throwable e){
         Task<?> current = __previous;
         while(current!=null){
             current.__exception = e;
@@ -136,6 +136,7 @@ public class Task<T> extends Command {
             }
             current = current.__previous;
         }
+        return e;
     }
 
     public T i(){ return __in; }
