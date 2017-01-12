@@ -1,8 +1,9 @@
 package novemberizing.rx;
 
+import com.google.gson.annotations.Expose;
 import novemberizing.ds.Exec;
 import novemberizing.ds.Func;
-import novemberizing.ds.Task;
+
 import novemberizing.rx.operator.Just;
 import novemberizing.rx.operator.Single;
 
@@ -11,20 +12,31 @@ import novemberizing.rx.operator.Single;
  * @author novemberizing, novemberizing@gmail.com
  * @since 2017. 1. 12.
  */
-public interface Operator<T, U> extends Exec<T, U> {
-    class Work<T> extends Command {
-        protected Operator<T, ?> __op;
-        protected T __in;
-        protected Task<T, ?> task;
-        public Work(Operator<T, ?> op, T o, Task<T, ?> task){
+public interface Operator<T, U> extends Exec<T, Task<T,U>> {
 
+
+    class Exec<T, U> extends Command {
+        @Expose protected Operator<T, U> __op;
+        @Expose protected Task<T, ?> __task;
+
+        public Exec(Operator<T, U> op, Task<T, ?> task){
+            __op = op;
         }
 
         @Override
         public void execute() {
-
+            Task<T, U> task = __op.exec(__task.in);
+            if (task.done()) {
+                /**
+                 * next execute
+                 */
+            } else {
+                /**
+                 * wait to finish task ...
+                 */
+                // __task.child(task);
+            }
         }
-        // op, o, task;
     }
 
     static <T> Operator<T, T> Just(){ return new Just<>(); }

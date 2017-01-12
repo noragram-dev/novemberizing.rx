@@ -7,4 +7,4 @@ package novemberizing.ds;
  * @since 2017. 1. 13.
  */
 @SuppressWarnings("unused")
-public interface Exec<T, U> { Task<T, U> exec(T o); }
+public interface Exec<T, U> { U exec(T o); }

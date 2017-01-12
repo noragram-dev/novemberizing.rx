@@ -1,8 +1,9 @@
 package novemberizing.rx.operator;
 
+import com.google.gson.annotations.Expose;
 import novemberizing.ds.Func;
-import novemberizing.ds.Task;
 import novemberizing.rx.Scheduler;
+import novemberizing.rx.Task;
 import novemberizing.util.Log;
 
 /**
@@ -13,6 +14,9 @@ import novemberizing.util.Log;
 @SuppressWarnings({"DanglingJavadoc", "WeakerAccess"})
 public abstract class Operator<T, U> implements novemberizing.rx.Operator<T, U> {
     private static final String Tag = "Operator";
+
+    @Expose protected Operator<U, ?> __next;
+
     @Override
     public Task<T, U> exec(T o) {
         Log.f(Tag, this, o);
@@ -25,7 +29,7 @@ public abstract class Operator<T, U> implements novemberizing.rx.Operator<T, U> 
 
     protected Task<T, U> declare(T o){
         Log.f(Tag, this, o);
-        return new Task<>(o);
+        return new Task<>(o, this);
     }
 
     protected Task<T, U> in(Task<T, U> task){
@@ -37,6 +41,9 @@ public abstract class Operator<T, U> implements novemberizing.rx.Operator<T, U> 
 
     protected Task<T, U> out(Task<T, U> task){
         Log.f(Tag, this, task);
+        if(__next!=null){
+
+        }
         return task;
     }
 

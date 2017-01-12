@@ -17,12 +17,10 @@ public abstract class Scheduler implements Executor {
 
     public static Scheduler Local(){ return Local.Get(); }
 
-    public static <T, U> Task<T, U> Exec(Scheduler scheduler, Operator<T, ?> op, T o){
+    public static <T, U, V> Task<T, U> Exec(Scheduler scheduler, Operator<T, V> op, T o){
         Log.f(Tag, op, o);
         Task<T, U> task = new Task<>(o);
-        scheduler.dispatch(new Operator.Work<>(op, o, task));
-        // scheduler.dispatch(new Operator.Work.New<>(op, o, task));
-        // scheduler.dispatch(new Operator.Work.New<>(op, o, task));
+        scheduler.dispatch(new Operator.Exec<>(op, task));
         return task;
     }
 

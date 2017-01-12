@@ -1,7 +1,7 @@
 package novemberizing.rx.operator;
 
-import novemberizing.ds.Task;
 import novemberizing.rx.Scheduler;
+import novemberizing.rx.Task;
 import novemberizing.util.Log;
 
 /**
@@ -11,6 +11,7 @@ import novemberizing.util.Log;
  */
 public class Just<T> extends Single<T> {
     private static final String Tag = "Just";
+
     @Override
     protected Task<T, T> on(Task<T, T> task) {
         Log.f(Tag, this, task);

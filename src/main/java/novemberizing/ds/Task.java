@@ -10,6 +10,9 @@ import com.google.gson.annotations.Expose;
 public class Task<T, U> {
     @Expose public final T in;
     @Expose public U out;
+    @Expose protected boolean __done;
+
+    public boolean done(){ return __done; }
 
     public Task(T o){
         in = o;
