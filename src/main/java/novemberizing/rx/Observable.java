@@ -1,5 +1,6 @@
 package novemberizing.rx;
 
+import novemberizing.rx.operator.Block;
 import novemberizing.util.Log;
 
 import java.util.LinkedHashSet;
@@ -182,9 +183,25 @@ public abstract class Observable<T> {
                 }
             }
         } else {
-            Log.e(Tag, this, new RuntimeException("observer==null"));
+            Log.e(Tag, this, new RuntimeException("subject==null"));
         }
         return subject;
+    }
+
+    public <U> Wrap<T, U> subscribe(Wrap<T, U> wrap){
+        if(wrap!=null){
+            if(__subscribe(wrap)){
+                wrap.onSubscribe(this);
+                synchronized (this) {
+                    if (__replayer != null) {
+                        __replayer.on(wrap);
+                    }
+                }
+            }
+        } else {
+            Log.e(Tag, this, new RuntimeException("wrap==null"));
+        }
+        return wrap;
     }
 
     public Observable<T> subscribe(Observer<T> observer){
@@ -226,7 +243,7 @@ public abstract class Observable<T> {
     }
 
     public <U> Observable<U> wrap(novemberizing.rx.func.Single<T, U> f, Observable<U> observable){
-
-        return observable;
+        return subscribe(new Wrap<>(f,observable));
     }
+
 }

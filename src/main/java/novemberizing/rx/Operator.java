@@ -115,6 +115,13 @@ public abstract class Operator<T, U> implements novemberizing.rx.func.Single<T, 
         return new For<>(initializer, condition, op, block);
     }
 
+    public static <T> Complete<T> Complete(Task<T> task){
+        Complete<T> ret = new Complete<>();
+        Scheduler.Exec(task.scheduler(),ret, task);
+        return ret;
+    }
+
+
     protected Operator<U, ?> __next;
 
     synchronized public Task<T> exec(Task<T> task) {
