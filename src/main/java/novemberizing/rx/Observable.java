@@ -162,6 +162,15 @@ public abstract class Observable<T> {
         return ret;
     }
 
+    public Observable<T> subscribe(novemberizing.rx.run.Single<T> r){
+        return subscribe(new Subscriber<T>(){
+            @Override
+            public void onNext(T o){
+                r.run(o);
+            }
+        });
+    }
+
     public <U> Subject<T, U> subscribe(Subject<T, U> subject){
         if(subject!=null){
             if(__subscribe(subject)){
