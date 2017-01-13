@@ -1,4 +1,4 @@
-package novemberizing.rx.operator;
+package novemberizing.rx.task;
 
 import com.google.gson.annotations.Expose;
 import novemberizing.util.Log;
@@ -10,7 +10,7 @@ import novemberizing.util.Log;
  */
 @SuppressWarnings("WeakerAccess")
 public class Exec<T> extends novemberizing.ds.Task<T> {
-    private static final String Tag = "novemberizing.rx.operator.Task";
+    private static final String Tag = "novemberizing.rx.task.Task";
     @Expose protected novemberizing.rx.Operator<T, ?> __op;
 
     public Exec(T o, novemberizing.rx.Operator<T, ?> op) {

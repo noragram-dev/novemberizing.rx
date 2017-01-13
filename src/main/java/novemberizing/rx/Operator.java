@@ -2,12 +2,12 @@ package novemberizing.rx;
 
 import novemberizing.ds.Func;
 
-import novemberizing.ds.On;
 import novemberizing.ds.Tasks;
 import novemberizing.rx.operator.*;
+import novemberizing.rx.task.Exec;
+import novemberizing.rx.task.Task;
 import novemberizing.util.Log;
 
-import java.util.Collection;
 import java.util.LinkedList;
 
 /**

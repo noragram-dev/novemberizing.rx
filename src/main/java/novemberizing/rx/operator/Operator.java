@@ -1,17 +1,15 @@
 package novemberizing.rx.operator;
 
 import com.google.gson.annotations.Expose;
-import novemberizing.ds.Func;
 import novemberizing.ds.Tasks;
 import novemberizing.rx.Scheduler;
+import novemberizing.rx.task.Exec;
+import novemberizing.rx.task.Task;
 import novemberizing.util.Log;
 
-import java.util.Collection;
-import java.util.LinkedList;
-
-import static novemberizing.rx.operator.Iteration.IN;
-import static novemberizing.rx.operator.Iteration.ON;
-import static novemberizing.rx.operator.Iteration.OUT;
+import static novemberizing.ds.Iteration.IN;
+import static novemberizing.ds.Iteration.ON;
+import static novemberizing.ds.Iteration.OUT;
 
 /**
  *

@@ -1,11 +1,12 @@
-package novemberizing.rx.operator;
+package novemberizing.rx.task;
 
 
 import com.google.gson.annotations.Expose;
 import novemberizing.ds.On;
+import novemberizing.rx.operator.Operator;
 import novemberizing.util.Log;
 
-import static novemberizing.rx.operator.Iteration.IN;
+import static novemberizing.ds.Iteration.IN;
 
 /**
  *
@@ -13,7 +14,7 @@ import static novemberizing.rx.operator.Iteration.IN;
  * @since 2017. 1. 13.
  */
 public class Task<T, U> extends novemberizing.ds.Task<T> {
-    private static final String Tag = "novemberizing.rx.operator.Task";
+    private static final String Tag = "novemberizing.rx.task.Task";
 
     @Expose public int it;
     @Expose public U out;

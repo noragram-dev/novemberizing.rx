@@ -1,5 +1,7 @@
-package novemberizing.rx;
+package novemberizing.ds;
 
+import novemberizing.ds.Cyclable;
+import novemberizing.ds.Executable;
 import novemberizing.ds.Queue;
 import novemberizing.util.Log;
 
@@ -11,7 +13,7 @@ import java.util.HashSet;
  * @since 2017. 1. 12.
  */
 public abstract class Executor implements Cyclable {
-    private static final String Tag = "novemberizing.rx.Executor";
+    private static final String Tag = "novemberizing.ds.Executor";
 
     protected final HashSet<Executable> __executables = new HashSet<>();
     protected Queue<Executable> __q;

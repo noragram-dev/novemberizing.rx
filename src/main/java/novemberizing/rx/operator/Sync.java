@@ -1,9 +1,8 @@
 package novemberizing.rx.operator;
 
 import com.google.gson.annotations.Expose;
-import novemberizing.ds.Func;
-import novemberizing.ds.On;
 import novemberizing.rx.Scheduler;
+import novemberizing.rx.task.Task;
 import novemberizing.util.Log;
 
 import java.util.LinkedList;

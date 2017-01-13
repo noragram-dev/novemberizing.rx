@@ -1,6 +1,7 @@
 package novemberizing.rx.operator;
 
 import novemberizing.rx.Scheduler;
+import novemberizing.rx.task.Task;
 import novemberizing.util.Log;
 
 /**

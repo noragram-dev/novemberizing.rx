@@ -1,4 +1,4 @@
-package novemberizing.rx;
+package novemberizing.ds;
 
 /**
  *

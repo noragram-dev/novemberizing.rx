@@ -1,7 +1,7 @@
 package novemberizing.rx.scheduler;
 
 import novemberizing.ds.Queue;
-import novemberizing.rx.Executable;
+import novemberizing.ds.Executable;
 import novemberizing.rx.Scheduler;
 import novemberizing.util.Log;
 

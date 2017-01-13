@@ -1,7 +1,6 @@
 package novemberizing.ds;
 
 import com.google.gson.annotations.Expose;
-import novemberizing.rx.Command;
 import novemberizing.util.Log;
 
 import java.util.HashSet;

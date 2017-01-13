@@ -1,4 +1,4 @@
-package novemberizing.rx;
+package novemberizing.ds;
 
 import com.google.gson.annotations.Expose;
 import novemberizing.util.Log;
@@ -9,7 +9,7 @@ import novemberizing.util.Log;
  * @since 2017. 1. 12.
  */
 public abstract class Command implements Executable {
-    private static final String Tag = "novemberizing.rx.Command";
+    private static final String Tag = "novemberizing.ds.Command";
 
     @Expose protected Executor __executor;
 
