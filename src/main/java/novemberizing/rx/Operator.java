@@ -122,4 +122,8 @@ public interface Operator<T, U> extends Func<Task<T, U>, Task<T,U>> {
             }
         };
     }
+
+    static CompletionPort CompletionPort(){
+        return new CompletionPort();
+    }
 }

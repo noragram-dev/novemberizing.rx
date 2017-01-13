@@ -105,6 +105,8 @@ public abstract class Operator<T, U> implements novemberizing.rx.Operator<T, U> 
 
     public static <T, U> novemberizing.rx.Operator<T, U> Op(Func<T, U> f){ return novemberizing.rx.Operator.Op(f); }
 
+    public static CompletionPort CompletionPort(){ return novemberizing.rx.Operator.CompletionPort(); }
+
     @SafeVarargs
     public static <T> Tasks Foreach(novemberizing.rx.Operator<T, ?> op, T o, T... items){
         return novemberizing.rx.Operator.Foreach(op, o, items);

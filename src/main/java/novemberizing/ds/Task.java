@@ -17,7 +17,7 @@ public abstract class Task<T> extends Command {
     @Expose public final T in;
     @Expose protected boolean __done;
     protected novemberizing.ds.Task<?> __parent;
-    @Expose protected LinkedList<On<Object>> __onCompleteds;
+    @Expose protected LinkedList<On<Task>> __onCompleteds;
     @Expose protected novemberizing.ds.Task<?> __o;
     protected final HashSet<Task<?>> __children = new HashSet<>();
 
@@ -51,9 +51,9 @@ public abstract class Task<T> extends Command {
         __done = v;
     }
 
-    public void onCompleted(Object o){
+    public void onCompleted(Task o){
         if(__onCompleteds!=null){
-            for(On<Object> on : __onCompleteds){
+            for(On<Task> on : __onCompleteds){
                 if(on!=null) {
                     on.on(o);
                 }
@@ -61,15 +61,15 @@ public abstract class Task<T> extends Command {
         }
     }
 
-    public Task<T> on(On<Object> on){
+    public <U extends Task> Task<T> on(On<U> on){
         if(on!=null) {
             if(__onCompleteds==null){
                 __onCompleteds = new LinkedList<>();
             }
-            __onCompleteds.addLast(on);
+            __onCompleteds.addLast((On<Task>) on);
             if (__done) {
                 try {
-                    on.on(__o);
+                    on.on((U) __o);
                 } catch(ClassCastException e){
                     e.printStackTrace();
                 }
