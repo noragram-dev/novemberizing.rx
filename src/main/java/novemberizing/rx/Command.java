@@ -13,7 +13,7 @@ public abstract class Command implements Executable {
 
     @Expose protected Executor __executor;
 
-    private boolean set(Executor executor){
+    synchronized private boolean set(Executor executor){
         Log.f(Tag, "set", this, executor);
         if(__executor==null && executor!=null) {
             __executor = executor;
@@ -37,6 +37,7 @@ public abstract class Command implements Executable {
         Log.f(Tag, "executed", this);
         if(__executor!=null){
             __executor.executed(this);
+            __executor = null;
         }
     }
 
@@ -45,6 +46,7 @@ public abstract class Command implements Executable {
         Log.f(Tag, "completed", this);
         if(__executor!=null){
             __executor.completed(this);
+            __executor = null;
         }
     }
 }

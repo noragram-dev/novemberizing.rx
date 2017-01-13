@@ -52,8 +52,18 @@ public class Local extends Scheduler {
                     Log.e(Tag, new RuntimeException(""));
                 }
             }
+            __q.lock();
             __q.front(executable);
+            __q.resume(false);
+            __q.unlock();
         }
+//        onecycle();
     }
+
+//    @Override
+//    public void completed(Executable executable){
+//        super.completed(executable);
+//        onecycle();
+//    }
 
 }

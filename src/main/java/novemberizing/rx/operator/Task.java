@@ -18,7 +18,7 @@ public class Task<T, U> extends novemberizing.ds.Task<T> {
     @Expose public int it;
     @Expose public U out;
     @Expose protected novemberizing.rx.Operator<T, U> __op;
-    @Expose protected On<Object> __onCompleted;
+    @Expose protected On<Object> __onChildCompleted;
 
     public Task(T o, novemberizing.rx.Operator<T, U> op, novemberizing.ds.Task<?> parent) {
         super(o, parent);
@@ -27,37 +27,37 @@ public class Task<T, U> extends novemberizing.ds.Task<T> {
         out = null;
     }
 
-    public Task<T, U> setOnCompleted(On<Object> onCompleted){
-        __onCompleted = onCompleted;
+    public Task<T, U> setOnChildCompleted(On onChildCompleted){
+        __onChildCompleted = onChildCompleted;
         return this;
     }
 
     @Override
-    public void execute() {
+    synchronized public void execute() {
         Log.f(Tag, "execute", this);
 
         Task<T, U> ret = __op.call(this);
         if(ret!=null && ret.done()){
             completed();
-            if(__op.down()!=null) {
-                __executor.dispatch(__op.down(this));
-            } else if(__op.next()!=null) {
+            if(__op.next()!=null) {
                 __executor.dispatch(__op.next(this));
             } else if(__parent!=null) {
                 __parent.onChildCompleted(ret.out);
             }
         } else {
-            Log.i(Tag, "2");
+            // Log.i(Tag, "2");
         }
     }
 
     @Override
     public <V> void onChildCompleted(V o){
         Log.f(Tag, this, o);
-        done(true);
-        if(__onCompleted!=null){
-            __onCompleted.on(o);
+        if(__onChildCompleted!=null) {
+            __child = null;
+            __onChildCompleted.on(o);
+        } else {
+            done(true);
+            super.onChildCompleted(o);
         }
-        super.onChildCompleted(o);
     }
 }

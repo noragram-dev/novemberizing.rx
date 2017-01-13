@@ -79,12 +79,17 @@ public abstract class Task<T> extends Command {
         return this;
     }
 
+    @Override
+    public void completed(){
+        super.completed();
+        onCompleted(__o);
+    }
+
     public <U> void onChildCompleted(U o){
         Log.f(Tag, this, o);
         __o = o;
         __child = null;
         if(__done) {
-            onCompleted(o);
             completed();
         } else {
             executed();

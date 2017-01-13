@@ -5,6 +5,9 @@ import novemberizing.ds.Func;
 import novemberizing.rx.Scheduler;
 import novemberizing.util.Log;
 
+import java.util.Collection;
+import java.util.LinkedList;
+
 import static novemberizing.rx.operator.Iteration.IN;
 import static novemberizing.rx.operator.Iteration.ON;
 import static novemberizing.rx.operator.Iteration.OUT;
@@ -19,7 +22,6 @@ public abstract class Operator<T, U> implements novemberizing.rx.Operator<T, U> 
     private static final String Tag = "novemberizing.rx.operator.Operator";
 
     @Expose protected novemberizing.rx.Operator<U, ?> __next;
-    @Expose protected novemberizing.rx.Operator<T, ?> __down;
 
     protected Task<T, U> in(Task<T, U> task){
         Log.f(Tag, this, task);
@@ -38,17 +40,17 @@ public abstract class Operator<T, U> implements novemberizing.rx.Operator<T, U> 
     public Task<T, U> call(Task<T, U> task) {
         if(task.it==IN){
             if(in(task)!=null){
-                task.it++;
+                task.it = IN + 1;
             }
         }
         if(task.it==ON){
             if(on(task)!=null){
-                task.it++;
+                task.it = ON + 1;
             }
         }
         if(task.it==OUT){
             if(out(task)!=null){
-                task.it++;
+                task.it = OUT + 1;
             }
         }
         return task;
@@ -64,11 +66,27 @@ public abstract class Operator<T, U> implements novemberizing.rx.Operator<T, U> 
         return __next!=null ? __next.build(task.out, task.parent()) : null;
     }
 
-    @Override
-    public Task<T, ?> down(Task<T, ?> task) {
-        // return __down!=null ? __down.build(task.in, task.parent()) : null;
-        return __down!=null ? __down.build(task.in, task.parent()).setOnCompleted(o->Log.i("", o)) : null;
-    }
+//    Task<T, ?> down(Task<T, ?> task);
+//    Operator<T, ?> down();
+//    <V> Operator<T, V> down(Func<T, V> f);
+//    @Override
+//    public Task<T, ?> down(Task<T, ?> task) {
+//        // return __down!=null ? __down.build(task.in, task.parent()) : null;
+//        return __down!=null ? __down.build(task.in, task.parent()).setOnCompleted(o->Log.i("", o)) : null;
+//    }
+//
+//    @Override
+//    public novemberizing.rx.Operator<T, ?> down(){ return __down; }
+//
+//    @Override
+//    public <V> novemberizing.rx.Operator<T, V> down(Func<T, V> f){
+//        if(__down!=null){
+//            Log.e(Tag, new RuntimeException("__down!=null"));
+//        }
+//        novemberizing.rx.Operator<T, V> op = Operator.Op(f);
+//        __down = op;
+//        return op;
+//    }
 
     @Override
     public novemberizing.rx.Operator<U, ?> next(){ return __next; }
@@ -83,17 +101,13 @@ public abstract class Operator<T, U> implements novemberizing.rx.Operator<T, U> 
         return op;
     }
 
-    @Override
-    public novemberizing.rx.Operator<T, ?> down(){ return __down; }
+    public static <T, U> Task<T, U> Exec(Scheduler scheduler, Task<T, U> task){
+        scheduler.dispatch(task);
+        return task;
+    }
 
-    @Override
-    public <V> novemberizing.rx.Operator<T, V> down(Func<T, V> f){
-        if(__down!=null){
-            Log.e(Tag, new RuntimeException("__down!=null"));
-        }
-        novemberizing.rx.Operator<T, V> op = Operator.Op(f);
-        __down = op;
-        return op;
+    public static <T, U> Task<T, U> Exec(Task<T, U> task){
+        return Exec(Scheduler.Self(), task);
     }
 
     public static <T> Exec<T> Exec(novemberizing.rx.Operator<T, ?> op, T o){
@@ -114,6 +128,23 @@ public abstract class Operator<T, U> implements novemberizing.rx.Operator<T, U> 
 
     public static <T, U> novemberizing.rx.Operator<T, U> Op(Func<T, U> f){ return novemberizing.rx.Operator.Op(f); }
 
+    @SafeVarargs
+    public static <T> Collection<Exec<T>> Foreach(novemberizing.rx.Operator<T, ?> op, T o, T... items){
+        return novemberizing.rx.Operator.Foreach(op, o, items);
+    }
+
+    public static <T> Collection<Exec<T>> Foreach(novemberizing.rx.Operator<T, ?> op, T[] items){
+        return novemberizing.rx.Operator.Foreach(op, items);
+    }
+
+    @SafeVarargs
+    public static <T> Collection<Exec<T>> Foreach(Scheduler scheduler, novemberizing.rx.Operator<T, ?> op, T o, T... items){
+        return novemberizing.rx.Operator.Foreach(scheduler, op, o, items);
+    }
+
+    public static <T> Collection<Exec<T>> Foreach(Scheduler scheduler, novemberizing.rx.Operator<T, ?> op, T[] items){
+        return novemberizing.rx.Operator.Foreach(scheduler, op, items);
+    }
 
     public static void main(String[] args){
         Log.depth(3);

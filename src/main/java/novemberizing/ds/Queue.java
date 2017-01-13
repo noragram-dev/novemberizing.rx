@@ -5,6 +5,7 @@ import novemberizing.util.Log;
 import java.util.LinkedList;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  *
@@ -63,8 +64,8 @@ public class Queue<T> {
     public boolean empty(){ return __q.isEmpty(); }
 
     public Queue(){
-        __sync = null;
-        __condition = null;
+        __sync = new ReentrantLock();
+        __condition = __sync.newCondition();
     }
 
     public Queue(Lock sync){

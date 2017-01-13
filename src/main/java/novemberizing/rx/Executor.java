@@ -35,15 +35,19 @@ public abstract class Executor implements Cyclable {
             synchronized (this) {
                 __running = true;
             }
-            while (!__q.empty()) {
+            __q.lock();
+            while (__q.size()>0) {
                 Executable executable = __q.pop();
+                __q.unlock();
                 synchronized (__executables) {
                     if (!__executables.add(executable)) {
                         Log.e(Tag, new RuntimeException(""));
                     }
                 }
                 executable.execute(this);
+                __q.lock();
             }
+            __q.unlock();
             synchronized (this) {
                 __running = false;
             }
@@ -58,7 +62,10 @@ public abstract class Executor implements Cyclable {
                     Log.e(Tag, new RuntimeException(""));
                 }
             }
+            __q.lock();
             __q.push(executable);
+            __q.resume(false);
+            __q.unlock();
         }
     }
 
@@ -76,14 +83,19 @@ public abstract class Executor implements Cyclable {
     public void dispatch(Executable executable){
         Log.f(Tag, "dispatch", this, executable);
         if(executable!=null){
+            __q.lock();
             __q.push(executable);
+            __q.resume(false);
+            __q.unlock();
         }
     }
 
     public void clear(){
         Log.f(Tag, "clear", this);
+        __q.lock();
         while(!empty()){
             Executable executable = __q.pop();
+            __q.unlock();
             if(executable!=null) {
                 synchronized (__executables) {
                     if (!__executables.add(executable)) {
@@ -92,6 +104,8 @@ public abstract class Executor implements Cyclable {
                 }
                 executable.execute(this);
             }
+            __q.lock();
         }
+        __q.unlock();
     }
 }
