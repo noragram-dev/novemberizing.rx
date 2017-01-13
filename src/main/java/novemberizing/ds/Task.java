@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose;
 import novemberizing.rx.Command;
 import novemberizing.util.Log;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 
 /**
@@ -16,16 +17,15 @@ public abstract class Task<T> extends Command {
     private static final String Tag = "Task";
     @Expose public final T in;
     @Expose protected boolean __done;
-    @Expose protected novemberizing.ds.Task<?> __parent;
+    protected novemberizing.ds.Task<?> __parent;
     @Expose protected LinkedList<On<Object>> __onCompleteds;
-    @Expose protected Object __o;
-    protected novemberizing.ds.Task<?> __child;
+    @Expose protected novemberizing.ds.Task<?> __o;
+    protected final HashSet<Task<?>> __children = new HashSet<>();
 
     public Task(T o) {
         in = o;
         __done = false;
         __parent = null;
-        __child = null;
 
     }
 
@@ -33,11 +33,11 @@ public abstract class Task<T> extends Command {
         in = o;
         __done = false;
         __parent = parent;
-        __child = null;
-
 
         if(__parent!=null){
-            __parent.__child = this;
+            synchronized (__parent.__children) {
+                __parent.__children.add(this);
+            }
         }
     }
 
@@ -85,10 +85,13 @@ public abstract class Task<T> extends Command {
         onCompleted(__o);
     }
 
-    public <U> void onChildCompleted(U o){
+    public <U extends Task> void onChildCompleted(U o){
         Log.f(Tag, this, o);
         __o = o;
-        __child = null;
+        synchronized (__children){
+            __children.remove(o);
+            if(__children.size()==0){ __done = true; }
+        }
         if(__done) {
             completed();
         } else {

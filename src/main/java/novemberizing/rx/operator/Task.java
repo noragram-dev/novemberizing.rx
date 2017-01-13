@@ -40,9 +40,13 @@ public class Task<T, U> extends novemberizing.ds.Task<T> {
         if(ret!=null && ret.done()){
             completed();
             if(__op.next()!=null) {
-                __executor.dispatch(__op.next(this));
+                try {
+                    Operator.Exec(__op.next(this));
+                } catch(Exception e){
+                    e.printStackTrace();
+                }
             } else if(__parent!=null) {
-                __parent.onChildCompleted(ret.out);
+                __parent.onChildCompleted(this);
             }
         } else {
             // Log.i(Tag, "2");
@@ -50,13 +54,15 @@ public class Task<T, U> extends novemberizing.ds.Task<T> {
     }
 
     @Override
-    public <V> void onChildCompleted(V o){
+    public <V extends novemberizing.ds.Task> void onChildCompleted(V o){
         Log.f(Tag, this, o);
+        synchronized (this) {
+            __children.remove(o);
+        }
         if(__onChildCompleted!=null) {
-            __child = null;
+
             __onChildCompleted.on(o);
         } else {
-            done(true);
             super.onChildCompleted(o);
         }
     }

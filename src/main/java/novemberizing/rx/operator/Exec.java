@@ -21,13 +21,6 @@ public class Exec<T> extends novemberizing.ds.Task<T> {
     @Override
     public void execute() {
         Log.f(Tag, "execute", this);
-        __executor.dispatch(__child = __op.build(in, this));
-    }
-
-    @Override
-    public <U> void onChildCompleted(U o){
-        Log.f(Tag, this, o);
-        done(true);
-        super.onChildCompleted(o);
+        __executor.dispatch(__op.build(in, this));
     }
 }

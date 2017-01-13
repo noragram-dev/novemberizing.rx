@@ -2,6 +2,7 @@ package novemberizing.rx.operator;
 
 import com.google.gson.annotations.Expose;
 import novemberizing.ds.Func;
+import novemberizing.ds.Tasks;
 import novemberizing.rx.Scheduler;
 import novemberizing.util.Log;
 
@@ -66,28 +67,6 @@ public abstract class Operator<T, U> implements novemberizing.rx.Operator<T, U> 
         return __next!=null ? __next.build(task.out, task.parent()) : null;
     }
 
-//    Task<T, ?> down(Task<T, ?> task);
-//    Operator<T, ?> down();
-//    <V> Operator<T, V> down(Func<T, V> f);
-//    @Override
-//    public Task<T, ?> down(Task<T, ?> task) {
-//        // return __down!=null ? __down.build(task.in, task.parent()) : null;
-//        return __down!=null ? __down.build(task.in, task.parent()).setOnCompleted(o->Log.i("", o)) : null;
-//    }
-//
-//    @Override
-//    public novemberizing.rx.Operator<T, ?> down(){ return __down; }
-//
-//    @Override
-//    public <V> novemberizing.rx.Operator<T, V> down(Func<T, V> f){
-//        if(__down!=null){
-//            Log.e(Tag, new RuntimeException("__down!=null"));
-//        }
-//        novemberizing.rx.Operator<T, V> op = Operator.Op(f);
-//        __down = op;
-//        return op;
-//    }
-
     @Override
     public novemberizing.rx.Operator<U, ?> next(){ return __next; }
 
@@ -129,71 +108,43 @@ public abstract class Operator<T, U> implements novemberizing.rx.Operator<T, U> 
     public static <T, U> novemberizing.rx.Operator<T, U> Op(Func<T, U> f){ return novemberizing.rx.Operator.Op(f); }
 
     @SafeVarargs
-    public static <T> Collection<Exec<T>> Foreach(novemberizing.rx.Operator<T, ?> op, T o, T... items){
+    public static <T> Tasks Foreach(novemberizing.rx.Operator<T, ?> op, T o, T... items){
         return novemberizing.rx.Operator.Foreach(op, o, items);
     }
 
-    public static <T> Collection<Exec<T>> Foreach(novemberizing.rx.Operator<T, ?> op, T[] items){
+    public static <T> Tasks Foreach(novemberizing.rx.Operator<T, ?> op, T[] items){
         return novemberizing.rx.Operator.Foreach(op, items);
     }
 
     @SafeVarargs
-    public static <T> Collection<Exec<T>> Foreach(Scheduler scheduler, novemberizing.rx.Operator<T, ?> op, T o, T... items){
+    public static <T> Tasks Foreach(Scheduler scheduler, novemberizing.rx.Operator<T, ?> op, T o, T... items){
         return novemberizing.rx.Operator.Foreach(scheduler, op, o, items);
     }
 
-    public static <T> Collection<Exec<T>> Foreach(Scheduler scheduler, novemberizing.rx.Operator<T, ?> op, T[] items){
+    public static <T> Tasks Foreach(Scheduler scheduler, novemberizing.rx.Operator<T, ?> op, T[] items){
         return novemberizing.rx.Operator.Foreach(scheduler, op, items);
     }
 
     public static void main(String[] args){
         Log.depth(3);
         Log.disable(Log.HEADER | Log.FLOW);
-        novemberizing.rx.Operator<Integer, String> op = Op(o->(Integer.toString(o+1)));
-        Exec(op, 1).on(o->Log.i("",o));
-        op.next(o->o+1).next(o->o+1);
-        Exec(op, 1).on(o->Log.i("",o));
+        String[] strings = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
+
+        novemberizing.rx.Operator<String, Integer> op = Op(o->(Integer.parseInt(o)+1));
+        Foreach(op, strings);
+
+        op.next(o->o+1)
+                .next(o->o+1)
+                .next(o->o+1)
+                .next(o->o+1)
+                .next(o->o+1)
+                .next(o->o+1)
+                .next(o->o+1)
+                .next(o->o+1)
+                .next(o->o+1)
+                .next(o->o+1);
+
+//        Exec(op, 1).on(o->Log.i("",o));
     }
 
-//    protected novemberizing.rx.Operator<U, ?> __next;
-//
-
-//
-//    public static <T> novemberizing.rx.Operator<T, T> Just(){ return novemberizing.rx.Operator.Just(); }
-//
-//    public static <T> novemberizing.rx.Operator<T, T> Just(Func<T, T> f){ return novemberizing.rx.Operator.Just(f); }
-//
-//    public static <T, U> novemberizing.rx.Operator<T, U> Op(Func<T, U> f){ return novemberizing.rx.Operator.Op(f); }
-//
-//    public static void main(String[] args){
-//        Log.i("", "= Operator() ==========================");
-//        novemberizing.rx.Operator<String, Integer> op = Op(o->(Integer.parseInt(o)+10));
-//        for (String s : args) {
-//            Log.i("operator() >", op.call(s));
-//        }
-//
-//        op.next(o->o+1)
-//                .next(o->o+1)
-//                .next(o->o+1)
-//                .next(o->o+1)
-//                .next(o->o+1)
-//                .next(o->o+1)
-//                .next(o->o+1)
-//                .next(o->o+1)
-//                .next(o->o+1)
-//                .next(o->o+1)
-//                .next(o->o+1);
-//
-//        for (String s : args) {
-//            Log.i("operator() >", op.call(s));
-//        }
-//
-////        op.next()
-//        /**
-//         * 사용자는 "call" 을 호출해서는 안된다.
-//         * Op(f).
-//         * Op(f).
-//         * Op(f).
-//         */
-//    }
 }

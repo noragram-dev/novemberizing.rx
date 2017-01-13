@@ -3,6 +3,7 @@ package novemberizing.rx;
 import novemberizing.ds.Func;
 
 import novemberizing.ds.On;
+import novemberizing.ds.Tasks;
 import novemberizing.rx.operator.*;
 import novemberizing.util.Log;
 
@@ -60,34 +61,34 @@ public interface Operator<T, U> extends Func<Task<T, U>, Task<T,U>> {
     }
 
     @SafeVarargs
-    static <T> Collection<Exec<T>> Foreach(Operator<T, ?> op, T o, T... items){
+    static <T> Tasks Foreach(Operator<T, ?> op, T o, T... items){
         Log.f(Tag, "Foreach", op, o);
         return Foreach(Scheduler.Self(), op, o, items);
     }
 
-    static <T> Collection<Exec<T>> Foreach(Operator<T, ?> op, T[] items){
+    static <T> Tasks Foreach(Operator<T, ?> op, T[] items){
         Log.f(Tag, "Foreach", op);
         return Foreach(Scheduler.Self(), op, items);
     }
 
     @SafeVarargs
-    static <T> Collection<Exec<T>> Foreach(Scheduler scheduler, Operator<T, ?> op, T o, T... items){
+    static <T> Tasks Foreach(Scheduler scheduler, Operator<T, ?> op, T o, T... items){
         Log.f(Tag, "Foreach" ,op, o, items);
-        LinkedList<Exec<T>> tasks = new LinkedList<>();
-        tasks.add(Exec(op, o));
+        LinkedList<novemberizing.ds.Task> collection = new LinkedList<>();
+        collection.add(Exec(op, o));
         for(T item : items){
-            tasks.add(Exec(op, item));
+            collection.add(Exec(op, item));
         }
-        return tasks;
+        return new Tasks(collection);
     }
 
-    static <T> Collection<Exec<T>> Foreach(Scheduler scheduler, Operator<T, ?> op, T[] items){
+    static <T> Tasks Foreach(Scheduler scheduler, Operator<T, ?> op, T[] items){
         Log.f(Tag, "Foreach" ,op, items);
-        LinkedList<Exec<T>> tasks = new LinkedList<>();
+        LinkedList<novemberizing.ds.Task> collection = new LinkedList<>();
         for(T item : items){
-            tasks.add(Exec(op, item));
+            collection.add(Exec(op, item));
         }
-        return tasks;
+        return new Tasks(collection);
     }
 
     static <T> Operator<T, T> Just(){ return new Just<>(); }
