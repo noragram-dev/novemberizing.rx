@@ -8,4 +8,6 @@ package novemberizing.rx;
 public interface Executable {
     void execute(Executor executor);
     void execute();
+    void executed();
+    void completed();
 }

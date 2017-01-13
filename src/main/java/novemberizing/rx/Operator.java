@@ -1,42 +1,42 @@
 package novemberizing.rx;
 
-import com.google.gson.annotations.Expose;
-import novemberizing.ds.Exec;
 import novemberizing.ds.Func;
 
+import novemberizing.rx.operator.Exec;
 import novemberizing.rx.operator.Just;
 import novemberizing.rx.operator.Single;
+import novemberizing.rx.operator.Task;
+import novemberizing.util.Log;
 
 /**
  *
  * @author novemberizing, novemberizing@gmail.com
  * @since 2017. 1. 12.
  */
-public interface Operator<T, U> extends Exec<T, Task<T,U>> {
+public interface Operator<T, U> extends Func<Task<T, U>, Task<T,U>> {
+    String Tag = "novemberizing.rx.Operator";
 
+    Task<T, U> build(T in, novemberizing.ds.Task<?> task);
 
-    class Exec<T, U> extends Command {
-        @Expose protected Operator<T, U> __op;
-        @Expose protected Task<T, ?> __task;
+    Task<U, ?> next(Task<?, U> task);
+    Task<T, ?> down(Task<T, ?> task);
 
-        public Exec(Operator<T, U> op, Task<T, ?> task){
-            __op = op;
-        }
+    Operator<U, ?> next();
+    Operator<T, ?> down();
 
-        @Override
-        public void execute() {
-            Task<T, U> task = __op.exec(__task.in);
-            if (task.done()) {
-                /**
-                 * next execute
-                 */
-            } else {
-                /**
-                 * wait to finish task ...
-                 */
-                // __task.child(task);
-            }
-        }
+    <V> Operator<U, V> next(Func<U, V> f);
+    <V> Operator<T, V> down(Func<T, V> f);
+
+    static <T> Exec<T> Exec(Operator<T, ?> op, T o){
+        Log.f(Tag, "Exec", op, o);
+        return Exec(Scheduler.Self(), op, o);
+    }
+
+    static <T> Exec<T> Exec(Scheduler scheduler, Operator<T, ?> op, T o){
+        Log.f(Tag, "Exec" ,op, o);
+        Exec<T> task = new Exec<>(o, op);
+        scheduler.dispatch(task);
+        return task;
     }
 
     static <T> Operator<T, T> Just(){ return new Just<>(); }
@@ -52,6 +52,9 @@ public interface Operator<T, U> extends Exec<T, Task<T,U>> {
     }
 
     static <T, U> Operator<T, U> Op(Func<T, U> f){
+        if(f==null){
+            Log.e(Tag, "f==null");
+        }
         return new novemberizing.rx.operator.Operator<T, U>(){
             @Override
             protected Task<T, U> on(Task<T, U> task) {
@@ -62,6 +65,4 @@ public interface Operator<T, U> extends Exec<T, Task<T,U>> {
             }
         };
     }
-
-
 }
