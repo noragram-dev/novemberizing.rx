@@ -2,6 +2,7 @@ package novemberizing.rx.example.observable;
 
 import novemberizing.rx.Observable;
 import novemberizing.rx.Subscriber;
+import novemberizing.rx.observables.Just;
 import novemberizing.util.Log;
 
 /**
@@ -15,22 +16,23 @@ public class Example {
         Log.depth(3);
         Log.disable(Log.FLOW | Log.HEADER);
 
-        Observable<String> observable = new Observable<String>() {};
+        Just<String> observable = Observable.Just();
 
         observable.subscribe(new Subscriber<String>() {
             @Override
             public void onNext(String o) {
-                Log.i("observable >", o);
+                Log.i("observable.just(string) >", o);
             }
 
             @Override
-            public void onComplete() { Log.i("observable >", "complete"); }
+            public void onComplete() { Log.i("observable.just(string) >", "complete"); }
 
             @Override
             public void onError(Throwable e) {
-                Log.i("observable(error) >", this, e);
+                Log.e("observable.just(string) >", "error: " + e.getMessage());
             }
         });
+
 
         for(String s : args){
             observable.next(s);

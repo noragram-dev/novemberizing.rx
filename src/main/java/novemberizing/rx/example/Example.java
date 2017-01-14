@@ -10,8 +10,10 @@ import novemberizing.util.Log;
 public class Example {
     public static void main(String[] args){
         Log.depth(3);
-//        Log.disable(Log.FLOW | Log.HEADER);
+        Log.disable(Log.FLOW | Log.HEADER);
 
         novemberizing.rx.example.observable.Example.main(args);
+
+        novemberizing.rx.example.operators.Example.main(args);
     }
 }

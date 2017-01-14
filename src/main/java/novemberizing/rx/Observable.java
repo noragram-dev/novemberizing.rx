@@ -1,8 +1,10 @@
 package novemberizing.rx;
 
+import novemberizing.ds.Task;
 import novemberizing.rx.functions.OnComplete;
 import novemberizing.rx.functions.OnError;
 import novemberizing.rx.functions.OnNext;
+import novemberizing.rx.observables.Just;
 import novemberizing.util.Log;
 
 import java.util.LinkedHashSet;
@@ -77,18 +79,18 @@ public abstract class Observable<T> {
         }
     }
 
-    private final LinkedHashSet<Observer<T>> __observers = new LinkedHashSet<>();
-    private Scheduler __observableOn = Scheduler.New();
-    private T __current = null;
-    private boolean __completed = false;
-    private Throwable __exception = null;
+    protected final LinkedHashSet<Observer<T>> __observers = new LinkedHashSet<>();
+    protected Scheduler __observableOn = Scheduler.New();
+    protected T __current = null;
+    protected boolean __completed = false;
+    protected Throwable __exception = null;
 
     protected T snapshot(T o){
         Log.f(Tag, this, o);
         return o;
     }
 
-    public Observable<T> next(T o){
+    protected Observable<T> next(T o){
         Log.f(Tag, this, o);
 
         __observableOn.dispatch(new ObservableOn<>(this,  snapshot(o), null, false));
@@ -106,14 +108,18 @@ public abstract class Observable<T> {
         for(Observer<T> observer : __observers) {
             Scheduler observeOn = observer.observeOn();
             if(observeOn==Scheduler.Self()){
-                observer.onNext(snapshot(o));
+                try {
+                    observer.onNext(snapshot(o));
+                } catch(Exception e){
+                    observer.onError(e);
+                }
             } else {
                 observeOn.dispatch(new ObserveOn<>(observer, snapshot(o), null, false));
             }
         }
     }
 
-    public Observable<T> error(Throwable e){
+    protected Observable<T> error(Throwable e){
         Log.f(Tag, this, e);
 
         __observableOn.dispatch(new ObservableOn<>(this, null, e, true));
@@ -137,10 +143,18 @@ public abstract class Observable<T> {
         }
     }
 
-    public Observable<T> complete(){
+    protected Observable<T> complete(){
         Log.f(Tag, this);
 
         __observableOn.dispatch(new ObservableOn<>(this, null, null, true));
+
+        return this;
+    }
+
+    protected Observable<T> complete(T o){
+        Log.f(Tag, this);
+
+        __observableOn.dispatch(new ObservableOn<>(this, o, null, true));
 
         return this;
     }
@@ -211,4 +225,5 @@ public abstract class Observable<T> {
     }
 
 
+    public static <T> Just<T> Just(){ return new Just<>(); }
 }
