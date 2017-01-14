@@ -178,6 +178,22 @@ public abstract class Observable<T> {
         }
     }
 
+    public final <U> Operator<T, U> subscribe(Operator<T, U> operator){
+        Log.f(Tag, this, operator);
+        if(operator!=null){
+            synchronized (__observers){
+                if(__observers.add(operator.subscriber)){
+                    operator.subscriber.onSubscribe(this);
+                } else {
+                    Log.c(Tag, new RuntimeException("__observers.add(observer)==false"));
+                }
+            }
+        } else {
+            Log.e(Tag, new RuntimeException("observer==null"));
+        }
+        return operator;
+    }
+
     public final Observable<T> subscribe(Observer<T> observer){
         Log.f(Tag, this, observer);
         if(observer!=null){

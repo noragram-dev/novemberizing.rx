@@ -32,11 +32,30 @@ public abstract class Operator<T, U> extends Observable<Task<T, U>> {
             super(in, out);
             __op = op;
         }
+
+        @Override
+        public void execute() {
+            __op.on(this);
+        }
     }
 
-    protected Task<T, U> out(T in, U out){
-        return out(new Task<>(in, out));
-    }
+    protected Scheduler __operatorOn = Scheduler.Self();
+    protected Subscriber<T> subscriber = new Subscriber<T>() {
+        @Override
+        public void onNext(T o) {
+            exec(o);
+        }
+
+        @Override
+        public void onComplete() {
+            complete();
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            error(e);
+        }
+    };
 
     protected Task<T, U> out(Task<T, U> task){
         Log.f(Tag, this, task);
@@ -46,13 +65,24 @@ public abstract class Operator<T, U> extends Observable<Task<T, U>> {
         return task;
     }
 
-    public abstract Task<T, U> exec(T o);
+    public Task<T, U> exec(T o){
+        Task<T, U> task = new Local<>(o, this);
+        if(__operatorOn==Scheduler.Self()){
+            task = on(task);
+        } else {
+            __observableOn.dispatch(task);
+        }
+        return task;
+    }
+
+    public abstract Task<T, U> on(Task<T, U> task);
 
     public static <T, U> Operator<T, U> Op(Func<T, U> f){
         return new Operator<T, U>() {
             @Override
-            public Task<T, U> exec(T o) {
-                return out(o, f.call(o));
+            public Task<T, U> on(Task<T, U> task) {
+                task.out = f.call(task.in);
+                return out(task);
             }
         };
     }

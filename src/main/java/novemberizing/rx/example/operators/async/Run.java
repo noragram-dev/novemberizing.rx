@@ -17,8 +17,7 @@ public class Run<T, U> extends Operator<T, U> {
     private Func<T, U> __func;
 
     @Override
-    public Task<T, U> exec(T o) {
-        Task<T, U> task = new Task<>(o);
+    public Task<T, U> on(Task<T, U> task) {
         new Thread(){
             @Override
             public void run(){

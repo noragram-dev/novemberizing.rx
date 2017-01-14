@@ -5,7 +5,6 @@ import novemberizing.rx.Subscriber;
 import novemberizing.rx.Task;
 import novemberizing.util.Log;
 
-import java.util.HashSet;
 import java.util.LinkedList;
 
 /**
@@ -59,14 +58,13 @@ public class Sync<T, U> extends Operator<T, U> {
     }
 
     @Override
-    public Task<T, U> exec(T o) {
-        Operator.Local<T, U> task = new Operator.Local<>(o, __op);
+    public Task<T, U> on(Task<T, U> task) {
         synchronized (__tasks){
             if(__current!=null){
                 __tasks.addLast(task);
             } else {
                 __current = task;
-                __child = __op.exec(o);
+                __child = __op.exec(task.in);
             }
         }
         return task;
