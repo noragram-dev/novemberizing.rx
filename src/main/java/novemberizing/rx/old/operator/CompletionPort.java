@@ -1,8 +1,8 @@
-package novemberizing.rx.operator;
+package novemberizing.rx.old.operator;
 
-import novemberizing.ds.On;
-import novemberizing.rx.Scheduler;
-import novemberizing.rx.task.Task;
+import novemberizing.rx.ds.On;
+import novemberizing.rx.old.des.Scheduler;
+import novemberizing.rx.old.task.Task;
 import novemberizing.util.Log;
 
 import java.util.HashSet;
@@ -14,12 +14,12 @@ import java.util.Random;
  * @since 2017. 1. 12.
  */
 @SuppressWarnings("DanglingJavadoc")
-public class CompletionPort extends Operator<novemberizing.ds.Task, novemberizing.ds.Task> {
+public class CompletionPort extends Operator<novemberizing.rx.ds.Task, novemberizing.rx.ds.Task> {
     private static final String Tag = "CompletionPort";
 
-    private final HashSet<novemberizing.ds.Task> __tasks = new HashSet<>();
+    private final HashSet<novemberizing.rx.ds.Task> __tasks = new HashSet<>();
     @Override
-    protected Task<novemberizing.ds.Task, novemberizing.ds.Task> on(Task<novemberizing.ds.Task, novemberizing.ds.Task> task) {
+    protected Task<novemberizing.rx.ds.Task, novemberizing.rx.ds.Task> on(Task<novemberizing.rx.ds.Task, novemberizing.rx.ds.Task> task) {
         boolean ret;
         synchronized (__tasks){
             Log.e(Tag, "");
@@ -27,18 +27,17 @@ public class CompletionPort extends Operator<novemberizing.ds.Task, novemberizin
              * check thread safety
              */
             if(!(ret = task.in.done())) {
-                __tasks.add(task.in);
-                task.in.on(new On<novemberizing.ds.Task>() {
-                    @Override
-                    public void on(novemberizing.ds.Task v) {
-                        synchronized (__tasks) {
-                            Log.e(Tag, "");
-                            __tasks.remove(v);
-                            task.it++;
-                            task.executed();
-                        }
-                    }
-                });
+//                __tasks.add(task.in);
+//                task.in.on(new On<novemberizing.rx.ds.Task>() {
+//                    @Override
+//                    public void on(novemberizing.rx.ds.Task v) {
+//                        synchronized (__tasks) {
+//                            Log.e(Tag, "");
+//                            __tasks.remove(v);
+//                            task.next();
+//                        }
+//                    }
+//                });
             }
         }
         return ret ? task : null;
@@ -78,13 +77,13 @@ public class CompletionPort extends Operator<novemberizing.ds.Task, novemberizin
         }
 
         public static void main(String[] args){
-            Log.depth(3);
-            Log.disable(Log.FLOW);
-            String[] strings = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
-            Operator.Exec(CompletionPort(),Operator.Foreach(Run.New(100,
-                    o->Log.i("sync >", o)),
-                    strings)).on(o->Log.i("completion.port >", o));
-            Scheduler.Local().clear();
+//            Log.depth(3);
+//            Log.disable(Log.FLOW);
+//            String[] strings = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
+//            Operator.Exec(CompletionPort(),Operator.Foreach(Run.New(100,
+//                    o->Log.i("sync >", o)),
+//                    strings)).on(o->Log.i("completion.port >", o));
+//            Scheduler.Local().clear();
         }
     }
 
@@ -122,13 +121,13 @@ public class CompletionPort extends Operator<novemberizing.ds.Task, novemberizin
         }
 
         public static void main(String[] args){
-            Log.depth(3);
-            Log.disable(Log.FLOW);
-            String[] strings = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
-            Operator.Exec(CompletionPort(),Operator.Foreach(Run.New(100,
-                    o->Log.i("sync >", o)),
-                    strings)).on(o->Log.i("completion.port >", o));
-            Scheduler.Local().clear();
+//            Log.depth(3);
+//            Log.disable(Log.FLOW);
+//            String[] strings = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
+//            Operator.Exec(CompletionPort(),Operator.Foreach(Run.New(100,
+//                    o->Log.i("sync >", o)),
+//                    strings)).on(o->Log.i("completion.port >", o));
+//            Scheduler.Local().clear();
         }
     }
 }

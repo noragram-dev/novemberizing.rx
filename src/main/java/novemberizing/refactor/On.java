@@ -1,4 +1,4 @@
-package novemberizing.ds;
+package novemberizing.refactor;
 
 /**
  *
@@ -6,4 +6,4 @@ package novemberizing.ds;
  * @since 2017. 1. 14
  */
 @SuppressWarnings("unused")
-public interface Cyclable { void onecycle(); }
+public interface On<T> { void on(T o); }

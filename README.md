@@ -1,8 +1,8 @@
 # novemberizing.rx
 
-## novemberizing.ds.Func
+## novemberizing.rx.ds.Func
 
-![novemberizing.ds.Func](doc/ClassDiagram_i_rx_Func.jpg)
+![novemberizing.rx.ds.Func](doc/ClassDiagram_i_rx_Func.jpg)
 
 ### novemberizing.rx.func.Single
 

@@ -1,7 +1,7 @@
-package novemberizing.rx.operator;
+package novemberizing.rx.old.operator;
 
-import novemberizing.rx.Scheduler;
-import novemberizing.rx.task.Task;
+import novemberizing.rx.old.des.Scheduler;
+import novemberizing.rx.old.task.Task;
 import novemberizing.util.Log;
 
 /**
@@ -20,9 +20,9 @@ public class Just<T> extends Single<T> {
     }
 
     public static void main(String[] args){
-        Log.depth(3);
-        Log.disable(Log.HEADER | Log.FLOW);
-        Operator.Exec(Just(), "1").on(o->Log.i("",o));
-        Scheduler.Local().clear();
+//        Log.depth(3);
+//        Log.disable(Log.HEADER | Log.FLOW);
+//        Operator.Exec(Just(), "1").on(o->Log.i("", o));
+//        Scheduler.Local().clear();
     }
 }

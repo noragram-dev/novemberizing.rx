@@ -1,8 +1,8 @@
-package novemberizing.rx.scheduler;
+package novemberizing.rx.old.scheduler;
 
-import novemberizing.ds.Queue;
-import novemberizing.ds.Executable;
-import novemberizing.rx.Scheduler;
+import novemberizing.rx.ds.Queue;
+import novemberizing.rx.ds.Executable;
+import novemberizing.rx.old.des.Scheduler;
 import novemberizing.util.Log;
 
 /**
@@ -11,7 +11,7 @@ import novemberizing.util.Log;
  * @since 2017. 1. 12.
  */
 public class Local extends Scheduler {
-    private static final String Tag = "novemberizing.rx.scheduler.Local";
+    private static final String Tag = "novemberizing.rx.old.schedulers.Local";
 
     private static ThreadLocal<Local> __schedulers = new ThreadLocal<>();
 

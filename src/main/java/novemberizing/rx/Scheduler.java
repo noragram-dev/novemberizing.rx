@@ -1,20 +1,20 @@
 package novemberizing.rx;
 
+import novemberizing.ds.Executable;
 import novemberizing.ds.Executor;
-import novemberizing.rx.scheduler.Local;
+import novemberizing.rx.schedulers.Local;
+
 
 /**
  *
- * @author novemberizing, novemberizing@gmail.com
- * @since 2017. 1. 12.
+ * @author novemberizing, me@novemberizing.net
+ * @since 2017. 1. 14
  */
-@SuppressWarnings("DanglingJavadoc")
-public abstract class Scheduler extends Executor {
-    private static final String Tag = "Scheduler";
-
-    public static Scheduler Self(){ return Local(); }
-
+@SuppressWarnings({"unused", "WeakerAccess"})
+public class Scheduler extends Executor {
+    public static Scheduler Self(){ return Local.Get(); }
     public static Scheduler Local(){ return Local.Get(); }
+    public static Scheduler New(){ return Local.Get(); }
 
 
 

@@ -1,11 +1,10 @@
-package novemberizing.ds;
+package novemberizing.rx.ds;
 
 /**
  *
- * @author novemberizing, me@novemberizing.net
- * @since 2017. 1. 14
+ * @author novemberizing, novemberizing@gmail.com
+ * @since 2017. 1. 12.
  */
-@SuppressWarnings("unused")
 public interface Executable {
     void execute(Executor executor);
     void execute();

@@ -1,4 +1,5 @@
-package novemberizing.ds;
+package novemberizing.rx.ds;
+
 
 /**
  *
@@ -6,5 +7,4 @@ package novemberizing.ds;
  * @since 2017. 1. 13.
  */
 @SuppressWarnings("unused")
-public interface On<T> { void on(T v); }
-
+public interface Exec<T, U> { U exec(T o); }

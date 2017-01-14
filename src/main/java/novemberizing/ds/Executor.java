@@ -1,113 +1,110 @@
 package novemberizing.ds;
 
-import novemberizing.ds.Cyclable;
-import novemberizing.ds.Executable;
-import novemberizing.ds.Queue;
 import novemberizing.util.Log;
 
 import java.util.HashSet;
 
 /**
  *
- * @author novemberizing, novemberizing@gmail.com
- * @since 2017. 1. 12.
+ * @author novemberizing, me@novemberizing.net
+ * @since 2017. 1. 14
  */
+@SuppressWarnings({"WeakerAccess", "unused", "DanglingJavadoc"})
 public abstract class Executor implements Cyclable {
-    private static final String Tag = "novemberizing.ds.Executor";
+    private static final String Tag = "Executor";
 
-    protected final HashSet<Executable> __executables = new HashSet<>();
     protected Queue<Executable> __q;
-    protected boolean __running;
-
-    public boolean empty(){
-//        Log.f(Tag, "empty", this);
-        boolean ret;
-        synchronized (__executables){
-            ret = __executables.size()==0 && __q.empty();
-        }
-        return ret;
-    }
-
-    synchronized public boolean running(){ return __running; }
+    protected final HashSet<Executable> __executables = new HashSet<>();
+    protected boolean __running = false;
 
     @Override
-    public void onecycle(){
-//        Log.f(Tag, "onecycle", this);
-        if(!running()) {
-            synchronized (this) {
-                __running = true;
-            }
+    public void onecycle() {
+        if(!__running) {
             __q.lock();
-            while (__q.size()>0) {
+            __running = true;
+            while (__q.size() > 0) {
                 Executable executable = __q.pop();
                 __q.unlock();
                 synchronized (__executables) {
                     if (!__executables.add(executable)) {
-                        Log.e(Tag, new RuntimeException(""));
+                        Log.e(Tag, new RuntimeException("!__executables.add(executable)"));
                     }
                 }
                 executable.execute(this);
                 __q.lock();
             }
-            __q.unlock();
-            synchronized (this) {
-                __running = false;
-            }
-        }
-    }
-
-    public void executed(Executable executable){
-//        Log.f(Tag, "executed", this, executable);
-        if(executable!=null) {
-            synchronized (__executables) {
-                if (!__executables.remove(executable)) {
-                    Log.e(Tag, new RuntimeException(""));
-                }
-            }
-            __q.lock();
-            __q.push(executable);
-            __q.resume(false);
-            __q.unlock();
-        }
-    }
-
-    public void completed(Executable executable){
-        Log.f(Tag, "completed", this, executable);
-        if(executable!=null) {
-            synchronized (__executables) {
-                if (!__executables.remove(executable)) {
-                    Log.e(Tag, new RuntimeException(""));
-                }
-            }
-        }
-    }
-
-    public void dispatch(Executable executable){
-        Log.f(Tag, "dispatch", this, executable);
-        if(executable!=null){
-            __q.lock();
-            __q.push(executable);
-            __q.resume(false);
+            __running = false;
             __q.unlock();
         }
     }
 
     public void clear(){
-        Log.f(Tag, "clear", this);
+        int remain;
         __q.lock();
-        while(!empty()){
-            Executable executable = __q.pop();
-            __q.unlock();
-            if(executable!=null) {
-                synchronized (__executables) {
-                    if (!__executables.add(executable)) {
-                        Log.e(Tag, new RuntimeException(""));
+        do {
+            while(__q.size()>0){
+                Executable executable = __q.pop();
+                __q.unlock();
+                synchronized (__executables){
+                    if(!__executables.add(executable)){
+                        Log.e(Tag, new RuntimeException("!__executables.add(executable)"));
                     }
                 }
                 executable.execute(this);
+                __q.lock();
             }
-            __q.lock();
+            synchronized (__executables) {
+                remain = __executables.size();
+            }
+        } while(remain>0);
+        __q.unlock();
+    }
+
+    public void executed(Executable executable) {
+        if(executable!=null){
+            synchronized (__executables){
+                if(!__executables.remove(executable)){
+                    Log.e(Tag, new RuntimeException("!__executables.remove(executable)"));
+                }
+            }
+            dispatch(executable);
         }
+    }
+
+    public void completed(Executable executable) {
+        if(executable!=null){
+            synchronized (__executables){
+                if(!__executables.remove(executable)){
+                    Log.e(Tag, new RuntimeException("!__executables.remove(executable)"));
+                }
+            }
+            dispatch(executable);
+        }
+    }
+
+    public void dispatch(Executable executable){
+        __q.lock();
+        __q.push(executable);
+        __q.resume(false);
+        __q.unlock();
+    }
+
+    public void dispatch(Executable executable, Executable... executables){
+        __q.lock();
+        __q.push(executable);
+        for(Executable e : executables){
+            __q.push(e);
+        }
+        __q.resume(true);
+        __q.unlock();
+    }
+
+    public void dispatch(Executable[] executables){
+        __q.lock();
+        for(Executable e : executables){
+            __q.push(e);
+        }
+        __q.resume(true);
         __q.unlock();
     }
 }

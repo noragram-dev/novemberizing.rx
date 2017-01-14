@@ -1,67 +1,22 @@
 package novemberizing.ds;
 
-import novemberizing.util.Log;
-
 import java.util.LinkedList;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import static novemberizing.ds.Constant.Infinite;
+
 /**
  *
- * @author novemberizing, novemberizing@gmail.com
- * @since 2017. 1. 12.
+ * @author novemberizing, me@novemberizing.net
+ * @since 2017. 1. 14
  */
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class Queue<T> {
-    private static final String Tag = "Queue";
-
-    private final Lock __sync;
-    private final Condition __condition;
-    private final LinkedList<T> __q = new LinkedList<>();
-
-    public void lock(){ __sync.lock(); }
-
-    public void unlock(){ __sync.unlock(); }
-
-    public void suspend(long nano){
-        if(nano<=0){
-            try {
-                __condition.await();
-            } catch (InterruptedException e) {
-                Log.d(Tag, e);
-            }
-        } else {
-            try {
-                __condition.awaitNanos(nano);
-            } catch (InterruptedException e) {
-                Log.d(Tag, e);
-            }
-        }
-    }
-
-    public void resume(boolean all){
-        if(all){
-            __condition.signalAll();
-        } else {
-            __condition.signal();
-        }
-    }
-
-    public T pop(){ return __q.pollFirst(); }
-
-    public T front(){ return __q.pollFirst(); }
-
-    public T back(){ return __q.pollLast(); }
-
-    public void push(T o){ __q.addLast(o); }
-
-    public void front(T o){ __q.addFirst(o); }
-
-    public void back(T o){ __q.addLast(o); }
-
-    public int size(){ return __q.size(); }
-
-    public boolean empty(){ return __q.isEmpty(); }
+    private LinkedList<T> __q = new LinkedList<>();
+    private Lock __sync;
+    private Condition __condition;
 
     public Queue(){
         __sync = new ReentrantLock();
@@ -77,4 +32,45 @@ public class Queue<T> {
         __sync = sync;
         __condition = condition;
     }
+
+    public void lock(){ __sync.lock(); }
+    public void unlock(){ __sync.unlock(); }
+
+    public void suspend(){ suspend(Infinite); }
+
+    public void suspend(long nano){
+        if(nano<=0){
+            try {
+                __condition.await();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        } else {
+            try {
+                __condition.awaitNanos(nano);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void resume(){ resume(false); }
+
+    public void resume(boolean all){
+        if(all){
+            __condition.signalAll();
+        } else {
+            __condition.signal();
+        }
+    }
+
+    public final T front(){ return __q.pollFirst(); }
+    public final T back(){ return __q.pollLast(); }
+    public final void front(T o){ __q.addLast(o); }
+    public final void back(T o){ __q.addFirst(o); }
+
+    public void push(T o){ __q.addLast(o); }
+    public T pop(){ return __q.pollFirst(); }
+
+    public int size(){ return __q.size(); }
 }

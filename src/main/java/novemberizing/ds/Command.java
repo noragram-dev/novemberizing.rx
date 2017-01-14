@@ -1,52 +1,62 @@
 package novemberizing.ds;
 
-import com.google.gson.annotations.Expose;
 import novemberizing.util.Log;
 
 /**
  *
- * @author novemberizing, novemberizing@gmail.com
- * @since 2017. 1. 12.
+ * @author novemberizing, me@novemberizing.net
+ * @since 2017. 1. 14
  */
+@SuppressWarnings("unused")
 public abstract class Command implements Executable {
-    private static final String Tag = "novemberizing.ds.Command";
+    private static final String Tag = "Command";
 
-    @Expose protected Executor __executor;
-
-    synchronized private boolean set(Executor executor){
-        Log.f(Tag, "set", this, executor);
-        if(__executor==null && executor!=null) {
-            __executor = executor;
-            return true;
-        }
-        return false;
-    }
+    protected Executor __executor = null;
 
     @Override
     public void execute(Executor executor) {
-        Log.f(Tag, "execute", this, executor);
-        if(set(executor)){
-            execute();
-        } else {
-            Log.e(Tag, this, executor);
+        Log.f(Tag, this, executor);
+
+        synchronized (this){
+            if(__executor!=null){
+                Log.e(Tag, new RuntimeException("__executor!=null"));
+            }
+        }
+        execute();
+    }
+
+    @Override
+    public void executed() {
+        Log.f(Tag, this);
+
+        Executor executor;
+        synchronized (this) {
+            executor = __executor;
+            __executor = null;
+            if (executor == null) {
+                Log.e(Tag, new RuntimeException("__executor==null"));
+            }
+        }
+        if(executor!=null) {
+            executor.executed(this);
         }
     }
 
     @Override
-    public void executed(){
-        Log.f(Tag, "executed", this);
-        if(__executor!=null){
-            __executor.executed(this);
-            __executor = null;
-        }
-    }
+    public void completed() {
+        Log.f(Tag, this);
 
-    @Override
-    public void completed(){
-        Log.f(Tag, "completed", this);
-        if(__executor!=null){
-            __executor.completed(this);
+        Executor executor;
+        synchronized (this) {
+            executor = __executor;
             __executor = null;
+            if (executor == null) {
+                Log.e(Tag, new RuntimeException("__executor==null"));
+            }
+        }
+
+        if(executor!=null){
+            executor.completed(this);
         }
     }
 }
