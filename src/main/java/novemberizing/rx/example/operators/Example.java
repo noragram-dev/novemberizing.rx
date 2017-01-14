@@ -1,9 +1,5 @@
 package novemberizing.rx.example.operators;
 
-import novemberizing.rx.Operator;
-import novemberizing.rx.Subscribers;
-import novemberizing.rx.Task;
-
 /**
  *
  * @author novemberizing, me@novemberizing.net
@@ -11,25 +7,8 @@ import novemberizing.rx.Task;
  */
 public class Example {
     public static void main(String[] args){
-        Operator<String, Integer> op = new Operator<String, Integer>() {
-            @Override
-            public Task<String, Integer> exec(String o) {
-                return out(o, Integer.parseInt(o) + 10);
-            }
-        };
-
-        op.subscribe(Subscribers.Just("operator.just(string) >"));
-
-        for(String s : args){
-            op.exec(s);
-        }
-
-
-
-//        op.exec
-//
-
-//
-//        op.complete();
+        novemberizing.rx.example.operators.just.Example.main(args);
+        novemberizing.rx.example.operators.async.Example.main(args);
+        novemberizing.rx.example.operators.sync.Example.main(args);
     }
 }

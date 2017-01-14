@@ -46,6 +46,7 @@ public abstract class Observable<T> {
             } else {
                 __observable.__complete();
             }
+            complete();
         }
     }
 
@@ -76,6 +77,7 @@ public abstract class Observable<T> {
             } else {
                 __observer.onComplete();
             }
+            complete();
         }
     }
 

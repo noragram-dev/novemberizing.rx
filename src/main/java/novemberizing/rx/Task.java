@@ -23,6 +23,6 @@ public class Task<T, U> extends novemberizing.ds.Task {
 
     @Override
     public void execute() {
-
+        complete();
     }
 }

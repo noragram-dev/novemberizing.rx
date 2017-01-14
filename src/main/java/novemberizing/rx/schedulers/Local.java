@@ -52,10 +52,6 @@ public class Local extends Scheduler {
                     Log.e(Tag, new RuntimeException("!__executables.remove(executable)"));
                 }
             }
-            __q.lock();
-            __q.front(executable);
-            __q.resume(false);
-            __q.unlock();
             onecycle();
         }
     }

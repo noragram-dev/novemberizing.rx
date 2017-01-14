@@ -10,5 +10,6 @@ public interface Executable {
     void execute(Executor executor);
     void execute();
     void executed();
-    void completed();
+    void complete();
+    boolean completed();
 }

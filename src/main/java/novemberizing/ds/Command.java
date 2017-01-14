@@ -12,6 +12,7 @@ public abstract class Command implements Executable {
     private static final String Tag = "Command";
 
     protected Executor __executor = null;
+    protected boolean __completed = false;
 
     @Override
     public void execute(Executor executor) {
@@ -21,6 +22,7 @@ public abstract class Command implements Executable {
             if(__executor!=null){
                 Log.e(Tag, new RuntimeException("__executor!=null"));
             }
+            __executor = executor;
         }
         execute();
     }
@@ -43,11 +45,12 @@ public abstract class Command implements Executable {
     }
 
     @Override
-    public void completed() {
+    public void complete() {
         Log.f(Tag, this);
 
         Executor executor;
         synchronized (this) {
+            __completed = true;
             executor = __executor;
             __executor = null;
             if (executor == null) {
@@ -59,4 +62,7 @@ public abstract class Command implements Executable {
             executor.completed(this);
         }
     }
+
+    @Override
+    synchronized public boolean completed(){ return __completed; }
 }

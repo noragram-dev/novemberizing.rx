@@ -13,8 +13,6 @@ import novemberizing.util.Log;
 public class Example {
 
     public static void main(String[] args){
-        Log.depth(3);
-        Log.disable(Log.FLOW | Log.HEADER);
 
         Just<String> observable = Observable.Just();
 

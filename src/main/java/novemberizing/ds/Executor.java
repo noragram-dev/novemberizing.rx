@@ -19,6 +19,7 @@ public abstract class Executor implements Cyclable {
 
     @Override
     public void onecycle() {
+        Log.f(Tag, this);
         if(!__running) {
             __q.lock();
             __running = true;
@@ -78,7 +79,6 @@ public abstract class Executor implements Cyclable {
                     Log.e(Tag, new RuntimeException("!__executables.remove(executable)"));
                 }
             }
-            dispatch(executable);
         }
     }
 
