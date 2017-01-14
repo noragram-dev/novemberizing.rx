@@ -35,6 +35,7 @@ public class Example {
         for(String s : args){
             observable.next(s);
         }
+
         observable.complete();
     }
 }

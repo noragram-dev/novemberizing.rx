@@ -83,7 +83,7 @@ public abstract class Observable<T> {
     private boolean __completed = false;
     private Throwable __exception = null;
 
-    public T snapshot(T o){
+    protected T snapshot(T o){
         Log.f(Tag, this, o);
         return o;
     }
