@@ -93,7 +93,7 @@ public class Observable<T> {
         return o;
     }
 
-    protected Observable<T> next(T o){
+    protected Observable<T> emit(T o){
         Log.f(Tag, this, o);
 
         __observableOn.dispatch(new ObservableOn<>(this,  snapshot(o), null, false));
@@ -212,7 +212,7 @@ public class Observable<T> {
     }
 
     public <U> Operator<T, U> append(Operator<T, U> op){ return subscribe(op); }
-    public <U> Operator<T, U> append(Func<T, U> f){ return subscribe(Operator.Op(f)); }
+    // public <U> Operator<T, U> append(Func<T, U> f){ return subscribe(Operator.Op(f)); }
 
     public final Observable<T> subscribe(OnNext<T> next, OnError error, OnComplete complete){
         return subscribe(new Subscriber<T>() {
@@ -246,6 +246,17 @@ public class Observable<T> {
         return this;
     }
 
+    public static <T> Observable<T> emit(Observable<T> observable, T o){
+        return observable!=null ? observable.emit(o) : null;
+    }
+
+    public static Observable<?> complete(Observable<?> observable){
+        return observable!=null ? observable.complete() : null;
+    }
+
+    public static Observable<?> error(Observable<?> observable, Throwable e){
+        return observable!=null ? observable.error(e) : null;
+    }
 
     public static <T> Just<T> Just(){ return new Just<>(); }
 }

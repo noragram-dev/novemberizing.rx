@@ -41,8 +41,9 @@ public abstract class Executor implements Cyclable {
 
     public void clear(){
         int remain;
-        __q.lock();
+
         do {
+            __q.lock();
             while(__q.size()>0){
                 Executable executable = __q.pop();
                 __q.unlock();
@@ -57,8 +58,9 @@ public abstract class Executor implements Cyclable {
             synchronized (__executables) {
                 remain = __executables.size();
             }
+            __q.unlock();
         } while(remain>0);
-        __q.unlock();
+
     }
 
     public void executed(Executable executable) {

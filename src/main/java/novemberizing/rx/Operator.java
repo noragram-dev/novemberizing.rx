@@ -37,11 +37,43 @@ public abstract class Operator<T, U> extends Observable<U> {
         public void execute() {
             __op.on(this);
         }
+
+        @Override
+        protected void complete(){
+            __op.internal.emit(this);
+            super.complete();
+        }
+
+        public void done(U o){
+            out = o;
+            complete();
+        }
     }
 
-    protected Operator<T, U> self = this;
-    protected Observable<Task<T, U>> internal = new Observable<Task<T, U>>();
-    protected Scheduler __operatorOn = Scheduler.Self();
+    public static class Internal<T, U> extends Observable<Local<T, U>> {
+        protected Operator<T, U> parent;
+        protected Local<T, U> exec(T o){
+            Local<T, U> task = new Local<>(o, parent);
+
+            __observableOn.dispatch(task);
+
+            return task;
+        }
+
+        protected Observable<Local<T, U>> emit(Local<T, U> o){
+            Log.f(Tag, this, o);
+
+            __next(o);
+
+            return this;
+        }
+
+        protected Internal(Operator<T, U> parent){
+            this.parent = parent;
+        }
+    }
+
+    protected Internal<T, U> internal;
     protected Subscriber<T> subscriber = new Subscriber<T>() {
         @Override
         public void onNext(T o) {
@@ -60,77 +92,120 @@ public abstract class Operator<T, U> extends Observable<U> {
     };
 
     public Operator(){
-        internal.subscribe(new Subscribers.Task<T, U>(){
+        internal = new Internal<>(this);
+        internal.subscribe(new Subscriber<Local<T, U>>() {
             @Override
-            public void onNext(Task<T, U> task){
-                self.next(task.out);
+            public void onNext(Local<T, U> task) {
+                internal.parent.emit(task.out);
+            }
+
+            @Override
+            public void onComplete() {
+                internal.parent.complete();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                internal.parent.error(e);
             }
         });
     }
 
-    protected Task<T, U> out(Task<T, U> task){
-        Log.f(Tag, this, task);
-
-        internal.next(task);
-
-        return task;
+    public Local<T, U> exec(T o){
+        return internal.exec(o);
     }
 
-    public Task<T, U> exec(T o){
-        Task<T, U> task = new Local<>(o, this);
-        if(__operatorOn==Scheduler.Self()){
-            task = on(task);
-        } else {
-            __observableOn.dispatch(task);
-        }
-        return task;
-    }
+    protected abstract void on(Local<T, U> task);
 
-    protected abstract Task<T, U> on(Task<T, U> task);
-
-    public final Operator<T, U> subscribe(Subscribers.Task<T, U> subscriber){
-        Log.f(Tag, this, subscriber);
-        if(subscriber!=null){
-            synchronized (internal.__observers){
-                if(internal.__observers.add(subscriber)){
-                    subscriber.onSubscribe(internal);
-                } else {
-                    Log.c(Tag, new RuntimeException("internal.__observers.add(subscriber)==false"));
-                }
-            }
+    @Override
+    protected Observable<U> emit(U o){
+        Log.f(Tag, this, o);
+        if(__observableOn==Scheduler.Self()) {
+            __next(o);
         } else {
-            Log.e(Tag, new RuntimeException("observer==null"));
+            __observableOn.dispatch(new ObservableOn<>(this, snapshot(o), null, false));
         }
+
         return this;
     }
 
-    public final Operator<T, U> unsubscribe(Subscribers.Task<T, U> subscriber){
-        Log.f(Tag, this, subscriber);
-        if(subscriber!=null){
-            synchronized (internal.__observers){
-                if(internal.__observers.remove(subscriber)){
-                    subscriber.onUnsubscribe(internal);
-                } else {
-                    Log.c(Tag, new RuntimeException("internal.__observers.remove(subscriber)==false"));
-                }
-            }
-        } else {
-            Log.e(Tag, new RuntimeException("observer==null"));
-        }
-        return this;
-    }
+//    protected Operator<T, U> self = this;
+//    protected Observable<Task<T, U>> internal = new Observable<Task<T, U>>();
+//    protected Scheduler __operatorOn = Scheduler.Self();
 
-
-
-    public static <T, U> Operator<T, U> Op(Func<T, U> f){
-        return new Operator<T, U>() {
-            @Override
-            public Task<T, U> on(Task<T, U> task) {
-                task.out = f.call(task.in);
-                return out(task);
-            }
-        };
-    }
+//
+//    public Operator(){
+//        internal.subscribe(new Subscribers.Task<T, U>(){
+//            @Override
+//            public void onNext(Task<T, U> task){
+//                self.emit(task.out);
+//            }
+//        });
+//    }
+//
+//    protected Task<T, U> out(Task<T, U> task){
+//        Log.f(Tag, this, task);
+//
+//        internal.emit(task);
+//
+//        return task;
+//    }
+//
+//    public Task<T, U> exec(T o){
+//        Task<T, U> task = new Local<>(o, this);
+//        if(__operatorOn==Scheduler.Self()){
+//            task = on(task);
+//        } else {
+//            __observableOn.dispatch(task);
+//        }
+//        return task;
+//    }
+//
+//
+//
+//    public final Operator<T, U> subscribe(Subscribers.Task<T, U> subscriber){
+//        Log.f(Tag, this, subscriber);
+//        if(subscriber!=null){
+//            synchronized (internal.__observers){
+//                if(internal.__observers.add(subscriber)){
+//                    subscriber.onSubscribe(internal);
+//                } else {
+//                    Log.c(Tag, new RuntimeException("internal.__observers.add(subscriber)==false"));
+//                }
+//            }
+//        } else {
+//            Log.e(Tag, new RuntimeException("observer==null"));
+//        }
+//        return this;
+//    }
+//
+//    public final Operator<T, U> unsubscribe(Subscribers.Task<T, U> subscriber){
+//        Log.f(Tag, this, subscriber);
+//        if(subscriber!=null){
+//            synchronized (internal.__observers){
+//                if(internal.__observers.remove(subscriber)){
+//                    subscriber.onUnsubscribe(internal);
+//                } else {
+//                    Log.c(Tag, new RuntimeException("internal.__observers.remove(subscriber)==false"));
+//                }
+//            }
+//        } else {
+//            Log.e(Tag, new RuntimeException("observer==null"));
+//        }
+//        return this;
+//    }
+//
+//
+//
+//    public static <T, U> Operator<T, U> Op(Func<T, U> f){
+//        return new Operator<T, U>() {
+//            @Override
+//            public Task<T, U> on(Task<T, U> task) {
+//                task.out = f.call(task.in);
+//                return out(task);
+//            }
+//        };
+//    }
 
 
 }

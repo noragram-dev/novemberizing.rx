@@ -14,6 +14,8 @@ public abstract class Command implements Executable {
     protected Executor __executor = null;
     protected boolean __completed = false;
 
+    public abstract void execute();
+
     @Override
     public void execute(Executor executor) {
         Log.f(Tag, this, executor);
@@ -27,8 +29,7 @@ public abstract class Command implements Executable {
         execute();
     }
 
-    @Override
-    public void executed() {
+    protected void executed() {
         Log.f(Tag, this);
 
         Executor executor;
@@ -44,8 +45,7 @@ public abstract class Command implements Executable {
         }
     }
 
-    @Override
-    public void complete() {
+    protected void complete() {
         Log.f(Tag, this);
 
         Executor executor;
