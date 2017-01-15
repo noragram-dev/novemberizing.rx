@@ -15,20 +15,7 @@ public abstract class Operator<T, Z> extends Observable<Z> {
     public static class Local<T, Z> extends Task<T, Z> {
         protected Operator<T, Z> __op;
 
-        public Local(T in) {
-            super(in);
-        }
-
-        public Local(T in, Operator<T, Z> op) {
-            super(in);
-            __op = op;
-        }
-
-        protected Local(T in, Z out) {
-            super(in, out);
-        }
-
-        protected Local(T in, Z out, Operator<T, Z> op) {
+        public Local(T in, Z out, Operator<T, Z> op) {
             super(in, out);
             __op = op;
         }
@@ -54,7 +41,7 @@ public abstract class Operator<T, Z> extends Observable<Z> {
         protected Operator<T, Z> parent;
 
         protected Local<T, Z> exec(T o){
-            Local<T, Z> task = new Local<>(o, parent);
+            Local<T, Z> task = new Local<>(o, null, parent);
 
             __observableOn.dispatch(task);
 
@@ -69,8 +56,7 @@ public abstract class Operator<T, Z> extends Observable<Z> {
             return this;
         }
 
-        protected Internal(Operator<T, Z> p){
-            this.parent = p;
+        protected void initialize(){
             subscribe(new Subscriber<Local<T, Z>>() {
                 @Override
                 public void onNext(Local<T, Z> task) {
@@ -87,6 +73,11 @@ public abstract class Operator<T, Z> extends Observable<Z> {
                     parent.error(e);
                 }
             });
+        }
+
+        public Internal(Operator<T, Z> p){
+            this.parent = p;
+            initialize();
         }
     }
 

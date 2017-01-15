@@ -20,7 +20,7 @@ public abstract class Sync<T, Z> extends Operator<T, Z> {
         private Local<T, Z> __current;
 
         protected Local<T, Z> exec(T o){
-            Local<T, Z> task = new Local<>(o, parent);
+            Local<T, Z> task = new Local<>(o, null, parent);
 
             synchronized (__tasks) {
                 if(__current==null) {
