@@ -20,6 +20,7 @@ public class Example {
         };
 
         op.subscribe(Subscribers.Just("operator(string)"));
+        op.subscribe(new Subscribers.Task<String, Integer>("operator(string).task"));
 
         for(String s : args){
             op.exec(s);

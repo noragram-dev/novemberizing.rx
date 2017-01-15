@@ -1,5 +1,6 @@
 package novemberizing.rx;
 
+import novemberizing.ds.Func;
 import novemberizing.util.Log;
 
 /**
@@ -134,83 +135,48 @@ public abstract class Operator<T, U> extends Observable<U> {
         return this;
     }
 
-//    protected Operator<T, U> self = this;
-//    protected Observable<Task<T, U>> internal = new Observable<Task<T, U>>();
-//    protected Scheduler __operatorOn = Scheduler.Self();
 
-//
-//    public Operator(){
-//        internal.subscribe(new Subscribers.Task<T, U>(){
-//            @Override
-//            public void onNext(Task<T, U> task){
-//                self.emit(task.out);
-//            }
-//        });
-//    }
-//
-//    protected Task<T, U> out(Task<T, U> task){
-//        Log.f(Tag, this, task);
-//
-//        internal.emit(task);
-//
-//        return task;
-//    }
-//
-//    public Task<T, U> exec(T o){
-//        Task<T, U> task = new Local<>(o, this);
-//        if(__operatorOn==Scheduler.Self()){
-//            task = on(task);
-//        } else {
-//            __observableOn.dispatch(task);
-//        }
-//        return task;
-//    }
-//
-//
-//
-//    public final Operator<T, U> subscribe(Subscribers.Task<T, U> subscriber){
-//        Log.f(Tag, this, subscriber);
-//        if(subscriber!=null){
-//            synchronized (internal.__observers){
-//                if(internal.__observers.add(subscriber)){
-//                    subscriber.onSubscribe(internal);
-//                } else {
-//                    Log.c(Tag, new RuntimeException("internal.__observers.add(subscriber)==false"));
-//                }
-//            }
-//        } else {
-//            Log.e(Tag, new RuntimeException("observer==null"));
-//        }
-//        return this;
-//    }
-//
-//    public final Operator<T, U> unsubscribe(Subscribers.Task<T, U> subscriber){
-//        Log.f(Tag, this, subscriber);
-//        if(subscriber!=null){
-//            synchronized (internal.__observers){
-//                if(internal.__observers.remove(subscriber)){
-//                    subscriber.onUnsubscribe(internal);
-//                } else {
-//                    Log.c(Tag, new RuntimeException("internal.__observers.remove(subscriber)==false"));
-//                }
-//            }
-//        } else {
-//            Log.e(Tag, new RuntimeException("observer==null"));
-//        }
-//        return this;
-//    }
-//
-//
-//
-//    public static <T, U> Operator<T, U> Op(Func<T, U> f){
-//        return new Operator<T, U>() {
-//            @Override
-//            public Task<T, U> on(Task<T, U> task) {
-//                task.out = f.call(task.in);
-//                return out(task);
-//            }
-//        };
-//    }
 
+    public final Operator<T, U> subscribe(Subscribers.Task<T, U> subscriber){
+        Log.f(Tag, this, subscriber);
+        if(subscriber!=null){
+            synchronized (internal.__observers){
+                if(internal.__observers.add(subscriber)){
+                    subscriber.onSubscribe(internal);
+                } else {
+                    Log.c(Tag, new RuntimeException("internal.__observers.add(subscriber)==false"));
+                }
+            }
+        } else {
+            Log.e(Tag, new RuntimeException("observer==null"));
+        }
+        return this;
+    }
+
+    public final Operator<T, U> unsubscribe(Subscribers.Task<T, U> subscriber){
+        Log.f(Tag, this, subscriber);
+        if(subscriber!=null){
+            synchronized (internal.__observers){
+                if(internal.__observers.remove(subscriber)){
+                    subscriber.onUnsubscribe(internal);
+                } else {
+                    Log.c(Tag, new RuntimeException("internal.__observers.remove(subscriber)==false"));
+                }
+            }
+        } else {
+            Log.e(Tag, new RuntimeException("observer==null"));
+        }
+        return this;
+    }
+
+
+    public static <T, U> Operator<T, U> Op(Func<T, U> f){
+        return new Operator<T, U>() {
+            @Override
+            public void on(Local<T, U> task) {
+                task.done(task.out = f.call(task.in));
+            }
+        };
+    }
 
 }

@@ -37,7 +37,7 @@ public class Subscribers {
     public static <T> Just<T> Just(){ return new Just<>(); }
     public static <T> Just<T> Just(String tag){ return new Just<>(tag); }
 
-    public static class Task<T, U> extends Subscriber<novemberizing.rx.Task<T, U>> {
+    public static class Task<T, U> extends Subscriber<Operator.Local<T, U>> {
         private String __tag;
 
         public Task(){ __tag = "Task"; }
@@ -45,7 +45,7 @@ public class Subscribers {
         public Task(String tag){ __tag = tag; }
 
         @Override
-        public void onNext(novemberizing.rx.Task<T, U> o) {
+        public void onNext(Operator.Local<T, U> o) {
             Log.i(__tag, o);
         }
 
