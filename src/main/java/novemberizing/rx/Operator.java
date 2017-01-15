@@ -8,27 +8,27 @@ import novemberizing.util.Log;
  * @author novemberizing, me@novemberizing.net
  * @since 2017. 1. 14
  */
-public abstract class Operator<T, U> extends Observable<U> {
+public abstract class Operator<T, Z> extends Observable<Z> {
 
     private static final String Tag = "Operator";
 
-    public static class Local<T, U> extends Task<T, U> {
-        protected Operator<T, U> __op;
+    public static class Local<T, Z> extends Task<T, Z> {
+        protected Operator<T, Z> __op;
 
         public Local(T in) {
             super(in);
         }
 
-        public Local(T in, Operator<T, U> op) {
+        public Local(T in, Operator<T, Z> op) {
             super(in);
             __op = op;
         }
 
-        protected Local(T in, U out) {
+        protected Local(T in, Z out) {
             super(in, out);
         }
 
-        protected Local(T in, U out, Operator<T, U> op) {
+        protected Local(T in, Z out, Operator<T, Z> op) {
             super(in, out);
             __op = op;
         }
@@ -44,24 +44,24 @@ public abstract class Operator<T, U> extends Observable<U> {
             super.complete();
         }
 
-        public void done(U o){
+        public void done(Z o){
             out = o;
             complete();
         }
     }
 
-    public static class Internal<T, U> extends Observable<Local<T, U>> {
-        protected Operator<T, U> parent;
+    public static class Internal<T, Z> extends Observable<Local<T, Z>> {
+        protected Operator<T, Z> parent;
 
-        protected Local<T, U> exec(T o){
-            Local<T, U> task = new Local<>(o, parent);
+        protected Local<T, Z> exec(T o){
+            Local<T, Z> task = new Local<>(o, parent);
 
             __observableOn.dispatch(task);
 
             return task;
         }
 
-        protected Observable<Local<T, U>> emit(Local<T, U> o){
+        protected Observable<Local<T, Z>> emit(Local<T, Z> o){
             Log.f(Tag, this, o);
 
             __next(o);
@@ -69,11 +69,11 @@ public abstract class Operator<T, U> extends Observable<U> {
             return this;
         }
 
-        protected Internal(Operator<T, U> p){
+        protected Internal(Operator<T, Z> p){
             this.parent = p;
-            subscribe(new Subscriber<Local<T, U>>() {
+            subscribe(new Subscriber<Local<T, Z>>() {
                 @Override
-                public void onNext(Local<T, U> task) {
+                public void onNext(Local<T, Z> task) {
                     parent.emit(task.out);
                 }
 
@@ -90,8 +90,7 @@ public abstract class Operator<T, U> extends Observable<U> {
         }
     }
 
-    private Operator<T, U> self = this;
-    protected Internal<T, U> internal;
+    protected Internal<T, Z> internal;
     protected Subscriber<T> subscriber = new Subscriber<T>() {
         @Override
         public void onNext(T o) {
@@ -113,18 +112,18 @@ public abstract class Operator<T, U> extends Observable<U> {
         initialize();
     }
 
-    protected Internal<T, U> initialize(){
+    protected Internal<T, Z> initialize(){
         return internal = new Internal<>(this);
     }
 
-    public Local<T, U> exec(T o){
+    public Local<T, Z> exec(T o){
         return internal.exec(o);
     }
 
-    protected abstract void on(Local<T, U> task);
+    protected abstract void on(Local<T, Z> task);
 
     @Override
-    protected Observable<U> emit(U o){
+    protected Observable<Z> emit(Z o){
         Log.f(Tag, this, o);
         if(__observableOn==Scheduler.Self()) {
             __next(o);
@@ -137,7 +136,7 @@ public abstract class Operator<T, U> extends Observable<U> {
 
 
 
-    public final Operator<T, U> subscribe(Subscribers.Task<T, U> subscriber){
+    public final Operator<T, Z> subscribe(Subscribers.Task<T, Z> subscriber){
         Log.f(Tag, this, subscriber);
         if(subscriber!=null){
             synchronized (internal.__observers){
@@ -153,7 +152,7 @@ public abstract class Operator<T, U> extends Observable<U> {
         return this;
     }
 
-    public final Operator<T, U> unsubscribe(Subscribers.Task<T, U> subscriber){
+    public final Operator<T, Z> unsubscribe(Subscribers.Task<T, Z> subscriber){
         Log.f(Tag, this, subscriber);
         if(subscriber!=null){
             synchronized (internal.__observers){
@@ -170,10 +169,10 @@ public abstract class Operator<T, U> extends Observable<U> {
     }
 
 
-    public static <T, U> Operator<T, U> Op(Func<T, U> f){
-        return new Operator<T, U>() {
+    public static <T, Z> Operator<T, Z> Op(Func<T, Z> f){
+        return new Operator<T, Z>() {
             @Override
-            public void on(Local<T, U> task) {
+            public void on(Local<T, Z> task) {
                 task.done(task.out = f.call(task.in));
             }
         };
