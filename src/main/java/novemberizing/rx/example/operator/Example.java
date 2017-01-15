@@ -30,5 +30,6 @@ public class Example {
 
         novemberizing.rx.example.operator.async.Example.main(args);
         novemberizing.rx.example.operator.sync.Example.main(args);
+        novemberizing.rx.example.operator.chain.Example.main(args);
     }
 }

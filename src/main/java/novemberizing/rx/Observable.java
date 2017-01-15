@@ -212,7 +212,7 @@ public class Observable<T> {
     }
 
     public <U> Operator<T, U> append(Operator<T, U> op){ return subscribe(op); }
-    // public <U> Operator<T, U> append(Func<T, U> f){ return subscribe(Operator.Op(f)); }
+    public <U> Operator<T, U> append(Func<T, U> f){ return subscribe(Operator.Op(f)); }
 
     public final Observable<T> subscribe(OnNext<T> next, OnError error, OnComplete complete){
         return subscribe(new Subscriber<T>() {
