@@ -2,6 +2,7 @@ package novemberizing.rx.operators;
 
 import novemberizing.rx.Operator;
 import novemberizing.rx.Subscriber;
+import novemberizing.rx.Subscribers;
 import novemberizing.rx.Task;
 import novemberizing.util.Log;
 
@@ -24,7 +25,7 @@ public class Sync<T, U> extends Operator<T, U> {
 
     public Sync(Operator<T, U> op){
         __op = op;
-        __op.subscribe(new Subscriber<Task<T, U>>() {
+        __op.subscribe(new Subscribers.Task<T, U>() {
             @Override
             public void onNext(Task<T, U> o) {
                 if(__current!=null){
@@ -32,6 +33,15 @@ public class Sync<T, U> extends Operator<T, U> {
                         synchronized (__tasks) {
                             __current.out = o.out;
                             out(__current);
+                            if(__tasks.size()>0){
+                                /**
+                                 * todo null task ...
+                                 */
+                                __current = __tasks.pollFirst();
+                                __child = __op.exec(__current.in);
+                            } else {
+                                __current = null;
+                            }
                         }
                     } else {
                         Log.e(Tag, new RuntimeException("o==null"));
@@ -70,21 +80,13 @@ public class Sync<T, U> extends Operator<T, U> {
         return task;
     }
 
-    protected Task<T, U> out(Task<T, U> task){
-        Log.f(Tag, this, task);
-
-        next(task);
-
-        if(__tasks.size()>0){
-            /**
-             * todo null task ...
-             */
-            __current = __tasks.pollFirst();
-            __child = __op.exec(__current.in);
-        } else {
-            __current = null;
-        }
-
-        return task;
-    }
+//    protected Task<T, U> out(Task<T, U> task){
+//        Log.f(Tag, this, task);
+//
+//        next(task);
+//
+//
+//
+//        return task;
+//    }
 }

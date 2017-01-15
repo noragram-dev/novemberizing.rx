@@ -8,7 +8,7 @@ import novemberizing.util.Log;
  * @author novemberizing, me@novemberizing.net
  * @since 2017. 1. 14
  */
-public abstract class Operator<T, U> extends Observable<Task<T, U>> {
+public abstract class Operator<T, U> extends Observable<U> {
 
     private static final String Tag = "Operator";
 
@@ -39,6 +39,8 @@ public abstract class Operator<T, U> extends Observable<Task<T, U>> {
         }
     }
 
+    protected Operator<T, U> self = this;
+    protected Observable<Task<T, U>> internal = new Observable<Task<T, U>>();
     protected Scheduler __operatorOn = Scheduler.Self();
     protected Subscriber<T> subscriber = new Subscriber<T>() {
         @Override
@@ -57,10 +59,19 @@ public abstract class Operator<T, U> extends Observable<Task<T, U>> {
         }
     };
 
+    public Operator(){
+        internal.subscribe(new Subscribers.Task<T, U>(){
+            @Override
+            public void onNext(Task<T, U> task){
+                self.next(task.out);
+            }
+        });
+    }
+
     protected Task<T, U> out(Task<T, U> task){
         Log.f(Tag, this, task);
 
-        next(task);
+        internal.next(task);
 
         return task;
     }
@@ -85,5 +96,21 @@ public abstract class Operator<T, U> extends Observable<Task<T, U>> {
                 return out(task);
             }
         };
+    }
+
+    public final Operator<T, U> subscribe(Subscribers.Task<T, U> subscriber){
+        Log.f(Tag, this, subscriber);
+        if(subscriber!=null){
+            synchronized (__observers){
+                if(internal.__observers.add(subscriber)){
+                    subscriber.onSubscribe(internal);
+                } else {
+                    Log.c(Tag, new RuntimeException("internal.__observers.add(subscriber)==false"));
+                }
+            }
+        } else {
+            Log.e(Tag, new RuntimeException("observer==null"));
+        }
+        return this;
     }
 }

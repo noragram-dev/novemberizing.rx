@@ -15,7 +15,7 @@ import java.util.LinkedHashSet;
  * @since 2017. 1. 14
  */
 @SuppressWarnings("unused")
-public abstract class Observable<T> {
+public class Observable<T> {
 
     private static final String Tag = "Observable";
 
