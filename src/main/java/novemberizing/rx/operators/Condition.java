@@ -2,6 +2,7 @@ package novemberizing.rx.operators;
 
 import com.google.gson.annotations.Expose;
 import novemberizing.ds.Func;
+import novemberizing.ds.Interest;
 import novemberizing.rx.Observable;
 import novemberizing.rx.Operator;
 import novemberizing.rx.Subscriber;
@@ -29,9 +30,16 @@ public abstract class Condition<T, Z> extends Operator<T, Z> {
         }
     }
 
+    public abstract static class Internal<T, Z> extends Operator.Internal<T, Z> implements Interest {
+
+        public Internal(Operator<T, Z> p) {
+            super(p);
+        }
+    }
+
     public static class Observal<T, U, Z> extends Internal<T, Z> {
-        T __first;
-        U __second;
+        private T __first;
+        private U __second;
 
         private novemberizing.ds.func.Pair<T, U, Boolean> __condition;
 
@@ -66,10 +74,16 @@ public abstract class Condition<T, Z> extends Operator<T, Z> {
             super(p);
             __condition = condition;
         }
+
+        @Override
+        public boolean interest() {
+            return __condition.call(__first,__second);
+        }
     }
 
     public static class Functional<T, Z> extends Internal<T, Z> {
 
+        private T __first;
         protected Func<T, Boolean> __condition;
 
         @Override
@@ -77,7 +91,7 @@ public abstract class Condition<T, Z> extends Operator<T, Z> {
             Local<T, Object, Z> task;
 
             if(__condition.call(o)) {
-                task = new Local<>(o, null, null, parent);
+                task = new Local<>(__first = o, null, null, parent);
                 __observableOn.dispatch(task);
             } else {
                 task = new Local<>(o, null, parent);
@@ -93,11 +107,17 @@ public abstract class Condition<T, Z> extends Operator<T, Z> {
             super(p);
             __condition = condition;
         }
+
+        @Override
+        public boolean interest() {
+            return __condition.call(__first);
+        }
     }
 
+    protected Internal<T, Z> __interest;
     protected Internal<T, Z> initialize(){ return null; }
     public Condition(Func<T, Boolean> f){
-        internal = new Functional<>(this, f);
+        internal = __interest = new Functional<>(this, f);
 
     }
 
@@ -122,4 +142,6 @@ public abstract class Condition<T, Z> extends Operator<T, Z> {
 
         internal = observal;
     }
+
+    public boolean interest(){ return __interest.interest(); }
 }

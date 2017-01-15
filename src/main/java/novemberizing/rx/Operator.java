@@ -1,9 +1,13 @@
 package novemberizing.rx;
 
 import novemberizing.ds.Func;
+import novemberizing.rx.operators.CompletionPort;
 import novemberizing.rx.operators.Condition;
 import novemberizing.rx.operators.Sync;
 import novemberizing.util.Log;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  *
@@ -162,6 +166,8 @@ public abstract class Operator<T, Z> extends Observable<Z> {
     }
 
 
+
+
     public static <T, Z> Operator<T, Z> Op(Func<T, Z> f){
         return new Operator<T, Z>() {
             @Override
@@ -197,5 +203,7 @@ public abstract class Operator<T, Z> extends Observable<Z> {
             }
         };
     }
+
+    public static CompletionPort CompletionPort(){ return new CompletionPort(); }
 
 }

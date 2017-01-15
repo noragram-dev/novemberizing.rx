@@ -8,8 +8,7 @@ package novemberizing.ds;
 @SuppressWarnings("unused")
 public interface Executable {
     void execute(Executor executor);
-//    void execute();
-//    void executed();
-//    void complete();
     boolean completed();
+
+    void set(CompletionPort completionPort);
 }

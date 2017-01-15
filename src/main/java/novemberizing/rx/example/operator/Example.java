@@ -32,5 +32,6 @@ public class Example {
         novemberizing.rx.example.operator.sync.Example.main(args);
         novemberizing.rx.example.operator.chain.Example.main(args);
         novemberizing.rx.example.operator.condition.Example.main(args);
+        novemberizing.rx.example.operator.completion.Example.main(args);
     }
 }

@@ -13,6 +13,7 @@ public abstract class Command implements Executable {
 
     protected Executor __executor = null;
     protected boolean __completed = false;
+    protected CompletionPort __completionPort = null;
 
     public abstract void execute();
 
@@ -56,6 +57,9 @@ public abstract class Command implements Executable {
             if (executor == null) {
                 Log.e(Tag, new RuntimeException("__executor==null"));
             }
+            if(__completionPort!=null){
+                __completionPort.dispatch(this);
+            }
         }
 
         if(executor!=null){
@@ -65,4 +69,13 @@ public abstract class Command implements Executable {
 
     @Override
     synchronized public boolean completed(){ return __completed; }
+
+    @Override
+    synchronized public void set(CompletionPort completionPort){
+        Log.f(Tag, this, completionPort);
+        __completionPort = completionPort;
+        if(__completed){
+            __completionPort.dispatch(this);
+        }
+    }
 }
