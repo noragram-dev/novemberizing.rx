@@ -20,15 +20,15 @@ public class Example {
         observable.subscribe(new Subscriber<String>() {
             @Override
             public void onNext(String o) {
-                Log.i("observable(string) >", o);
+                Log.i("observal(string) >", o);
             }
 
             @Override
-            public void onComplete() { Log.i("observable(string) >", "complete"); }
+            public void onComplete() { Log.i("observal(string) >", "complete"); }
 
             @Override
             public void onError(Throwable e) {
-                Log.e("observable(string) >", "error: " + e.getMessage());
+                Log.e("observal(string) >", "error: " + e.getMessage());
             }
         });
 

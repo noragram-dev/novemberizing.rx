@@ -9,7 +9,9 @@ import novemberizing.rx.Scheduler;
  */
 public class Example {
     public static void main(String[] args){
-        novemberizing.rx.example.operator.condition.observable.Example.main(args);
+        novemberizing.rx.example.operator.condition.observal.Example.main(args);
+
+        novemberizing.rx.example.operator.condition.functional.Example.main(args);
 
         Scheduler.Local().clear();
     }

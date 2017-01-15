@@ -1,6 +1,7 @@
 package novemberizing.rx.operators;
 
 import com.google.gson.annotations.Expose;
+import novemberizing.ds.Func;
 import novemberizing.rx.Observable;
 import novemberizing.rx.Operator;
 import novemberizing.rx.Subscriber;
@@ -32,7 +33,7 @@ public abstract class Condition<T, Z> extends Operator<T, Z> {
         T __first;
         U __second;
 
-        protected novemberizing.ds.func.Pair<T, U, Boolean> __condition;
+        private novemberizing.ds.func.Pair<T, U, Boolean> __condition;
 
         synchronized protected void second(U o){
             __second = o;
@@ -67,9 +68,38 @@ public abstract class Condition<T, Z> extends Operator<T, Z> {
         }
     }
 
-    protected final Observal<T, ?, Z> __observal;
+    public static class Functional<T, Z> extends Internal<T, Z> {
+
+        protected Func<T, Boolean> __condition;
+
+        @Override
+        synchronized protected Operator.Local<T, Z> exec(T o){
+            Local<T, Object, Z> task;
+
+            if(__condition.call(o)) {
+                task = new Local<>(o, null, null, parent);
+                __observableOn.dispatch(task);
+            } else {
+                task = new Local<>(o, null, parent);
+            }
+
+            return task;
+        }
+
+        @Override public Observable<Operator.Local<T,Z>> complete(){ return super.complete(); }
+        @Override public Observable<Operator.Local<T,Z>> error(Throwable e){ return super.error(e); }
+
+        public Functional(Condition<T, Z> p, Func<T, Boolean> condition) {
+            super(p);
+            __condition = condition;
+        }
+    }
 
     protected Internal<T, Z> initialize(){ return null; }
+    public Condition(Func<T, Boolean> f){
+        internal = new Functional<>(this, f);
+
+    }
 
     public <U> Condition(Observable<U> observable, novemberizing.ds.func.Pair<T, U, Boolean> condition){
         Observal<T, U, Z> observal = new Observal<>(this, condition);
@@ -90,6 +120,6 @@ public abstract class Condition<T, Z> extends Operator<T, Z> {
             }
         });
 
-        internal = __observal = observal;
+        internal = observal;
     }
 }

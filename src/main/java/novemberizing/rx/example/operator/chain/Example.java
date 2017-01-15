@@ -18,7 +18,7 @@ public class Example {
         Just<String> observable = Observable.Just();
 
         observable.
-                subscribe(Subscribers.Just("observable.just(string)")).
+                subscribe(Subscribers.Just("observal.just(string)")).
                 append(new Func<String, Integer>() {
                     @Override
                     public Integer call(String o) {

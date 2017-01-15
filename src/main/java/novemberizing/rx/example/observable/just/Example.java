@@ -17,7 +17,7 @@ public class Example {
     public static void main(String[] args){
         Just<String> observable = Observable.Just();
 
-        observable.subscribe(Subscribers.Just("observable.just(string)"));
+        observable.subscribe(Subscribers.Just("observal.just(string)"));
 
         for(String s : args){
             observable.emit(s);
