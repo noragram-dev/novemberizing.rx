@@ -1,6 +1,8 @@
 package novemberizing.rx;
 
 import novemberizing.ds.Func;
+import novemberizing.rx.operators.Condition;
+import novemberizing.rx.operators.Sync;
 import novemberizing.util.Log;
 
 /**
@@ -165,6 +167,33 @@ public abstract class Operator<T, Z> extends Observable<Z> {
             @Override
             public void on(Local<T, Z> task) {
                 task.done(task.out = f.call(task.in));
+            }
+        };
+    }
+
+    public static <T, Z> Sync<T, Z> Sync(Func<T, Z> f){
+        return new Sync<T, Z>(){
+            @Override
+            protected void on(Local<T, Z> task) {
+                task.done(f.call(task.in));
+            }
+        };
+    }
+
+    public static <T, Z> Condition<T, Z> Condition(Func<T, Boolean> condition, Func<T, Z> f){
+        return new Condition<T, Z>(condition) {
+            @Override
+            protected void on(Operator.Local<T, Z> task) {
+                task.done(f.call(task.in));
+            }
+        };
+    }
+
+    public static <T, U, Z> Condition<T, Z> Condition(Observable<U> observable, novemberizing.ds.func.Pair<T, U, Boolean> condition, Func<T, Z> f){
+        return new Condition<T, Z>(observable, condition) {
+            @Override
+            protected void on(Operator.Local<T, Z> task) {
+                task.done(f.call(task.in));
             }
         };
     }
