@@ -37,7 +37,7 @@ public class Subscribers {
     public static <T> Just<T> Just(){ return new Just<>(); }
     public static <T> Just<T> Just(String tag){ return new Just<>(tag); }
 
-    public static class Task<T, U> extends Subscriber<Operator.Local<T, U>> {
+    public static class Task<T, Z> extends Subscriber<Operator.Local<T, Z>> {
         private String __tag;
 
         public Task(){ __tag = "Task"; }
@@ -45,7 +45,7 @@ public class Subscribers {
         public Task(String tag){ __tag = tag; }
 
         @Override
-        public void onNext(Operator.Local<T, U> o) {
+        public void onNext(Operator.Local<T, Z> o) {
             Log.i(__tag, o);
         }
 
@@ -60,6 +60,6 @@ public class Subscribers {
         }
     }
 
-    public static <T, U> Task<T, U> Task(){ return new Task<>(); }
-    public static <T, U> Task<T, U> Task(String tag){ return new Task<>(tag); }
+    public static <T, Z> Task<T, Z> Task(){ return new Task<>(); }
+    public static <T, Z> Task<T, Z> Task(String tag){ return new Task<>(tag); }
 }
