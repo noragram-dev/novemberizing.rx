@@ -1,7 +1,6 @@
 package novemberizing.rx.operators;
 
 import novemberizing.rx.Operator;
-import novemberizing.rx.Subscriber;
 import novemberizing.rx.Subscribers;
 import novemberizing.rx.Task;
 import novemberizing.util.Log;
@@ -19,7 +18,6 @@ public class Sync<T, U> extends Operator<T, U> {
 
     private final LinkedList<Task<T, U>> __tasks = new LinkedList<>();
     private Task<T, U> __current;
-    private Task<T, U> __child;
 
     private Operator<T, U> __op;
 
@@ -34,11 +32,8 @@ public class Sync<T, U> extends Operator<T, U> {
                             __current.out = o.out;
                             out(__current);
                             if(__tasks.size()>0){
-                                /**
-                                 * todo null task ...
-                                 */
                                 __current = __tasks.pollFirst();
-                                __child = __op.exec(__current.in);
+                                __op.exec(__current.in);
                             } else {
                                 __current = null;
                             }
@@ -50,20 +45,6 @@ public class Sync<T, U> extends Operator<T, U> {
                     Log.e(Tag, new RuntimeException("__current==null"));
                 }
             }
-
-            @Override
-            public void onComplete() {
-                /**
-                 * todo
-                 */
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                /**
-                 * todo
-                 */
-            }
         });
     }
 
@@ -74,19 +55,9 @@ public class Sync<T, U> extends Operator<T, U> {
                 __tasks.addLast(task);
             } else {
                 __current = task;
-                __child = __op.exec(task.in);
+                __op.exec(task.in);
             }
         }
         return task;
     }
-
-//    protected Task<T, U> out(Task<T, U> task){
-//        Log.f(Tag, this, task);
-//
-//        next(task);
-//
-//
-//
-//        return task;
-//    }
 }

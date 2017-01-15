@@ -86,22 +86,12 @@ public abstract class Operator<T, U> extends Observable<U> {
         return task;
     }
 
-    public abstract Task<T, U> on(Task<T, U> task);
-
-    public static <T, U> Operator<T, U> Op(Func<T, U> f){
-        return new Operator<T, U>() {
-            @Override
-            public Task<T, U> on(Task<T, U> task) {
-                task.out = f.call(task.in);
-                return out(task);
-            }
-        };
-    }
+    protected abstract Task<T, U> on(Task<T, U> task);
 
     public final Operator<T, U> subscribe(Subscribers.Task<T, U> subscriber){
         Log.f(Tag, this, subscriber);
         if(subscriber!=null){
-            synchronized (__observers){
+            synchronized (internal.__observers){
                 if(internal.__observers.add(subscriber)){
                     subscriber.onSubscribe(internal);
                 } else {
@@ -113,4 +103,34 @@ public abstract class Operator<T, U> extends Observable<U> {
         }
         return this;
     }
+
+    public final Operator<T, U> unsubscribe(Subscribers.Task<T, U> subscriber){
+        Log.f(Tag, this, subscriber);
+        if(subscriber!=null){
+            synchronized (internal.__observers){
+                if(internal.__observers.remove(subscriber)){
+                    subscriber.onUnsubscribe(internal);
+                } else {
+                    Log.c(Tag, new RuntimeException("internal.__observers.remove(subscriber)==false"));
+                }
+            }
+        } else {
+            Log.e(Tag, new RuntimeException("observer==null"));
+        }
+        return this;
+    }
+
+
+
+    public static <T, U> Operator<T, U> Op(Func<T, U> f){
+        return new Operator<T, U>() {
+            @Override
+            public Task<T, U> on(Task<T, U> task) {
+                task.out = f.call(task.in);
+                return out(task);
+            }
+        };
+    }
+
+
 }

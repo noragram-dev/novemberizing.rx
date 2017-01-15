@@ -10,6 +10,7 @@ public class Example {
         novemberizing.rx.example.operators.just.Example.main(args);
         novemberizing.rx.example.operators.async.Example.main(args);
         novemberizing.rx.example.operators.sync.Example.main(args);
-        novemberizing.rx.example.operators.completion.Example.main(args);
+        novemberizing.rx.example.operators.chain.Example.main(args);
+//        novemberizing.rx.example.operators.completion.Example.main(args);
     }
 }

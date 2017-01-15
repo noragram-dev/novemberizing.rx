@@ -1,5 +1,6 @@
 package novemberizing.rx;
 
+import novemberizing.ds.Func;
 import novemberizing.ds.Task;
 import novemberizing.rx.functions.OnComplete;
 import novemberizing.rx.functions.OnError;
@@ -209,6 +210,9 @@ public class Observable<T> {
         }
         return this;
     }
+
+    public <U> Operator<T, U> append(Operator<T, U> op){ return subscribe(op); }
+    public <U> Operator<T, U> append(Func<T, U> f){ return subscribe(Operator.Op(f)); }
 
     public final Observable<T> subscribe(OnNext<T> next, OnError error, OnComplete complete){
         return subscribe(new Subscriber<T>() {
