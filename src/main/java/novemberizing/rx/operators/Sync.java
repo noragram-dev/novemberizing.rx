@@ -11,16 +11,16 @@ import java.util.LinkedList;
  * @author novemberizing, me@novemberizing.net
  * @since 2017. 1. 14
  */
-public abstract class Sync<T, U> extends Operator<T, U> {
+public abstract class Sync<T, Z> extends Operator<T, Z> {
     private static final String Tag = "Sync";
 
-    public static class Internal<T, U> extends Operator.Internal<T, U> {
+    public static class Internal<T, Z> extends Operator.Internal<T, Z> {
 
-        private final LinkedList<Local<T, U>> __tasks = new LinkedList<>();
-        private Local<T, U> __current;
+        private final LinkedList<Local<T, Z>> __tasks = new LinkedList<>();
+        private Local<T, Z> __current;
 
-        protected Local<T, U> exec(T o){
-            Local<T, U> task = new Local<>(o, parent);
+        protected Local<T, Z> exec(T o){
+            Local<T, Z> task = new Local<>(o, parent);
 
             synchronized (__tasks) {
                 if(__current==null) {
@@ -34,7 +34,7 @@ public abstract class Sync<T, U> extends Operator<T, U> {
             return task;
         }
 
-        protected Observable<Local<T, U>> emit(Local<T, U> o){
+        protected Observable<Local<T, Z>> emit(Local<T, Z> o){
             Log.f(Tag, this, o);
 
             __next(o);
@@ -50,13 +50,13 @@ public abstract class Sync<T, U> extends Operator<T, U> {
             return this;
         }
 
-        protected Internal(Operator<T, U> parent) {
+        protected Internal(Operator<T, Z> parent) {
             super(parent);
             __current = null;
         }
     }
 
-    protected Operator.Internal<T, U> initialize(){
+    protected Operator.Internal<T, Z> initialize(){
         return internal = new Sync.Internal<>(this);
     }
 
