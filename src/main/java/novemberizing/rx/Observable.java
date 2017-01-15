@@ -179,7 +179,7 @@ public class Observable<T> {
         }
     }
 
-    public final <U> Operator<T, U> subscribe(Operator<T, U> operator){
+    public final <Z> Operator<T, Z> subscribe(Operator<T, Z> operator){
         Log.f(Tag, this, operator);
         if(operator!=null){
             synchronized (__observers){
@@ -211,8 +211,8 @@ public class Observable<T> {
         return this;
     }
 
-    public <U> Operator<T, U> append(Operator<T, U> op){ return subscribe(op); }
-    public <U> Operator<T, U> append(Func<T, U> f){ return subscribe(Operator.Op(f)); }
+    public <Z> Operator<T, Z> append(Operator<T, Z> op){ return subscribe(op); }
+    public <Z> Operator<T, Z> append(Func<T, Z> f){ return subscribe(Operator.Op(f)); }
 
     public final Observable<T> subscribe(OnNext<T> next, OnError error, OnComplete complete){
         return subscribe(new Subscriber<T>() {
