@@ -28,5 +28,6 @@ public class Example {
         Scheduler.Local().clear();
 
         novemberizing.rx.example.operator.async.Example.main(args);
+        novemberizing.rx.example.operator.sync.Example.main(args);
     }
 }

@@ -1,7 +1,7 @@
-package novemberizing.rx.example.operator.async;
+package novemberizing.rx.example.operator.sync;
 
 import novemberizing.ds.Func;
-import novemberizing.rx.Operator;
+import novemberizing.rx.operators.Sync;
 
 import java.util.Random;
 
@@ -10,7 +10,7 @@ import java.util.Random;
  * @author novemberizing, me@novemberizing.net
  * @since 2017. 1. 14
  */
-public class Run<T, Z> extends Operator<T, Z> {
+public class Run<T, Z> extends Sync<T, Z> {
     private Func<T, Z> __func;
     private long __second = 100;
 

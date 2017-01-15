@@ -1,4 +1,4 @@
-package novemberizing.rx.example.operator.async;
+package novemberizing.rx.example.operator.sync;
 
 import novemberizing.ds.Func;
 import novemberizing.rx.*;
@@ -19,7 +19,7 @@ public class Example {
             }
         });
 
-        op.subscribe(Subscribers.Just("operator.async(string)"));
+        op.subscribe(Subscribers.Just("operator.sync(string)"));
 
         for(String s : args){
             op.exec(s);

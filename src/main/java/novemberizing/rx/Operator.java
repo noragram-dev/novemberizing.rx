@@ -1,6 +1,5 @@
 package novemberizing.rx;
 
-import novemberizing.ds.Func;
 import novemberizing.util.Log;
 
 /**
@@ -52,6 +51,7 @@ public abstract class Operator<T, U> extends Observable<U> {
 
     public static class Internal<T, U> extends Observable<Local<T, U>> {
         protected Operator<T, U> parent;
+
         protected Local<T, U> exec(T o){
             Local<T, U> task = new Local<>(o, parent);
 
@@ -68,11 +68,28 @@ public abstract class Operator<T, U> extends Observable<U> {
             return this;
         }
 
-        protected Internal(Operator<T, U> parent){
-            this.parent = parent;
+        protected Internal(Operator<T, U> p){
+            this.parent = p;
+            subscribe(new Subscriber<Local<T, U>>() {
+                @Override
+                public void onNext(Local<T, U> task) {
+                    parent.emit(task.out);
+                }
+
+                @Override
+                public void onComplete() {
+                    parent.complete();
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    parent.error(e);
+                }
+            });
         }
     }
 
+    private Operator<T, U> self = this;
     protected Internal<T, U> internal;
     protected Subscriber<T> subscriber = new Subscriber<T>() {
         @Override
@@ -92,23 +109,11 @@ public abstract class Operator<T, U> extends Observable<U> {
     };
 
     public Operator(){
-        internal = new Internal<>(this);
-        internal.subscribe(new Subscriber<Local<T, U>>() {
-            @Override
-            public void onNext(Local<T, U> task) {
-                internal.parent.emit(task.out);
-            }
+        initialize();
+    }
 
-            @Override
-            public void onComplete() {
-                internal.parent.complete();
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                internal.parent.error(e);
-            }
-        });
+    protected Internal<T, U> initialize(){
+        return internal = new Internal<>(this);
     }
 
     public Local<T, U> exec(T o){
