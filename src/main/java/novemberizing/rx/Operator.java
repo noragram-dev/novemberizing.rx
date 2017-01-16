@@ -211,7 +211,7 @@ public abstract class Operator<T, Z> extends Observable<Z> {
     public Operator<T, Z> append(Callable<Z> c) {
         return subscribe(new Subscribers.Task<T, Z>(){
             @Override
-            public void onNext(Operator.Local<T, Z> task){
+            public void onNext(Local<T, Z> task){
                 try {
                     task.done(task.out = c.call());
                 } catch (Exception e) {

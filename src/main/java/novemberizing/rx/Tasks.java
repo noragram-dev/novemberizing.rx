@@ -20,6 +20,7 @@ public class Tasks extends Task<Collection<Task>, Collection<Task>> {
 
     public void add(Task task){
         if(task!=null) {
+            in.add(task);
             if(!task.completed()) {
                 task.append(new Subscribers.Just<Task>() {
                     private Task __task = task;
@@ -28,11 +29,17 @@ public class Tasks extends Task<Collection<Task>, Collection<Task>> {
                         Log.e(Tag, task);
                         synchronized (__self) {
                             if (task.completed()) {
+                                Log.e(Tag, "= 1 =");
                                 out.add(task);
                                 if (in.size() == out.size()) {
+                                    Log.e(Tag, "= 2 =");
                                     __completed = true;
                                     complete();
+                                } else {
+                                    Log.e(Tag, "= 3 =: " + in.size() + ":" + out.size());
                                 }
+                            } else {
+                                Log.e(Tag, "= 4 =");
                             }
                         }
                         onUnsubscribe(__task.__observable);

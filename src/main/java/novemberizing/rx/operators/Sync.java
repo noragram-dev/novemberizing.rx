@@ -57,7 +57,7 @@ public abstract class Sync<T, Z> extends Operator<T, Z> {
     }
 
     protected Operator.Internal<T, Z> initialize(){
-        return internal = new Sync.Internal<>(this);
+        return internal = new Internal<>(this);
     }
 
 }

@@ -24,7 +24,7 @@ public class If<T> extends Operator<T, T> {
     }
 
     @Override
-    protected void on(Operator.Local<T, T> task) {
+    protected void on(Local<T, T> task) {
         for(Condition<T, ?> condition : __conditions){
             if(condition.interest()){
                 condition.exec(task.in);

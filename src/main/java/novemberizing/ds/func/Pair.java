@@ -6,4 +6,4 @@ package novemberizing.ds.func;
  * @since 2017. 1. 14
  */
 @SuppressWarnings("unused")
-public interface Pair<A, B, Z> { Z call(A first,B second); }
+public interface Pair<A, B, Z> { Z call(A first, B second); }
