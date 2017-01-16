@@ -20,7 +20,7 @@ public class CompletionPort extends Operator<Executable,Executable> {
 
         public Local(Executable in, Executable out, Operator<Executable, Executable> op) {
             super(in, out, op);
-            in.set(this);
+            in.add(this);
         }
 
         @Override

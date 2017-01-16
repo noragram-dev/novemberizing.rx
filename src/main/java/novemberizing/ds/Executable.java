@@ -10,5 +10,5 @@ public interface Executable {
     void execute(Executor executor);
     boolean completed();
 
-    void set(CompletionPort completionPort);
+    void add(CompletionPort completionPort);
 }

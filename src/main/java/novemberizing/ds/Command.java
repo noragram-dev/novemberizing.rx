@@ -2,6 +2,10 @@ package novemberizing.ds;
 
 import novemberizing.util.Log;
 
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+
 /**
  *
  * @author novemberizing, me@novemberizing.net
@@ -13,7 +17,7 @@ public abstract class Command implements Executable {
 
     protected Executor __executor = null;
     protected boolean __completed = false;
-    protected CompletionPort __completionPort = null;
+    protected final HashSet<CompletionPort> __completionPorts = new HashSet<>();
 
     public abstract void execute();
 
@@ -57,8 +61,15 @@ public abstract class Command implements Executable {
             if (executor == null) {
                 Log.e(Tag, new RuntimeException("__executor==null"));
             }
-            if(__completionPort!=null){
-                __completionPort.dispatch(this);
+            if(__completionPorts!=null){
+                Iterator<CompletionPort> it = __completionPorts.iterator();
+                while(it.hasNext()){
+                    CompletionPort port = it.next();
+                    if(port!=null) {
+                        port.dispatch(this);
+                    }
+                    it.remove();
+                }
             }
         }
 
@@ -71,11 +82,14 @@ public abstract class Command implements Executable {
     synchronized public boolean completed(){ return __completed; }
 
     @Override
-    synchronized public void set(CompletionPort completionPort){
+    synchronized public void add(CompletionPort completionPort){
         Log.f(Tag, this, completionPort);
-        __completionPort = completionPort;
-        if(__completed){
-            __completionPort.dispatch(this);
+        if(completionPort!=null) {
+            if (__completed) {
+                completionPort.dispatch(this);
+            } else {
+                __completionPorts.add(completionPort);
+            }
         }
     }
 }

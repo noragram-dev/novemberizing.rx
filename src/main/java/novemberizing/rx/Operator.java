@@ -117,6 +117,23 @@ public abstract class Operator<T, Z> extends Observable<Z> {
         return internal.exec(o);
     }
 
+    public Tasks foreach(T o, T... items){
+        Tasks tasks = new Tasks(new LinkedList<>(), new LinkedList<>());
+        tasks.add(internal.exec(o));
+        for(T item : items){
+            tasks.add(internal.exec(item));
+        }
+        return tasks;
+    }
+
+    public Tasks foreach(T[] items){
+        Tasks tasks = new Tasks(new LinkedList<>(), new LinkedList<>());
+        for(T item : items){
+            tasks.add(internal.exec(item));
+        }
+        return tasks;
+    }
+
     protected abstract void on(Local<T, Z> task);
 
     @Override
