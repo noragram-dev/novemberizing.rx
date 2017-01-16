@@ -93,8 +93,6 @@ public class Task<T, Z> extends novemberizing.ds.Task {
             __observable.emit(this);
         }
 
-
-
         return c;
     }
 
@@ -113,13 +111,13 @@ public class Task<T, Z> extends novemberizing.ds.Task {
 
     @Override
     protected void complete() {
-        Log.f(Tag, this);
+        Log.e(Tag, this);
 
         super.complete();
         synchronized(this) {
             Log.e(Tag, this);
             if (__observable != null) {
-                __observable.complete(this);
+                __observable.emit(this);
             }
         }
     }
