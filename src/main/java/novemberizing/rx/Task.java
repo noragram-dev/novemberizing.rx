@@ -48,7 +48,9 @@ public class Task<T, Z> extends novemberizing.ds.Task {
     protected void executed() {
         Log.f(Tag, this);
         super.executed();
-        __observable.emit(this);
+        if(__observable!=null) {
+            __observable.emit(this);
+        }
 
     }
 
@@ -57,6 +59,8 @@ public class Task<T, Z> extends novemberizing.ds.Task {
         Log.f(Tag, this);
 
         super.complete();
-        __observable.complete(this);
+        if(__observable!=null) {
+            __observable.complete(this);
+        }
     }
 }

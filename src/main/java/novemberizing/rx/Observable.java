@@ -179,12 +179,21 @@ public class Observable<T> {
         }
     }
 
+    protected void onSubscribed(Operator<T, ?> operator){
+
+    }
+
+    protected void onSubscribed(Observer<T> operator){
+
+    }
+
     public final <Z> Operator<T, Z> subscribe(Operator<T, Z> operator){
         Log.f(Tag, this, operator);
         if(operator!=null){
             synchronized (__observers){
                 if(__observers.add(operator.subscriber)){
                     operator.subscriber.onSubscribe(this);
+                    onSubscribed(operator.subscriber);
                 } else {
                     Log.c(Tag, new RuntimeException("__observers.add(observer)==false"));
                 }
@@ -201,6 +210,7 @@ public class Observable<T> {
             synchronized (__observers){
                 if(__observers.add(observer)){
                     observer.onSubscribe(this);
+                    onSubscribed(observer);
                 } else {
                     Log.c(Tag, new RuntimeException("__observers.add(observer)==false"));
                 }
