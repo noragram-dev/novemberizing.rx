@@ -1,7 +1,5 @@
 package novemberizing.rx;
 
-import novemberizing.ds.CompletionPort;
-import novemberizing.ds.Executable;
 import novemberizing.util.Log;
 
 import java.util.Collection;

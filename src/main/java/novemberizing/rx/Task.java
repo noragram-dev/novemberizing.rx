@@ -34,6 +34,25 @@ public class Task<T, Z> extends novemberizing.ds.Task {
     synchronized public Observable<Task<T, Z>> append(Observer<Task<T, Z>> observer){
         if(__observable==null){
             __observable = new Observable<>();
+            __observable.subscribe(new Subscriber<Task<T, Z>>() {
+                @Override
+                public void onNext(Task<T, Z> o) {
+                    __observable.emit(o);
+                    __observable.unsubscribe(this);
+                }
+
+                @Override
+                public void onComplete() {
+                    __observable.complete();
+                    __observable.unsubscribe(this);
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    __observable.error(e);
+                    __observable.unsubscribe(this);
+                }
+            });
 
         }
         __observable.subscribe(observer);
@@ -49,10 +68,25 @@ public class Task<T, Z> extends novemberizing.ds.Task {
     synchronized public <U> Operator<Task<T, Z>, U> append(Operator<Task<T, Z>, U> op){
         if(__observable==null){
             __observable = new Observable<>();
-            if(completed()){
-                Log.e(Tag, this);
-                __observable.emit(this);
-            }
+            __observable.subscribe(new Subscriber<Task<T, Z>>() {
+                @Override
+                public void onNext(Task<T, Z> o) {
+                    __observable.emit(o);
+                    __observable.unsubscribe(this);
+                }
+
+                @Override
+                public void onComplete() {
+                    __observable.complete();
+                    __observable.unsubscribe(this);
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    __observable.error(e);
+                    __observable.unsubscribe(this);
+                }
+            });
         }
 
         Operator<Task<T, Z>, U> p =  __observable.append(op);
@@ -68,6 +102,25 @@ public class Task<T, Z> extends novemberizing.ds.Task {
     synchronized public <OUT> Condition<Task<T, Z>, OUT> condition(Func<Task<T, Z>, Boolean> condition, Func<Task<T, Z>, OUT> f){
         if(__observable==null){
             __observable = new Observable<>();
+            __observable.subscribe(new Subscriber<Task<T, Z>>() {
+                @Override
+                public void onNext(Task<T, Z> o) {
+                    __observable.emit(o);
+                    __observable.unsubscribe(this);
+                }
+
+                @Override
+                public void onComplete() {
+                    __observable.complete();
+                    __observable.unsubscribe(this);
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    __observable.error(e);
+                    __observable.unsubscribe(this);
+                }
+            });
         }
 
         Condition<Task<T, Z>, OUT> c = ((Condition<Task<T, Z>, OUT>) __observable.subscribe(Operator.Condition(condition, f)));
@@ -84,6 +137,25 @@ public class Task<T, Z> extends novemberizing.ds.Task {
     synchronized public <U, OUT> Condition<T, OUT> condition(Observable<U> observable, novemberizing.ds.func.Pair<Task<T, Z>, U, Boolean> condition, novemberizing.ds.func.Pair<Task<T, Z>, U, OUT> f){
         if(__observable==null){
             __observable = new Observable<>();
+            __observable.subscribe(new Subscriber<Task<T, Z>>() {
+                @Override
+                public void onNext(Task<T, Z> o) {
+                    __observable.emit(o);
+                    __observable.unsubscribe(this);
+                }
+
+                @Override
+                public void onComplete() {
+                    __observable.complete();
+                    __observable.unsubscribe(this);
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    __observable.error(e);
+                    __observable.unsubscribe(this);
+                }
+            });
         }
 
         Condition<T, OUT> c = ((Condition<T, OUT>) __observable.subscribe(Operator.Condition(observable, condition, f)));
