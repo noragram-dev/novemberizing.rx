@@ -21,22 +21,49 @@ public class Tasks extends Task<Collection<Task>, Collection<Task>> {
     }
 
     public void add(Task task){
-        task.append(new Subscribers.Just<Task>(){
-            @Override
-            public void onNext(Task task){
-                synchronized (__self) {
-                    if (task.completed()) {
-                        out.add(task);
-                        if (in.size() == out.size()) {
-                            __completed = true;
-                            complete();
+        if(task!=null) {
+            if(!task.completed()) {
+                task.append(new Subscribers.Just<Task>() {
+                    @Override
+                    public void onNext(Task task) {
+                        synchronized (__self) {
+                            if (task.completed()) {
+                                out.add(task);
+                                if (in.size() == out.size()) {
+                                    __completed = true;
+                                    complete();
+                                }
+                            }
                         }
+                        onUnsubscribe(task.__observable);
                     }
-                }
-                onUnsubscribe(task.__observable);
-            }
-            @Override
-            public void onComplete(){
+
+                    @Override
+                    public void onComplete() {
+                        synchronized (__self) {
+                            out.add(task);
+                            if (in.size() == out.size()) {
+                                __completed = true;
+                                complete();
+                            }
+                        }
+                        onUnsubscribe(task.__observable);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e(Tag, e);
+                        synchronized (__self) {
+                            out.add(task);
+                            if (in.size() == out.size()) {
+                                __completed = true;
+                                complete();
+                            }
+                        }
+                        onUnsubscribe(task.__observable);
+                    }
+                });
+            } else {
                 synchronized (__self) {
                     out.add(task);
                     if (in.size() == out.size()) {
@@ -44,20 +71,7 @@ public class Tasks extends Task<Collection<Task>, Collection<Task>> {
                         complete();
                     }
                 }
-                onUnsubscribe(task.__observable);
             }
-            @Override
-            public void onError(Throwable e){
-                Log.e(Tag, e);
-                synchronized (__self) {
-                    out.add(task);
-                    if (in.size() == out.size()) {
-                        __completed = true;
-                        complete();
-                    }
-                }
-                onUnsubscribe(task.__observable);
-            }
-        });
+        }
     }
 }
