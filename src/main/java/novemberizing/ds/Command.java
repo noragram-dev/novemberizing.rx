@@ -28,7 +28,7 @@ public abstract class Command implements Executable {
 
         synchronized (this){
             if(__executor!=null){
-                Log.e(Tag, new RuntimeException("__executor!=null"));
+                //Log.e(Tag, new RuntimeException("__executor!=null"));
             }
             __executor = executor;
         }
@@ -43,7 +43,7 @@ public abstract class Command implements Executable {
             executor = __executor;
             __executor = null;
             if (executor == null) {
-                Log.e(Tag, new RuntimeException("__executor==null"));
+                //Log.e(Tag, new RuntimeException("__executor==null"));
             }
         }
         if(executor!=null) {
@@ -60,7 +60,7 @@ public abstract class Command implements Executable {
             executor = __executor;
             __executor = null;
             if (executor == null) {
-                Log.e(Tag, new RuntimeException("__executor==null"));
+                //Log.e(Tag, new RuntimeException("__executor==null"));
             }
             Iterator<CompletionPort> it = __completionPorts.iterator();
             while(it.hasNext()){
