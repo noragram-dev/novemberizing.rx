@@ -221,8 +221,17 @@ public class Observable<T> {
         return this;
     }
 
+
     public <Z> Operator<T, Z> append(Operator<T, Z> op){ return subscribe(op); }
     public <Z> Operator<T, Z> append(Func<T, Z> f){ return subscribe(Operator.Op(f)); }
+    public Observable<T> append(Runnable r) {
+        return subscribe(new Subscribers.Just<T>(){
+            @Override
+            public void onNext(T o){
+                r.run();
+            }
+        });
+    }
 
     public final Observable<T> subscribe(OnNext<T> next, OnError error, OnComplete complete){
         return subscribe(new Subscriber<T>() {

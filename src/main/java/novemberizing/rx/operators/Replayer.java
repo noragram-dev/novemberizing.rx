@@ -1,6 +1,5 @@
 package novemberizing.rx.operators;
 
-import novemberizing.rx.Observable;
 import novemberizing.rx.Observer;
 import novemberizing.rx.Operator;
 import novemberizing.util.Log;
