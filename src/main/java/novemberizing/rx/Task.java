@@ -54,6 +54,7 @@ public class Task<T, Z> extends novemberizing.ds.Task {
                 __observable.emit(this);
             }
         }
+
         Operator<Task<T, Z>, U> p =  __observable.append(op);
 
         if(completed()){
@@ -102,6 +103,7 @@ public class Task<T, Z> extends novemberizing.ds.Task {
         Log.f(Tag, this);
         super.executed();
         synchronized(this) {
+            Log.e(Tag, this);
             if (__observable != null) {
                 __observable.emit(this);
             }
@@ -115,6 +117,7 @@ public class Task<T, Z> extends novemberizing.ds.Task {
 
         super.complete();
         synchronized(this) {
+            Log.e(Tag, this);
             if (__observable != null) {
                 __observable.complete(this);
             }
