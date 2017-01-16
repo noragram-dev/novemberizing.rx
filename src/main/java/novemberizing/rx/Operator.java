@@ -59,6 +59,25 @@ public abstract class Operator<T, Z> extends Observable<Z> {
 
             return task;
         }
+//
+//
+//        public Tasks foreach(T o, T... items){
+//            Tasks tasks = new Tasks(new LinkedList<>(), new LinkedList<>());
+//
+//            tasks.add(internal.exec(o));
+//            for(T item : items){
+//                tasks.add(internal.exec(item));
+//            }
+//            return tasks;
+//        }
+//
+//        public Tasks foreach(T[] items){
+//            Tasks tasks = new Tasks(new LinkedList<>(), new LinkedList<>());
+//            for(T item : items){
+//                tasks.add(internal.exec(item));
+//            }
+//            return tasks;
+//        }
 
         protected Observable<Local<T, Z>> emit(Local<T, Z> o){
             Log.f(Tag, this, o);

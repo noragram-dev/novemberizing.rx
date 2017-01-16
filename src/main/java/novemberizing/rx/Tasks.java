@@ -24,6 +24,7 @@ public class Tasks extends Task<Collection<Task>, Collection<Task>> {
                 task.append(new Subscribers.Just<Task>() {
                     @Override
                     public void onNext(Task task) {
+                        Log.e(Tag, task);
                         synchronized (__self) {
                             if (task.completed()) {
                                 out.add(task);
@@ -38,6 +39,7 @@ public class Tasks extends Task<Collection<Task>, Collection<Task>> {
 
                     @Override
                     public void onComplete() {
+                        Log.e(Tag, this);
                         synchronized (__self) {
                             out.add(task);
                             if (in.size() == out.size()) {
@@ -50,6 +52,7 @@ public class Tasks extends Task<Collection<Task>, Collection<Task>> {
 
                     @Override
                     public void onError(Throwable e) {
+                        Log.e(Tag, this);
                         Log.e(Tag, e);
                         synchronized (__self) {
                             out.add(task);
