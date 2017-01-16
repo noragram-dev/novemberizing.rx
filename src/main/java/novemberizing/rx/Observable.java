@@ -9,6 +9,7 @@ import novemberizing.rx.observables.Just;
 import novemberizing.util.Log;
 
 import java.util.LinkedHashSet;
+import java.util.concurrent.Callable;
 
 /**
  *
@@ -232,6 +233,7 @@ public class Observable<T> {
             }
         });
     }
+
 
     public final Observable<T> subscribe(OnNext<T> next, OnError error, OnComplete complete){
         return subscribe(new Subscriber<T>() {

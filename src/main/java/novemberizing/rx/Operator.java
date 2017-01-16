@@ -8,6 +8,7 @@ import novemberizing.util.Log;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.concurrent.Callable;
 
 /**
  *
@@ -180,6 +181,20 @@ public abstract class Operator<T, Z> extends Observable<Z> {
             Log.e(Tag, new RuntimeException("observer==null"));
         }
         return this;
+    }
+
+
+    public Operator<T, Z> append(Callable<Z> c) {
+        return subscribe(new Subscribers.Task<T, Z>(){
+            @Override
+            public void onNext(Operator.Local<T, Z> task){
+                try {
+                    task.done(task.out = c.call());
+                } catch (Exception e) {
+                    onError(e);
+                }
+            }
+        });
     }
 
 
