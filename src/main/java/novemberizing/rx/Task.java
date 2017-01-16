@@ -31,7 +31,7 @@ public class Task<T, Z> extends novemberizing.ds.Task {
         complete();
     }
 
-    public Observable<Task<T, Z>> append(Observer<Task<T, Z>> observer){
+    synchronized public Observable<Task<T, Z>> append(Observer<Task<T, Z>> observer){
         if(__observable==null){
             __observable = new Observable<>();
         }
@@ -39,21 +39,21 @@ public class Task<T, Z> extends novemberizing.ds.Task {
         return __observable;
     }
 
-    public <U> Operator<Task<T, Z>, U> append(Operator<Task<T, Z>, U> op){
+    synchronized public <U> Operator<Task<T, Z>, U> append(Operator<Task<T, Z>, U> op){
         if(__observable==null){
             __observable = new Observable<>();
         }
         return __observable.append(op);
     }
 
-    public <OUT> Condition<Task<T, Z>, OUT> condition(Func<Task<T, Z>, Boolean> condition, Func<Task<T, Z>, OUT> f){
+    synchronized public <OUT> Condition<Task<T, Z>, OUT> condition(Func<Task<T, Z>, Boolean> condition, Func<Task<T, Z>, OUT> f){
         if(__observable==null){
             __observable = new Observable<>();
         }
         return (Condition<Task<T, Z>, OUT>) __observable.subscribe(Operator.Condition(condition, f));
     }
 
-    public <U, OUT> Condition<T, OUT> condition(Observable<U> observable, novemberizing.ds.func.Pair<Task<T, Z>, U, Boolean> condition, novemberizing.ds.func.Pair<Task<T, Z>, U, OUT> f){
+    synchronized public <U, OUT> Condition<T, OUT> condition(Observable<U> observable, novemberizing.ds.func.Pair<Task<T, Z>, U, Boolean> condition, novemberizing.ds.func.Pair<Task<T, Z>, U, OUT> f){
         if(__observable==null){
             __observable = new Observable<>();
         }
@@ -64,8 +64,10 @@ public class Task<T, Z> extends novemberizing.ds.Task {
     protected void executed() {
         Log.f(Tag, this);
         super.executed();
-        if(__observable!=null) {
-            __observable.emit(this);
+        synchronized(this) {
+            if (__observable != null) {
+                __observable.emit(this);
+            }
         }
 
     }
@@ -75,8 +77,10 @@ public class Task<T, Z> extends novemberizing.ds.Task {
         Log.f(Tag, this);
 
         super.complete();
-        if(__observable!=null) {
-            __observable.complete(this);
+        synchronized(this) {
+            if (__observable != null) {
+                __observable.complete(this);
+            }
         }
     }
 }
