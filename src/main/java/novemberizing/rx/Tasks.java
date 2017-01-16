@@ -23,6 +23,7 @@ public class Tasks extends Task<Collection<Task>, Collection<Task>> {
                 out.add(task);
                 if(in.size()==out.size()){
                     __completed = true;
+                    complete();
                 }
             }
         });

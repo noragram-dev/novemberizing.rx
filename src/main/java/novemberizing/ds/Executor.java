@@ -49,7 +49,7 @@ public abstract class Executor implements Cyclable {
                 __q.unlock();
                 synchronized (__executables){
                     if(!__executables.add(executable)){
-                        Log.e(Tag, new RuntimeException("!__executables.add(executable)"));
+                        //Log.e(Tag, new RuntimeException("!__executables.add(executable)"));
                     }
                 }
                 executable.execute(this);
@@ -67,7 +67,7 @@ public abstract class Executor implements Cyclable {
         if(executable!=null){
             synchronized (__executables){
                 if(!__executables.remove(executable)){
-                    Log.e(Tag, new RuntimeException("!__executables.remove(executable)"));
+                    //Log.e(Tag, new RuntimeException("!__executables.remove(executable)"));
                 }
             }
             dispatch(executable);
@@ -78,7 +78,7 @@ public abstract class Executor implements Cyclable {
         if(executable!=null){
             synchronized (__executables){
                 if(!__executables.remove(executable)){
-                    Log.e(Tag, new RuntimeException("!__executables.remove(executable)"));
+                    //Log.e(Tag, new RuntimeException("!__executables.remove(executable)"));
                 }
             }
         }
