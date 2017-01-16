@@ -22,6 +22,7 @@ public class Tasks extends Task<Collection<Task>, Collection<Task>> {
         if(task!=null) {
             if(!task.completed()) {
                 task.append(new Subscribers.Just<Task>() {
+                    private Task __task = task;
                     @Override
                     public void onNext(Task task) {
                         Log.e(Tag, task);
@@ -34,20 +35,20 @@ public class Tasks extends Task<Collection<Task>, Collection<Task>> {
                                 }
                             }
                         }
-                        onUnsubscribe(task.__observable);
+                        onUnsubscribe(__task.__observable);
                     }
 
                     @Override
                     public void onComplete() {
                         Log.e(Tag, this);
                         synchronized (__self) {
-                            out.add(task);
+                            out.add(__task);
                             if (in.size() == out.size()) {
                                 __completed = true;
                                 complete();
                             }
                         }
-                        onUnsubscribe(task.__observable);
+                        onUnsubscribe(__task.__observable);
                     }
 
                     @Override
@@ -55,13 +56,13 @@ public class Tasks extends Task<Collection<Task>, Collection<Task>> {
                         Log.e(Tag, this);
                         Log.e(Tag, e);
                         synchronized (__self) {
-                            out.add(task);
+                            out.add(__task);
                             if (in.size() == out.size()) {
                                 __completed = true;
                                 complete();
                             }
                         }
-                        onUnsubscribe(task.__observable);
+                        onUnsubscribe(__task.__observable);
                     }
                 });
             } else {
