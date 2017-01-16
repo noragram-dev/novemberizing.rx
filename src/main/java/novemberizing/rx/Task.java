@@ -1,6 +1,8 @@
 package novemberizing.rx;
 
 import com.google.gson.annotations.Expose;
+import novemberizing.ds.Func;
+import novemberizing.rx.operators.Condition;
 import novemberizing.util.Log;
 
 /**
@@ -42,6 +44,20 @@ public class Task<T, Z> extends novemberizing.ds.Task {
             __observable = new Observable<>();
         }
         return __observable.append(op);
+    }
+
+    public Condition<Task<T, Z>, Z> condition(Func<Task<T, Z>, Boolean> condition, Func<Task<T, Z>, Z> f){
+        if(__observable==null){
+            __observable = new Observable<>();
+        }
+        return (Condition<Task<T, Z>, Z>) __observable.subscribe(Operator.Condition(condition, f));
+    }
+
+    public <U> Condition<T, Z> condition(Observable<U> observable, novemberizing.ds.func.Pair<Task<T, Z>, U, Boolean> condition, Func<Task<T, Z>, Z> f){
+        if(__observable==null){
+            __observable = new Observable<>();
+        }
+        return (Condition<T, Z>) __observable.subscribe(Operator.Condition(observable, condition, f));
     }
 
     @Override
