@@ -67,6 +67,7 @@ public class Tasks extends Task<Collection<Task>, Collection<Task>> {
                 synchronized (__self) {
                     out.add(task);
                     if (in.size() == out.size()) {
+                        Log.i(Tag, "out: " + out.size());
                         __completed = true;
                         complete();
                     }
