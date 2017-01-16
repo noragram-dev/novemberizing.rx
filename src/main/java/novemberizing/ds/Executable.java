@@ -9,6 +9,5 @@ package novemberizing.ds;
 public interface Executable {
     void execute(Executor executor);
     boolean completed();
-
     void add(CompletionPort completionPort);
 }
