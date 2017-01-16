@@ -38,6 +38,12 @@ public abstract class Operator<T, Z> extends Observable<Z> {
             super.complete();
         }
 
+        @Override
+        public void error(Throwable e){
+            __op.internal.error(e);
+            super.error(e);
+        }
+
         public void done(Z o){
             out = o;
             complete();

@@ -17,6 +17,7 @@ public abstract class Command implements Executable {
 
     protected Executor __executor = null;
     protected boolean __completed = false;
+    protected Throwable __exception = null;
     protected final HashSet<CompletionPort> __completionPorts = new HashSet<>();
 
     public abstract void execute();
@@ -61,15 +62,13 @@ public abstract class Command implements Executable {
             if (executor == null) {
                 Log.e(Tag, new RuntimeException("__executor==null"));
             }
-            if(__completionPorts!=null){
-                Iterator<CompletionPort> it = __completionPorts.iterator();
-                while(it.hasNext()){
-                    CompletionPort port = it.next();
-                    if(port!=null) {
-                        port.dispatch(this);
-                    }
-                    it.remove();
+            Iterator<CompletionPort> it = __completionPorts.iterator();
+            while(it.hasNext()){
+                CompletionPort port = it.next();
+                if(port!=null) {
+                    port.dispatch(this);
                 }
+                it.remove();
             }
         }
 
@@ -80,6 +79,13 @@ public abstract class Command implements Executable {
 
     @Override
     synchronized public boolean completed(){ return __completed; }
+
+    synchronized public void error(Throwable e){
+        __exception = e;
+        complete();
+    }
+
+    public Throwable e(){ return __exception; }
 
     @Override
     synchronized public void add(CompletionPort completionPort){
