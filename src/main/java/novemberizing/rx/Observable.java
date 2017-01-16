@@ -239,7 +239,7 @@ public class Observable<T> {
         return (Condition<T, Z>) subscribe(Operator.Condition(condition, f));
     }
 
-    public <Z, U> Condition<T, Z> condition(Observable<U> observable, novemberizing.ds.func.Pair<T, U, Boolean> condition, Func<T, Z> f){
+    public <Z, U> Condition<T, Z> condition(Observable<U> observable, novemberizing.ds.func.Pair<T, U, Boolean> condition, novemberizing.ds.func.Pair<T, U, Z> f){
         return (Condition<T, Z>) subscribe(Operator.Condition(observable, condition, f));
     }
 

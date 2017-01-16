@@ -53,7 +53,7 @@ public class Task<T, Z> extends novemberizing.ds.Task {
         return (Condition<Task<T, Z>, Z>) __observable.subscribe(Operator.Condition(condition, f));
     }
 
-    public <U> Condition<T, Z> condition(Observable<U> observable, novemberizing.ds.func.Pair<Task<T, Z>, U, Boolean> condition, Func<Task<T, Z>, Z> f){
+    public <U> Condition<T, Z> condition(Observable<U> observable, novemberizing.ds.func.Pair<Task<T, Z>, U, Boolean> condition, novemberizing.ds.func.Pair<Task<T, Z>, U, Z> f){
         if(__observable==null){
             __observable = new Observable<>();
         }

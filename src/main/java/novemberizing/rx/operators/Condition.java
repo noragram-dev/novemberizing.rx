@@ -12,7 +12,7 @@ import novemberizing.rx.Subscriber;
  * @author novemberizing, me@novemberizing.net
  * @since 2017. 1. 14
  */
-public abstract class Condition<T, Z> extends Operator<T, Z> {
+public class Condition<T, Z> extends Operator<T, Z> {
 
     private static final String Tag = "Condition";
 
@@ -42,6 +42,7 @@ public abstract class Condition<T, Z> extends Operator<T, Z> {
         private U __second;
 
         private novemberizing.ds.func.Pair<T, U, Boolean> __condition;
+        private novemberizing.ds.func.Pair<T, U, Z> __func;
 
         synchronized protected void second(U o){
             __second = o;
@@ -53,6 +54,7 @@ public abstract class Condition<T, Z> extends Operator<T, Z> {
 
             if(__condition.call(__first,__second)) {
                 task = new Local<>(__first, __second, null, parent);
+                task.out = __func.call(__first, __second);
                 __observableOn.dispatch(task);
             } else {
                 task = new Local<>(__first, __second, parent);
@@ -70,9 +72,10 @@ public abstract class Condition<T, Z> extends Operator<T, Z> {
         @Override public Observable<Operator.Local<T,Z>> complete(){ return super.complete(); }
         @Override public Observable<Operator.Local<T,Z>> error(Throwable e){ return super.error(e); }
 
-        public Observal(Condition<T, Z> p, novemberizing.ds.func.Pair<T, U, Boolean> condition) {
+        public Observal(Condition<T, Z> p, novemberizing.ds.func.Pair<T, U, Boolean> condition, novemberizing.ds.func.Pair<T, U, Z> f) {
             super(p);
             __condition = condition;
+            __func = f;
         }
 
         @Override
@@ -85,6 +88,7 @@ public abstract class Condition<T, Z> extends Operator<T, Z> {
 
         private T __first;
         protected Func<T, Boolean> __condition;
+        protected Func<T, Z> __func;
 
         @Override
         synchronized protected Operator.Local<T, Z> exec(T o){
@@ -92,6 +96,7 @@ public abstract class Condition<T, Z> extends Operator<T, Z> {
 
             if(__condition.call(o)) {
                 task = new Local<>(__first = o, null, null, parent);
+                task.out = __func.call(__first);
                 __observableOn.dispatch(task);
             } else {
                 task = new Local<>(o, null, parent);
@@ -103,9 +108,10 @@ public abstract class Condition<T, Z> extends Operator<T, Z> {
         @Override public Observable<Operator.Local<T,Z>> complete(){ return super.complete(); }
         @Override public Observable<Operator.Local<T,Z>> error(Throwable e){ return super.error(e); }
 
-        public Functional(Condition<T, Z> p, Func<T, Boolean> condition) {
+        public Functional(Condition<T, Z> p, Func<T, Boolean> condition, Func<T, Z> f) {
             super(p);
             __condition = condition;
+            __func = f;
         }
 
         @Override
@@ -116,13 +122,19 @@ public abstract class Condition<T, Z> extends Operator<T, Z> {
 
     protected Internal<T, Z> __interest;
     protected Internal<T, Z> initialize(){ return null; }
-    public Condition(Func<T, Boolean> f){
-        internal = __interest = new Functional<>(this, f);
+
+    @Override
+    protected void on(Operator.Local<T, Z> task) {
+        task.done(task.out);
+    }
+
+    public Condition(Func<T, Boolean> condition, Func<T, Z> f){
+        internal = __interest = new Functional<>(this, condition, f);
 
     }
 
-    public <U> Condition(Observable<U> observable, novemberizing.ds.func.Pair<T, U, Boolean> condition){
-        Observal<T, U, Z> observal = new Observal<>(this, condition);
+    public <U> Condition(Observable<U> observable, novemberizing.ds.func.Pair<T, U, Boolean> condition, novemberizing.ds.func.Pair<T, U, Z> f){
+        Observal<T, U, Z> observal = new Observal<>(this, condition, f);
         observable.subscribe(new Subscriber<U>() {
             @Override
             public void onNext(U o) {

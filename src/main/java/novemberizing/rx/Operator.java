@@ -6,7 +6,6 @@ import novemberizing.rx.operators.Condition;
 import novemberizing.rx.operators.Sync;
 import novemberizing.util.Log;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.concurrent.Callable;
 
@@ -222,21 +221,11 @@ public abstract class Operator<T, Z> extends Observable<Z> {
     }
 
     public static <T, Z> Condition<T, Z> Condition(Func<T, Boolean> condition, Func<T, Z> f){
-        return new Condition<T, Z>(condition) {
-            @Override
-            protected void on(Operator.Local<T, Z> task) {
-                task.done(f.call(task.in));
-            }
-        };
+        return new Condition<>(condition, f);
     }
 
-    public static <T, U, Z> Condition<T, Z> Condition(Observable<U> observable, novemberizing.ds.func.Pair<T, U, Boolean> condition, Func<T, Z> f){
-        return new Condition<T, Z>(observable, condition) {
-            @Override
-            protected void on(Operator.Local<T, Z> task) {
-                task.done(f.call(task.in));
-            }
-        };
+    public static <T, U, Z> Condition<T, Z> Condition(Observable<U> observable, novemberizing.ds.func.Pair<T, U, Boolean> condition, novemberizing.ds.func.Pair<T, U, Z> f){
+        return new Condition<>(observable, condition, f);
     }
 
     public static CompletionPort CompletionPort(){ return new CompletionPort(); }
