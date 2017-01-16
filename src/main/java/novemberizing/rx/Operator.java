@@ -203,9 +203,6 @@ public abstract class Operator<T, Z> extends Observable<Z> {
         });
     }
 
-
-
-
     public static <T, Z> Operator<T, Z> Op(Func<T, Z> f){
         return new Operator<T, Z>() {
             @Override

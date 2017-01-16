@@ -6,10 +6,10 @@ import novemberizing.rx.functions.OnComplete;
 import novemberizing.rx.functions.OnError;
 import novemberizing.rx.functions.OnNext;
 import novemberizing.rx.observables.Just;
+import novemberizing.rx.operators.Condition;
 import novemberizing.util.Log;
 
 import java.util.LinkedHashSet;
-import java.util.concurrent.Callable;
 
 /**
  *
@@ -232,6 +232,15 @@ public class Observable<T> {
                 r.run();
             }
         });
+    }
+
+
+    public <Z> Condition<T, Z> condition(Func<T, Boolean> condition, Func<T, Z> f){
+        return (Condition<T, Z>) subscribe(Operator.Condition(condition, f));
+    }
+
+    public <Z, U> Condition<T, Z> condition(Observable<U> observable, novemberizing.ds.func.Pair<T, U, Boolean> condition, Func<T, Z> f){
+        return (Condition<T, Z>) subscribe(Operator.Condition(observable, condition, f));
     }
 
 
