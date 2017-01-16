@@ -5,6 +5,8 @@ import novemberizing.ds.Queue;
 import novemberizing.rx.Scheduler;
 import novemberizing.util.Log;
 
+import java.util.concurrent.Callable;
+
 /**
  *
  * @author novemberizing, me@novemberizing.net
@@ -13,12 +15,25 @@ import novemberizing.util.Log;
 public class Local extends Scheduler {
     private static final String Tag = "Local";
 
+    private static Callable<Local> __factory = null;
+
+    public static void factory(Callable<Local> factory){
+        synchronized (Local.class){
+            __factory = factory;
+        }
+    }
+
     private static ThreadLocal<Local> __schedulers = new ThreadLocal<>();
 
     public static Local Get(){
         Local scheduler = __schedulers.get();
         if(scheduler==null){
-            scheduler = new Local();
+            try {
+                scheduler = __factory == null ? new Local() : __factory.call();
+            } catch(Exception e){
+                Log.e(Tag, e);
+                scheduler = new Local();
+            }
             __schedulers.set(scheduler);
         }
         return scheduler;
