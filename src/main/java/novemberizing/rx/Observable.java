@@ -235,12 +235,12 @@ public class Observable<T> {
     }
 
 
-    public <Z> Condition<T, Z> condition(Func<T, Boolean> condition, Func<T, Z> f){
-        return (Condition<T, Z>) subscribe(Operator.Condition(condition, f));
+    public <Z, OUT> Condition<T, OUT> condition(Func<T, Boolean> condition, Func<T, OUT> f){
+        return (Condition<T, OUT>) subscribe(Operator.Condition(condition, f));
     }
 
-    public <Z, U> Condition<T, Z> condition(Observable<U> observable, novemberizing.ds.func.Pair<T, U, Boolean> condition, novemberizing.ds.func.Pair<T, U, Z> f){
-        return (Condition<T, Z>) subscribe(Operator.Condition(observable, condition, f));
+    public <Z, U, OUT> Condition<T, OUT> condition(Observable<U> observable, novemberizing.ds.func.Pair<T, U, Boolean> condition, novemberizing.ds.func.Pair<T, U, OUT> f){
+        return (Condition<T, OUT>) subscribe(Operator.Condition(observable, condition, f));
     }
 
 
