@@ -14,6 +14,7 @@ public class Task<T, Z> extends novemberizing.ds.Task {
     private static final String Tag = "Task";
     @Expose public final T in;
     @Expose public Z out;
+    private Task<T, Z> self= this;
     @Expose protected Observable<Task<T, Z>> __observable = null;
 
     public Task(T in) {
@@ -79,12 +80,12 @@ public class Task<T, Z> extends novemberizing.ds.Task {
         return c;
     }
 
-    synchronized public <U, OUT> Condition<T, OUT> condition(Observable<U> observable, novemberizing.ds.func.Pair<Task<T, Z>, U, Boolean> condition, novemberizing.ds.func.Pair<Task<T, Z>, U, OUT> f){
+    synchronized public <U, OUT> Condition<Task<T, Z>, OUT> condition(Observable<U> observable, novemberizing.ds.func.Pair<Task<T, Z>, U, Boolean> condition, novemberizing.ds.func.Pair<Task<T, Z>, U, OUT> f){
         if(__observable==null){
             __observable = new Observable<>();
         }
 
-        Condition<T, OUT> c = ((Condition<T, OUT>) __observable.subscribe(Operator.Condition(observable, condition, f)));
+        Condition<Task<T, Z>, OUT> c = ((Condition<Task<T, Z>, OUT>) __observable.subscribe(Operator.Condition(observable, condition, f)));
         __observable.subscribe(c);
 
         if(completed()){
