@@ -3,6 +3,7 @@ package novemberizing.rx;
 import novemberizing.util.Log;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 
@@ -26,21 +27,18 @@ public class Observable<T> {
         @Override
         public void execute() {
             Scheduler current = Scheduler.Self();
-            next(__observable.snapshot(in));
-            if(__observable.__replayer!=null) {
-                __observable.__replayer.add(__observable.snapshot(in));
-            }
             synchronized (__observable.__observers) {
+                next(__observable.set(in));
                 for (Observer<T> observer : __observable.__observers) {
                     Scheduler observeOn = observer.observeOn();
                     if (current == observeOn) {
                         try {
-                            observer.onNext(__observable.snapshot(in));
+                            observer.onNext(__observable.get());
                         } catch(Exception e){
                             observer.onError(e);
                         }
                     } else {
-                        observeOn.dispatch(new Subscriber.Observe<>(__observable.snapshot(in), observer));
+                        observeOn.dispatch(new Subscriber.Observe<>(__observable.get(), observer));
                     }
                 }
             }
@@ -59,22 +57,19 @@ public class Observable<T> {
         @Override
         public void execute() {
             Scheduler current = Scheduler.Self();
-            if(__observable.__replayer!=null) {
-                __observable.__replayer.all(in);
-            }
             synchronized (__observable.__observers) {
                 for(T item : in) {
-                    next(item);
+                    next(__observable.set(item));
                     for (Observer<T> observer : __observable.__observers) {
                         Scheduler observeOn = observer.observeOn();
                         if (current == observeOn) {
                             try {
-                                observer.onNext(__observable.snapshot(item));
+                                observer.onNext(__observable.get());
                             } catch (Exception e) {
                                 observer.onError(e);
                             }
                         } else {
-                            observeOn.dispatch(new Subscriber.Observe<>(__observable.snapshot(__observable.snapshot(item)), observer));
+                            observeOn.dispatch(new Subscriber.Observe<>(__observable.get(), observer));
                         }
                     }
                 }
@@ -97,11 +92,6 @@ public class Observable<T> {
         @Override
         public void execute() {
             Scheduler current = Scheduler.Self();
-            error(__exception);
-            if(__observable.__replayer!=null) {
-                __observable.__replayer.error(__exception);
-            }
-
             synchronized (__observable.__observers) {
                 for (Observer<T> observer : __observable.__observers) {
                     Scheduler observeOn = observer.observeOn();
@@ -112,6 +102,7 @@ public class Observable<T> {
                     }
                 }
             }
+            error(__observable.exception(__exception));
             complete();
         }
     }
@@ -119,35 +110,34 @@ public class Observable<T> {
     protected static class Complete<T> extends Task<T, T> {
         protected Observable<T> __observable;
 
-        public Complete(T current, Observable<T> observable) {
-            super(current);
+        public Complete(Observable<T> observable) {
+            super(null);
             __observable = observable;
         }
 
         @Override
         public void execute() {
             Scheduler current = Scheduler.Self();
-            if(__observable.__replayer!=null) {
-                __observable.__replayer.complete(in);
-            }
             synchronized (__observable.__observers) {
                 for (Observer<T> observer : __observable.__observers) {
                     Scheduler observeOn = observer.observeOn();
                     if (current == observeOn) {
                         observer.onComplete();
                     } else {
-                        observeOn.dispatch(new Subscriber.Complete<>(in, observer));
+                        observeOn.dispatch(new Subscriber.Complete<>(__observable.get(),observer));
                     }
                 }
             }
+            __observable.done();
             complete();
         }
     }
 
     private final LinkedHashSet<Observer<T>> __observers = new LinkedHashSet<>();
-    protected T __current;
+    private T __current;
     protected Replayer<T> __replayer;
     protected Scheduler __observableOn = Scheduler.New();
+    protected boolean __completed = false;
 
     protected Observable(Replayer<T> replayer){
         __replayer = replayer;
@@ -168,7 +158,41 @@ public class Observable<T> {
 
     protected T snapshot(T o){ return o; }
 
+    protected T get(){ return snapshot(__current); }
+    protected T set(T v){
+        if(__completed) {
+            if(__replayer!=null) {
+                __replayer.clear();
+            }
+            __completed = false;
+        }
+        __current = snapshot(v);
+        if(__replayer!=null) {
+            __replayer.add(snapshot(__current));
+        }
+        return snapshot(__current);
+    }
+
+    protected Throwable exception(Throwable e){
+        if(__replayer!=null){
+            __replayer.error(e);
+        }
+        __completed = true;
+        unsubscribe();
+        return e;
+    }
+
+    protected T done(){
+        if(__replayer!=null){
+            __replayer.complete(__current);
+        }
+        __completed = true;
+        unsubscribe();
+        return __current;
+    }
+
     protected Task<T, T> emit(T o){
+
         synchronized (this) {
             __current = snapshot(o);
         }
@@ -177,7 +201,9 @@ public class Observable<T> {
         return task;
     }
 
-    protected Task<Collection<T>, T> foreach(T o, T... items){
+    @SafeVarargs
+    protected final Task<Collection<T>, T> foreach(T o, T... items){
+
         LinkedList<T> objects = new LinkedList<>();
         objects.addLast(o);
         for(T item : items){
@@ -207,7 +233,7 @@ public class Observable<T> {
     }
 
     protected Task<T, T> complete(){
-        Complete<T> task = new Complete<>(snapshot(__current), this);
+        Complete<T> task = new Complete<>(this);
         __observableOn.dispatch(task);
         return task;
     }
@@ -247,14 +273,17 @@ public class Observable<T> {
 
     public Observable<T> unsubscribe(){
         synchronized (__observers) {
-            for (Observer<T> observer : __observers) {
+            Iterator<Observer<T>> it = __observers.iterator();
+            while(__observers.size()>0 && it.hasNext()){
+                Observer<T> observer = it.next();
                 unsubscribe(observer);
+                it = __observers.iterator();
             }
         }
         return this;
     }
 
-    protected Observable<T> replay(int limit){
+    public Observable<T> replay(int limit){
         if(limit==0){
             __replayer = null;
         } else if(__replayer==null){
@@ -267,6 +296,7 @@ public class Observable<T> {
 
     public static <T> Task<T, T> emit(Observable<T> observable, T o){ return observable.emit(o); }
 
+    @SafeVarargs
     public static <T> Task<Collection<T>, T> foreach(Observable<T> observable, T o, T... items){ return observable.foreach(o, items); }
 
     public static <T> Task<Collection<T>, T> foreach(Observable<T> observable, T[] items){ return observable.foreach(items); }

@@ -12,8 +12,6 @@ import java.util.HashSet;
 public class Operator<T, U> extends Observable<U> implements Observer<T> {
     private static final String Tag = "Operator";
 
-
-
     private final HashSet<Observable<T>> __observables = new HashSet<>();
     private Scheduler __observeOn = Scheduler.New();
     private Func<T, U> __func;

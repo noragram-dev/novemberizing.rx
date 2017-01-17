@@ -6,6 +6,8 @@ import novemberizing.rx.Scheduler;
 import novemberizing.rx.Subscribers;
 import novemberizing.rx.observables.Just;
 
+import static novemberizing.ds.Constant.Infinite;
+
 /**
  *
  * @author novemberizing, me@novemberizing.net
@@ -15,13 +17,19 @@ public class Example {
     public static void main(String[] args){
         Just<String> observable = new Just<>();
 
-        observable.subscribe(Subscribers.Just("observable.just(string) >"));
+        observable.replay(Infinite).subscribe(Subscribers.Just("observable.just(string) 1>"));
 
-        Observable.foreach(observable, args).subscribe(Subscribers.Just("completion(task) >"));
+        Observable.foreach(observable, args).subscribe(Subscribers.Just("completion(task) 2>"));
 
-        Observable.error(observable, new RuntimeException("message")).subscribe(Subscribers.Just("completion(error) >"));
+        observable.subscribe(Subscribers.Just("observable.just(string) 3>"));
 
-        Observable.complete(observable).subscribe(Subscribers.Just("completion(complete) >"));
+        Observable.foreach(observable, args).subscribe(Subscribers.Just("completion(task) 4>"));
+
+        Observable.error(observable, new RuntimeException("message")).subscribe(Subscribers.Just("completion(error) 5>"));
+
+        Observable.complete(observable).subscribe(Subscribers.Just("completion(complete) 6>"));
+
+        Observable.foreach(observable, args).subscribe(Subscribers.Just("completion(task) 7>"));
 
         Scheduler.Local().clear();
     }

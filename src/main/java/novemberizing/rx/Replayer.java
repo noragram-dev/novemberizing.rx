@@ -112,6 +112,7 @@ public class Replayer<T> {
     private int __limit;
     private T __last;
 
+    public void clear(){ __replays.clear(); }
 
     public T last() { return __last; }
 
