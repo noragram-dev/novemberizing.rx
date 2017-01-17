@@ -6,13 +6,12 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 
-import static novemberizing.ds.Constant.Infinite;
-
 /**
  *
  * @author novemberizing, me@novemberizing.net
  * @since 2017. 1. 17.
  */
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class Observable<T> {
     private static final String Tag = "Observable";
 
@@ -20,16 +19,16 @@ public class Observable<T> {
         protected Observable<T> __observable;
 
         public Emit(T in, Observable<T> observable) {
-            super(in, new Observable<>());
+            super(in);
             __observable = observable;
-            __completionPort.replay(Infinite);
         }
 
         @Override
         public void execute() {
             Scheduler current = Scheduler.Self();
+            next(__observable.snapshot(in));
             if(__observable.__replayer!=null) {
-                __observable.__replayer.add(in);
+                __observable.__replayer.add(__observable.snapshot(in));
             }
             synchronized (__observable.__observers) {
                 for (Observer<T> observer : __observable.__observers) {
@@ -45,18 +44,16 @@ public class Observable<T> {
                     }
                 }
             }
-            out = __observable.snapshot(in);
             complete();
         }
     }
 
-    protected static class Emits<T> extends Task<Collection<T>, Collection<T>> {
+    protected static class Emits<T> extends Task<Collection<T>, T> {
         protected Observable<T> __observable;
 
         public Emits(Collection<T> in, Observable<T> observable) {
-            super(in, new Observable<>());
+            super(in);
             __observable = observable;
-            __completionPort.replay(Infinite);
         }
 
         @Override
@@ -66,8 +63,9 @@ public class Observable<T> {
                 __observable.__replayer.all(in);
             }
             synchronized (__observable.__observers) {
-                for (Observer<T> observer : __observable.__observers) {
-                    for(T item : in) {
+                for(T item : in) {
+                    next(item);
+                    for (Observer<T> observer : __observable.__observers) {
                         Scheduler observeOn = observer.observeOn();
                         if (current == observeOn) {
                             try {
@@ -81,12 +79,11 @@ public class Observable<T> {
                     }
                 }
             }
-            out = in;
             complete();
         }
     }
 
-    protected static class Error<T> extends Task<T, Throwable> {
+    protected static class Error<T> extends Task<T, T> {
         protected Observable<T> __observable;
         protected Throwable __exception;
 
@@ -96,19 +93,15 @@ public class Observable<T> {
             __exception = e;
         }
 
-        public Error(Throwable e, Observable<Task<T, Throwable>> completionPort,Observable<T> observable) {
-            super(null, completionPort);
-            __observable = observable;
-            __exception = e;
-            __completionPort.replay(Infinite);
-        }
 
         @Override
         public void execute() {
             Scheduler current = Scheduler.Self();
+            error(__exception);
             if(__observable.__replayer!=null) {
                 __observable.__replayer.error(__exception);
             }
+
             synchronized (__observable.__observers) {
                 for (Observer<T> observer : __observable.__observers) {
                     Scheduler observeOn = observer.observeOn();
@@ -119,7 +112,6 @@ public class Observable<T> {
                     }
                 }
             }
-            out = __exception;
             complete();
         }
     }
@@ -130,12 +122,6 @@ public class Observable<T> {
         public Complete(T current, Observable<T> observable) {
             super(current);
             __observable = observable;
-        }
-
-        public Complete(T current, Observable<Task<T, T>> completionPort, Observable<T> observable) {
-            super(current, completionPort);
-            __observable = observable;
-            __completionPort.replay(Infinite);
         }
 
         @Override
@@ -154,7 +140,6 @@ public class Observable<T> {
                     }
                 }
             }
-            out = in;
             complete();
         }
     }
@@ -165,6 +150,17 @@ public class Observable<T> {
     protected Replayer<T> __replayer;
     protected Scheduler __observableOn = Scheduler.New();
 
+    protected Observable(Replayer<T> replayer){
+        __replayer = replayer;
+        __current = __replayer.last();
+    }
+
+
+    public Observable(){
+        __replayer = null;
+        __current = null;
+    }
+
     protected Scheduler observableOn(){ return __observableOn; }
 
     public Observable<T> observableOn(Scheduler scheduler){
@@ -174,16 +170,16 @@ public class Observable<T> {
 
     protected T snapshot(T o){ return o; }
 
-    protected Observable<Task<T, T>> emit(T o){
+    protected Task<T, T> emit(T o){
         synchronized (this) {
             __current = snapshot(o);
         }
         Emit<T> task = new Emit<>(o, this);
         __observableOn.dispatch(task);
-        return task.__completionPort;
+        return task;
     }
 
-    protected Observable<Task<Collection<T>, Collection<T>>> foreach(T o, T... items){
+    protected Task<Collection<T>, T> foreach(T o, T... items){
         LinkedList<T> objects = new LinkedList<>();
         objects.addLast(o);
         for(T item : items){
@@ -192,10 +188,10 @@ public class Observable<T> {
 
         Emits<T> task = new Emits<>(objects, this);
         __observableOn.dispatch(task);
-        return task.__completionPort;
+        return task;
     }
 
-    protected Observable<Task<Collection<T>, Collection<T>>> foreach(T[] items){
+    protected Task<Collection<T>, T> foreach(T[] items){
         LinkedList<T> objects = new LinkedList<>();
         for(T item : items){
             objects.addLast(item);
@@ -203,19 +199,19 @@ public class Observable<T> {
 
         Emits<T> task = new Emits<>(objects, this);
         __observableOn.dispatch(task);
-        return task.__completionPort;
+        return task;
     }
 
-    protected Observable<Task<T, Throwable>> error(Throwable e){
+    protected Task<T, T> error(Throwable e){
         Error<T> task = new Error<>(e, this);
         __observableOn.dispatch(task);
-        return task.__completionPort;
+        return task;
     }
 
-    protected Observable<Task<T, T>> complete(){
+    protected Task<T, T> complete(){
         Complete<T> task = new Complete<>(snapshot(__current), this);
         __observableOn.dispatch(task);
-        return task.__completionPort;
+        return task;
     }
 
     public Observable<T> subscribe(Observer<T> observer){
@@ -271,24 +267,16 @@ public class Observable<T> {
         return this;
     }
 
-    public static <T> Observable<Task<T, T>> emit(Observable<T> observable, T o){ return observable.emit(o); }
+    public static <T> Task<T, T> emit(Observable<T> observable, T o){ return observable.emit(o); }
 
-    public static <T> Observable<Task<Collection<T>, Collection<T>>> foreach(Observable<T> observable, T o, T... items){ return observable.foreach(o, items); }
+    public static <T> Task<Collection<T>, T> foreach(Observable<T> observable, T o, T... items){ return observable.foreach(o, items); }
 
-    public static <T> Observable<Task<Collection<T>, Collection<T>>> foreach(Observable<T> observable, T[] items){ return observable.foreach(items); }
+    public static <T> Task<Collection<T>, T> foreach(Observable<T> observable, T[] items){ return observable.foreach(items); }
 
 
-    public static <T> Observable<Task<T, T>> complete(Observable<T> observable) {
-        Complete<T> task = new Complete<>(observable.snapshot(observable.__current), new Observable<>() ,observable);
-        observable.__observableOn.dispatch(task);
-        return task.__completionPort;
-    }
+    public static <T> Task<T, T> complete(Observable<T> observable) { return observable.complete(); }
 
-    public static <T> Observable<Task<T, Throwable>> error(Observable<T> observable, Throwable e){
-        Error<T> task = new Error<>(e, new Observable<>() ,observable);
-        observable.__observableOn.dispatch(task);
-        return task.__completionPort;
-    }
+    public static <T> Task<T, T> error(Observable<T> observable, Throwable e){ return observable.error(e); }
 
     protected static <T> void onSubscribe(Observer<T> observer, Observable<T> observable){
         if(observer instanceof Operator){

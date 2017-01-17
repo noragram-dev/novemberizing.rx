@@ -29,7 +29,6 @@ public abstract class Subscriber<T> implements Observer<T> {
             } catch(Exception e){
                 __observer.onError(e);
             }
-            out = in;
             complete();
         }
     }
@@ -51,7 +50,6 @@ public abstract class Subscriber<T> implements Observer<T> {
                     __observer.onError(e);
                 }
             }
-            out = in;
             complete();
         }
     }
@@ -73,7 +71,6 @@ public abstract class Subscriber<T> implements Observer<T> {
             } catch(Exception e){
                 __observer.onError(e);
             }
-            out = __exception;
             complete();
         }
     }
@@ -94,7 +91,6 @@ public abstract class Subscriber<T> implements Observer<T> {
                 __observer.onError(e);
                 Log.d(Tag, this, e);
             }
-            out = in;
             complete();
         }
     }

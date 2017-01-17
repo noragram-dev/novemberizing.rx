@@ -15,11 +15,15 @@ public class Replayer<T> {
     protected interface Play<T> { void play(Observer<T> observer); }
 
     protected class Emits<T> implements Play<T>  {
-        private LinkedList<T> __list = new LinkedList<T>();
+        private LinkedList<T> __list = new LinkedList<>();
+        private T __last = null;
 
         public Emits(Collection<T> o){
             __list.addAll(o);
+            __last = __list.getLast();
         }
+
+        public T last(){ return __last; }
 
         @Override
         public void play(Observer<T> observer) {
@@ -106,6 +110,10 @@ public class Replayer<T> {
 
     private final LinkedList<Play<T>> __replays = new LinkedList<>();
     private int __limit;
+    private T __last;
+
+
+    public T last() { return __last; }
 
     public void limit(int limit) {
         __limit = limit;
@@ -116,6 +124,7 @@ public class Replayer<T> {
     public void add(T o){
         if(__limit!=0){
             __replays.addLast(new Emit<>(o));
+            __last = o;
         }
         if(__limit!=Infinite && __limit<__replays.size()){
             __replays.pollFirst();
@@ -124,7 +133,9 @@ public class Replayer<T> {
 
     public void all(Collection<T> o){
         if(__limit!=0){
-            __replays.addLast(new Emits<>(new LinkedList<>(o)));
+            Emits<T> emits = new Emits<>(new LinkedList<>(o));
+            __replays.addLast(emits);
+            __last = emits.last();
         }
         if(__limit!=Infinite && __limit<__replays.size()){
             __replays.pollFirst();
@@ -142,7 +153,7 @@ public class Replayer<T> {
 
     public void complete(T current){
         if(__limit!=0){
-            __replays.addLast(new Complete<T>(current));
+            __replays.addLast(new Complete<>(current));
         }
         if(__limit!=Infinite && __limit<__replays.size()){
             __replays.pollFirst();
