@@ -1,5 +1,10 @@
 package novemberizing.rx;
 
+import novemberizing.rx.functions.OnComplete;
+import novemberizing.rx.functions.OnError;
+import novemberizing.rx.functions.OnNext;
+import novemberizing.rx.operators.Composer;
+import novemberizing.rx.operators.Sync;
 import novemberizing.util.Log;
 
 import java.util.Collection;
@@ -238,6 +243,75 @@ public class Observable<T> {
         return task;
     }
 
+    public Observable<T> subscribe(OnNext<T> onNext){
+        return subscribe(new Subscribers.Just<T>(){
+            @Override
+            public void onNext(T o){
+                if(onNext!=null){
+                    onNext.on(o);
+                }
+            }
+        });
+    }
+
+    public Observable<T> subscribe(OnNext<T> onNext, OnError onError){
+        return subscribe(new Subscribers.Just<T>(){
+            @Override
+            public void onNext(T o){
+                if(onNext!=null){
+                    onNext.on(o);
+                }
+            }
+            @Override
+            public void onError(Throwable e){
+                if(onError!=null){
+                    onError.on(e);
+                }
+            }
+        });
+    }
+
+    public Observable<T> subscribe(OnNext<T> onNext, OnComplete onComplete){
+        return subscribe(new Subscribers.Just<T>(){
+            @Override
+            public void onNext(T o){
+                if(onNext!=null){
+                    onNext.on(o);
+                }
+            }
+            @Override
+            public void onComplete(){
+                if(onComplete!=null){
+                    onComplete.on();
+                }
+            }
+        });
+    }
+
+    public Observable<T> subscribe(OnNext<T> onNext, OnError onError, OnComplete onComplete){
+        return subscribe(new Subscribers.Just<T>(){
+            @Override
+            public void onNext(T o){
+                if(onNext!=null){
+                    onNext.on(o);
+                }
+            }
+            @Override
+            public void onError(Throwable e){
+                if(onError!=null){
+                    onError.on(e);
+                }
+            }
+
+            @Override
+            public void onComplete(){
+                if(onComplete!=null){
+                    onComplete.on();
+                }
+            }
+        });
+    }
+
     public Observable<T> subscribe(Observer<T> observer){
         if(observer!=null){
             synchronized (__observers){
@@ -254,6 +328,28 @@ public class Observable<T> {
             Log.c(Tag, this, "observer==null");
         }
         return this;
+    }
+
+    public <Z> Operator<T, Z> subscribe(Func<T, Z> f){ return subscribe(Operator.Op(f)); }
+
+    public <Z> Operator<T, Z> subscribe(novemberizing.ds.on.Pair<Operator.Task<T, Z>,T> f){ return subscribe(Operator.Op(f)); }
+
+    public <Z> Operator<T, Z> subscribe(Operator<T, Z> operator){
+        if(operator!=null){
+            synchronized (__observers){
+                if(__observers.add(operator)){
+                    onSubscribe(operator,this);
+                    if(__replayer!=null){
+                        __replayer.replay(operator);
+                    }
+                } else {
+                    Log.d(Tag, this, operator, "__observers.add(observer)==false");
+                }
+            }
+        } else {
+            Log.c(Tag, this, "observer==null");
+        }
+        return operator;
     }
 
     public Observable<T> unsubscribe(Observer<T> observer){
@@ -281,6 +377,17 @@ public class Observable<T> {
             }
         }
         return this;
+    }
+
+    public <Z> Operator<T, Z> next(Func<T, Z> f){ return subscribe(f); }
+    public <Z> Operator<T, Z> next(Operator<T, Z> op){ return subscribe(op); }
+    public <Z> Operator<T, Z> next(novemberizing.ds.on.Pair<Operator.Task<T, Z>,T> f){ return subscribe(f); }
+
+    public <Z> Sync<T, Z> sync(Func<T, Z> f){ return (Sync<T, Z>) subscribe(Operator.Sync(f)); }
+    public <Z> Sync<T, Z> sync(novemberizing.ds.on.Pair<Operator.Task<T, Z>,T> f){ return (Sync<T, Z>) subscribe(Operator.Sync(f)); }
+
+    public <U, Z> Composer<T, U, Z> compose(Observable<U> secondary, novemberizing.ds.func.Pair<T, U, Z> f){
+        return (Composer<T, U, Z>) subscribe(Operator.Composer(secondary,f));
     }
 
     public Observable<T> replay(int limit){
@@ -325,5 +432,4 @@ public class Observable<T> {
             subscriber.onUnsubscribe(observable);
         }
     }
-
 }

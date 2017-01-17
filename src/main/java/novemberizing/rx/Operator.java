@@ -2,6 +2,8 @@ package novemberizing.rx;
 
 import com.google.gson.annotations.Expose;
 import novemberizing.ds.Executor;
+import novemberizing.rx.operators.Composer;
+import novemberizing.rx.operators.Sync;
 import novemberizing.util.Log;
 
 import java.util.Collection;
@@ -175,6 +177,7 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
         return task;
     }
 
+    @SafeVarargs
     public final novemberizing.rx.Task<Collection<T>, U> foreach(T o, T... items){
         LinkedList<T> list = new LinkedList<>();
         list.add(o);
@@ -283,17 +286,52 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
         };
     }
 
-//    public static <T, Z> Operator<T, Z> Op(Runnable r){
-//        return new Operator<T, Z>() {
-//            @Override
-//            public void on(Task<T, Z> task, T in) {
-//                try {
-//                    task.next(f.call(in));
-//                    task.complete();
-//                } catch (Exception e){
-//                    task.error(e);
-//                }
-//            }
-//        };
-//    }
+    public static <T, Z> Operator<T, Z> Op(novemberizing.ds.on.Pair<Operator.Task<T, Z>,T> f){
+        return new Operator<T, Z>() {
+            @Override
+            protected void on(Task<T, Z> task, T in) {
+                try {
+                    f.on(task, in);
+                } catch (Exception e) {
+                    task.error(e);
+                }
+                task.complete();
+            }
+        };
+    }
+
+    public static <T, Z> Sync<T, Z> Sync(Func<T, Z> f){
+        return new Sync<T, Z>() {
+            @Override
+            protected void on(Task<T, Z> task, T in) {
+                try {
+                    task.next(f.call(in));
+                    task.complete();
+                } catch (Exception e){
+                    task.error(e);
+                }
+            }
+        };
+    }
+
+    public static <T, Z> Sync<T, Z> Sync(novemberizing.ds.on.Pair<Operator.Task<T, Z>,T> f){
+        return new Sync<T, Z>() {
+            @Override
+            protected void on(Task<T, Z> task, T in) {
+                try {
+                    f.on(task, in);
+                } catch (Exception e) {
+                    task.error(e);
+                }
+                task.complete();
+            }
+        };
+    }
+
+    public static <T, U, Z> Composer<T, U, Z> Composer(Observable<U> secondary, novemberizing.ds.func.Pair<T, U, Z> f){
+        return new Composer<>(secondary, f);
+    }
+
+
+
 }

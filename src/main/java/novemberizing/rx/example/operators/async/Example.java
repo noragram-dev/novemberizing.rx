@@ -16,7 +16,7 @@ import static novemberizing.ds.Constant.Infinite;
 public class Example {
 
     public static void main(String[] args){
-        Operator<String, String> op = new Run<>(new Func<String, String>() {
+        Operator<String, String> op = new Unorder<>(new Func<String, String>() {
             @Override
             public String call(String o) {
                 return o + "th";
