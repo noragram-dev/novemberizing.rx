@@ -1,37 +1,26 @@
 package novemberizing.rx.schedulers;
 
+import novemberizing.ds.ConditionalList;
 import novemberizing.ds.Executable;
-import novemberizing.ds.Queue;
-import novemberizing.rx.Scheduler;
-import novemberizing.util.Log;
-
-import java.util.concurrent.Callable;
+import novemberizing.ds.Factory;
 
 /**
  *
  * @author novemberizing, me@novemberizing.net
- * @since 2017. 1. 14
+ * @since 2017. 1. 17.
  */
 public class Local extends Scheduler {
-    private static final String Tag = "Local";
 
-    private static Callable<Local> __factory = null;
+    private static Factory<Local> __factory = null;
+    private static ThreadLocal<Scheduler> __schedulers = new ThreadLocal<>();
 
-    public static void factory(Callable<Local> factory){
-        synchronized (Local.class){
-            __factory = factory;
-        }
-    }
+    public static void Set(Factory<Local> factory){ __factory = factory; }
 
-    private static ThreadLocal<Local> __schedulers = new ThreadLocal<>();
-
-    public static Local Get(){
-        Local scheduler = __schedulers.get();
+    public static Scheduler Get(){
+        Scheduler scheduler = __schedulers.get();
         if(scheduler==null){
-            try {
-                scheduler = __factory == null ? new Local() : __factory.call();
-            } catch(Exception e){
-                Log.e(Tag, e);
+            scheduler = __factory!=null ? __factory.create() : new Local();
+            if(scheduler==null){
                 scheduler = new Local();
             }
             __schedulers.set(scheduler);
@@ -40,51 +29,35 @@ public class Local extends Scheduler {
     }
 
     public Local(){
-        __q = new Queue<>();
+        __q = new ConditionalList<>();
     }
 
     @Override
     public void executed(Executable executable) {
-        if(executable!=null){
-            synchronized (__executables){
-                if(!__executables.remove(executable)){
-                    Log.e(Tag, new RuntimeException("!__executables.remove(executable)"));
-                }
-            }
-            __q.lock();
-            __q.front(executable);
-            __q.resume(false);
-            __q.unlock();
-            onecycle();
-        }
+        super.executed(executable);
+        onecycle();
     }
 
     @Override
     public void completed(Executable executable) {
-        if(executable!=null){
-            synchronized (__executables){
-                if(!__executables.remove(executable)){
-                    Log.e(Tag, new RuntimeException("!__executables.remove(executable)"));
-                }
-            }
-            onecycle();
-        }
+        super.completed(executable);
+        onecycle();
     }
 
     @Override
-    public void dispatch(Executable executable){
+    public void dispatch(Executable executable) {
         super.dispatch(executable);
         onecycle();
     }
 
     @Override
-    public void dispatch(Executable executable, Executable... executables){
+    public void dispatch(Executable executable, Executable... executables) {
         super.dispatch(executable, executables);
         onecycle();
     }
 
     @Override
-    public void dispatch(Executable[] executables){
+    public void dispatch(Executable[] executables) {
         super.dispatch(executables);
         onecycle();
     }

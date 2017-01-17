@@ -1,126 +1,97 @@
 package novemberizing.rx;
 
-import com.google.gson.annotations.Expose;
-import novemberizing.ds.Func;
-import novemberizing.rx.operators.Condition;
+import novemberizing.ds.Executable;
+import novemberizing.ds.Executor;
 import novemberizing.util.Log;
 
 /**
  *
  * @author novemberizing, me@novemberizing.net
- * @since 2017. 1. 14
+ * @since 2017. 1. 17.
  */
-public class Task<T, Z> extends novemberizing.ds.Task {
+public abstract class Task<T, U> implements Executable {
     private static final String Tag = "Task";
-    @Expose public final T in;
-    @Expose public Z out;
-    private Task<T, Z> self= this;
-    @Expose protected Observable<Task<T, Z>> __observable = null;
 
-    public Task(T in) {
+    protected boolean __executed;
+    protected Executor __executor;
+    protected boolean __completed;
+    protected Throwable __exception;
+    protected final Observable<Task<T, U>> __completionPort;
+
+    public final T in;
+    public U out;
+
+    public Task(T in){
         this.in = in;
-        this.out = null;
+
+        out = null;
+        __executor = null;
+        __executed = false;
+        __completed = false;
+        __exception = null;
+
+        __completionPort = null;
     }
 
-    protected Task(T in, Z out) {
+    public Task(T in, Observable<Task<T, U>> completionPort){
         this.in = in;
-        this.out = out;
+
+        out = null;
+        __executor = null;
+        __executed = false;
+        __completed = false;
+        __exception = null;
+
+        __completionPort = completionPort;
     }
+
+    public void complete() {
+        Executor executor = __executor;
+
+        __completed = true;
+        __executor = null;
+        if(__completionPort!=null) {
+            __completionPort.complete();
+        }
+
+        executor.completed(this);
+    }
+
+    public void error(Throwable e) {
+        Executor executor = __executor;
+
+        __completed = true;
+        __executor = null;
+        __exception = e;
+
+        if(__completionPort!=null) {
+            __completionPort.error(e);
+        }
+
+        executor.completed(this);
+    }
+
+    public abstract void execute();
+
+    synchronized public boolean executed(){ return __executed; }
 
     @Override
-    public void execute() {
-        complete();
-    }
-
-    synchronized public Observable<Task<T, Z>> append(Observer<Task<T, Z>> observer){
-        if(__observable==null){
-            __observable = new Observable<>();
-        }
-
-        __observable.subscribe(observer);
-
-        if(completed()){
-            Log.e(Tag, this);
-            __observable.emit(this);
-        }
-
-        return __observable;
-    }
-
-    synchronized public <U> Operator<Task<T, Z>, U> append(Operator<Task<T, Z>, U> op){
-        if(__observable==null){
-            __observable = new Observable<>();
-        }
-
-        Operator<Task<T, Z>, U> p =  __observable.append(op);
-        __observable.subscribe(op);
-
-        if(completed()){
-            Log.e(Tag, this);
-            __observable.emit(this);
-        }
-
-        return p;
-    }
-
-    synchronized public <OUT> Condition<Task<T, Z>, OUT> condition(Func<Task<T, Z>, Boolean> condition, Func<Task<T, Z>, OUT> f){
-        if(__observable==null){
-            __observable = new Observable<>();
-        }
-
-        Condition<Task<T, Z>, OUT> c = ((Condition<Task<T, Z>, OUT>) __observable.subscribe(Operator.Condition(condition, f)));
-        __observable.subscribe(c);
-
-        if(completed()){
-            Log.e(Tag, this);
-            __observable.emit(this);
-        }
-
-
-        return c;
-    }
-
-    synchronized public <U, OUT> Condition<Task<T, Z>, OUT> condition(Observable<U> observable, novemberizing.ds.func.Pair<Task<T, Z>, U, Boolean> condition, novemberizing.ds.func.Pair<Task<T, Z>, U, OUT> f){
-        if(__observable==null){
-            __observable = new Observable<>();
-        }
-
-        Condition<Task<T, Z>, OUT> c = ((Condition<Task<T, Z>, OUT>) __observable.subscribe(Operator.Condition(observable, condition, f)));
-        __observable.subscribe(c);
-
-        if(completed()){
-            Log.e(Tag, this);
-            __observable.emit(this);
-        }
-
-        return c;
-    }
-
-    @Override
-    protected void executed() {
-        Log.f(Tag, this);
-        super.executed();
-        synchronized(this) {
-            Log.e(Tag, this);
-            if (__observable != null) {
-                __observable.emit(this);
+    public void execute(Executor executor) {
+        synchronized (this){
+            if(__executed){
+                Log.d(Tag, "__executed==true");
+                return;
             }
+            __executed = true;
         }
-
+        if(__executor!=null){
+            Log.d(Tag, this, "__executor!=null");
+        }
+        __executor = executor;
+        execute();
     }
 
     @Override
-    protected void complete() {
-        Log.f(Tag, this);
+    public boolean completed() { return __completed; }
 
-        super.complete();
-        synchronized(this) {
-            Log.f(Tag, this);
-            if (__observable != null) {
-                __observable.emit(this);
-            } else {
-                Log.e(Tag, "");
-            }
-        }
-    }
 }

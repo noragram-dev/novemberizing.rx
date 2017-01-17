@@ -3,7 +3,6 @@ package novemberizing.ds;
 /**
  *
  * @author novemberizing, me@novemberizing.net
- * @since 2017. 1. 14
+ * @since 2017. 1. 17.
  */
-public abstract class Task extends Command {
-}
+public interface Factory<T> { T create(); }

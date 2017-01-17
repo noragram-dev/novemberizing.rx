@@ -1,292 +1,262 @@
 package novemberizing.rx;
 
-import novemberizing.ds.Func;
-import novemberizing.ds.Task;
-import novemberizing.rx.functions.OnComplete;
-import novemberizing.rx.functions.OnError;
-import novemberizing.rx.functions.OnNext;
-import novemberizing.rx.observables.Just;
-import novemberizing.rx.operators.Condition;
 import novemberizing.util.Log;
 
+import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
+
+import static novemberizing.ds.Constant.Infinite;
 
 /**
  *
  * @author novemberizing, me@novemberizing.net
- * @since 2017. 1. 14
+ * @since 2017. 1. 17.
  */
-@SuppressWarnings("unused")
 public class Observable<T> {
-
     private static final String Tag = "Observable";
 
-    /**
-     *
-     * @author novemberizing, me@novemberizing.net
-     * @since 2017. 1. 14
-     */
-    protected static class ObservableOn<T> extends Task {
-        private Observable<T> __observable;
-        private T __o;
-        private Throwable __e;
-        private boolean __completed;
 
-        public ObservableOn(Observable<T> observable, T o, Throwable e, boolean completed){
+    protected static class Emit<T> extends Task<T, T> {
+        protected Observable<T> __observable;
+
+        public Emit(T in, Observable<T> observable) {
+            super(in, new Observable<>());
             __observable = observable;
-            __o = o;
-            __e = e;
-            __completed = completed;
+            __completionPort.replay(Infinite);
         }
 
         @Override
         public void execute() {
-            if(!__completed) {
-                __observable.__next(__o);
-            } else if(__e!=null){
-                __observable.__error(__e);
-            } else {
-                __observable.__complete();
+            Scheduler current = Scheduler.Self();
+            if(__observable.__replayer!=null) {
+                __observable.__replayer.add(in);
             }
+            synchronized (__observable.__observers) {
+                for (Observer<T> observer : __observable.__observers) {
+                    Scheduler observeOn = observer.observeOn();
+                    if (current == observeOn) {
+                        try {
+                            observer.onNext(__observable.snapshot(in));
+                        } catch(Exception e){
+                            observer.onError(e);
+                        }
+                    } else {
+                        observeOn.dispatch(new Subscriber.Observe<>(__observable.snapshot(in), observer));
+                    }
+                }
+            }
+            out = __observable.snapshot(in);
             complete();
         }
     }
 
-    /**
-     *
-     * @author novemberizing, me@novemberizing.net
-     * @since 2017. 1. 14
-     */
-    protected static class ObserveOn<T> extends Task {
-        private Observer<T> __observer;
-        private T __o;
-        private Throwable __e;
-        private boolean __completed;
+    protected static class Emits<T> extends Task<Collection<T>, Collection<T>> {
+        protected Observable<T> __observable;
 
-        public ObserveOn(Observer<T> observer, T o, Throwable e, boolean completed){
-            __observer = observer;
-            __o = o;
-            __e = e;
-            __completed = completed;
+        public Emits(Collection<T> in, Observable<T> observable) {
+            super(in, new Observable<>());
+            __observable = observable;
+            __completionPort.replay(Infinite);
         }
 
         @Override
         public void execute() {
-            if(!__completed) {
-                __observer.onNext(__o);
-            } else if(__e!=null){
-                __observer.onError(__e);
-            } else {
-                __observer.onComplete();
+            Scheduler current = Scheduler.Self();
+            if(__observable.__replayer!=null) {
+                __observable.__replayer.all(in);
             }
+            synchronized (__observable.__observers) {
+                for (Observer<T> observer : __observable.__observers) {
+                    for(T item : in) {
+                        Scheduler observeOn = observer.observeOn();
+                        if (current == observeOn) {
+                            try {
+                                observer.onNext(__observable.snapshot(item));
+                            } catch (Exception e) {
+                                observer.onError(e);
+                            }
+                        } else {
+                            observeOn.dispatch(new Subscriber.Observe<>(__observable.snapshot(__observable.snapshot(item)), observer));
+                        }
+                    }
+                }
+            }
+            out = in;
             complete();
         }
     }
 
-    protected final LinkedHashSet<Observer<T>> __observers = new LinkedHashSet<>();
+    protected static class Error<T> extends Task<T, Throwable> {
+        protected Observable<T> __observable;
+        protected Throwable __exception;
+
+        public Error(Throwable e, Observable<T> observable) {
+            super(null);
+            __observable = observable;
+            __exception = e;
+//            __completionPort = new Observable<>();
+        }
+
+        @Override
+        public void execute() {
+            Scheduler current = Scheduler.Self();
+            if(__observable.__replayer!=null) {
+                __observable.__replayer.error(__exception);
+            }
+            synchronized (__observable.__observers) {
+                for (Observer<T> observer : __observable.__observers) {
+                    Scheduler observeOn = observer.observeOn();
+                    if (current == observeOn) {
+                        observer.onError(__exception);
+                    } else {
+                        observeOn.dispatch(new Subscriber.Error<>(__exception, observer));
+                    }
+                }
+            }
+            out = __exception;
+            complete();
+        }
+    }
+
+    protected static class Complete<T> extends Task<T, T> {
+        protected Observable<T> __observable;
+
+        public Complete(T current, Observable<T> observable) {
+            super(current);
+            __observable = observable;
+//            __completionPort = new Observable<>();
+        }
+
+        @Override
+        public void execute() {
+            Scheduler current = Scheduler.Self();
+            if(__observable.__replayer!=null) {
+                __observable.__replayer.complete(in);
+            }
+            synchronized (__observable.__observers) {
+                for (Observer<T> observer : __observable.__observers) {
+                    Scheduler observeOn = observer.observeOn();
+                    if (current == observeOn) {
+                        observer.onComplete();
+                    } else {
+                        observeOn.dispatch(new Subscriber.Complete<>(in, observer));
+                    }
+                }
+            }
+            out = in;
+            complete();
+        }
+    }
+
+
+    private final LinkedHashSet<Observer<T>> __observers = new LinkedHashSet<>();
+    protected T __current;
+    protected Replayer<T> __replayer;
     protected Scheduler __observableOn = Scheduler.New();
-    protected T __current = null;
-    protected boolean __completed = false;
-    protected Throwable __exception = null;
 
-    protected T snapshot(T o){
-        Log.f(Tag, this, o);
-        return o;
-    }
+    protected T snapshot(T o){ return o; }
 
-    protected Observable<T> emit(T o){
-        Log.f(Tag, this, o);
-
-        __observableOn.dispatch(new ObservableOn<>(this,  snapshot(o), null, false));
-
-        return this;
-    }
-
-    protected void __next(T o){
-        Log.f(Tag, this, o);
-
-        __exception = null;
-        __current = snapshot(o);
-        __completed = false;
-
-        for(Observer<T> observer : __observers) {
-            Scheduler observeOn = observer.observeOn();
-            if(observeOn==Scheduler.Self()){
-                try {
-                    observer.onNext(snapshot(o));
-                } catch(Exception e){
-                    observer.onError(e);
-                }
-            } else {
-                observeOn.dispatch(new ObserveOn<>(observer, snapshot(o), null, false));
-            }
+    protected Observable<Task<T, T>> emit(T o){
+        synchronized (this) {
+            __current = snapshot(o);
         }
+        Emit<T> task = new Emit<>(o, this);
+        __observableOn.dispatch(task);
+        return task.__completionPort;
     }
 
-    protected Observable<T> error(Throwable e){
-        Log.f(Tag, this, e);
-
-        __observableOn.dispatch(new ObservableOn<>(this, null, e, true));
-
-        return this;
-    }
-
-    protected void __error(Throwable e){
-        Log.f(Tag, this, e);
-
-        __exception = e;
-        __current = null;
-        __completed = true;
-        for(Observer<T> observer : __observers) {
-            Scheduler observeOn = observer.observeOn();
-            if(observeOn==Scheduler.Self()){
-                observer.onError(e);
-            } else {
-                observeOn.dispatch(new ObserveOn<>(observer, null, e, true));
-            }
+    protected Observable<Task<Collection<T>, Collection<T>>> foreach(T o, T... items){
+        LinkedList<T> objects = new LinkedList<>();
+        objects.addLast(o);
+        for(T item : items){
+            objects.addLast(item);
         }
+
+        Emits<T> task = new Emits<>(objects, this);
+        __observableOn.dispatch(task);
+        return task.__completionPort;
     }
 
-    protected Observable<T> complete(){
-        Log.f(Tag, this);
-
-        __observableOn.dispatch(new ObservableOn<>(this, null, null, true));
-
-        return this;
-    }
-
-    protected Observable<T> complete(T o){
-        Log.f(Tag, this);
-
-        __observableOn.dispatch(new ObservableOn<>(this, o, null, true));
-
-        return this;
-    }
-
-    protected void __complete(){
-        Log.f(Tag, this);
-
-        __exception = null;
-        __current = null;
-        __completed = true;
-
-        for(Observer<T> observer : __observers) {
-            Scheduler observeOn = observer.observeOn();
-            if(observeOn==Scheduler.Self()){
-                observer.onComplete();
-            } else {
-                observeOn.dispatch(new ObserveOn<>(observer, null, null, true));
-            }
+    protected Observable<Task<Collection<T>, Collection<T>>> foreach(T[] items){
+        LinkedList<T> objects = new LinkedList<>();
+        for(T item : items){
+            objects.addLast(item);
         }
+
+        Emits<T> task = new Emits<>(objects, this);
+        __observableOn.dispatch(task);
+        return task.__completionPort;
     }
 
-    protected void onSubscribed(Operator<T, ?> operator){
-
+    public Observable<Task<T, Throwable>> error(Throwable e){
+        Error<T> task = new Error<>(e, this);
+        __observableOn.dispatch(task);
+        return task.__completionPort;
     }
 
-    protected void onSubscribed(Observer<T> operator){
-
+    public Observable<Task<T, T>> complete(){
+        Complete<T> task = new Complete<>(snapshot(__current), this);
+        __observableOn.dispatch(task);
+        return task.__completionPort;
     }
 
-    public final <Z> Operator<T, Z> subscribe(Operator<T, Z> operator){
-        Log.f(Tag, this, operator);
-        if(operator!=null){
-            synchronized (__observers){
-                if(__observers.add(operator.subscriber)){
-                    operator.subscriber.onSubscribe(this);
-                    onSubscribed(operator.subscriber);
-                } else {
-                    Log.c(Tag, new RuntimeException("__observers.add(observer)==false"));
-                }
-            }
-        } else {
-            Log.e(Tag, new RuntimeException("observer==null"));
-        }
-        return operator;
-    }
-
-    public final Observable<T> subscribe(Observer<T> observer){
-        Log.f(Tag, this, observer);
+    public Observable<T> subscribe(Observer<T> observer){
         if(observer!=null){
             synchronized (__observers){
                 if(__observers.add(observer)){
                     observer.onSubscribe(this);
-                    onSubscribed(observer);
+                    if(__replayer!=null){
+                        __replayer.replay(observer);
+                    }
                 } else {
-                    Log.c(Tag, new RuntimeException("__observers.add(observer)==false"));
+                    Log.d(Tag, this, observer, "__observers.add(observer)==false");
                 }
             }
         } else {
-            Log.e(Tag, new RuntimeException("observer==null"));
+            Log.c(Tag, this, "observer==null");
         }
         return this;
     }
 
-
-    public <Z> Operator<T, Z> append(Operator<T, Z> op){ return subscribe(op); }
-    public <Z> Operator<T, Z> append(Func<T, Z> f){ return subscribe(Operator.Op(f)); }
-    public Observable<T> append(Runnable r) {
-        return subscribe(new Subscribers.Just<T>(){
-            @Override
-            public void onNext(T o){
-                r.run();
-            }
-        });
-    }
-
-
-    public <Z, OUT> Condition<T, OUT> condition(Func<T, Boolean> condition, Func<T, OUT> f){
-        return (Condition<T, OUT>) subscribe(Operator.Condition(condition, f));
-    }
-
-    public <Z, U, OUT> Condition<T, OUT> condition(Observable<U> observable, novemberizing.ds.func.Pair<T, U, Boolean> condition, novemberizing.ds.func.Pair<T, U, OUT> f){
-        return (Condition<T, OUT>) subscribe(Operator.Condition(observable, condition, f));
-    }
-
-
-    public final Observable<T> subscribe(OnNext<T> next, OnError error, OnComplete complete){
-        return subscribe(new Subscriber<T>() {
-            @Override public void onNext(T o) { next.on(o); }
-            @Override public void onComplete() { complete.on(); }
-            @Override public void onError(Throwable e) { error.on(e); }
-        });
-    }
-
-    public final Observable<T> subscribe(OnNext<T> next){
-        return subscribe(new Subscriber<T>() {
-            @Override public void onNext(T o) { next.on(o); }
-            @Override public void onComplete() {}
-            @Override public void onError(Throwable e) {}
-        });
-    }
-
-    public final Observable<T> unsubscribe(Observer<T> observer){
-        Log.f(Tag, this, observer);
+    public Observable<T> unsubscribe(Observer<T> observer){
         if(observer!=null){
             synchronized (__observers){
                 if(__observers.remove(observer)){
                     observer.onUnsubscribe(this);
                 } else {
-                    Log.c(Tag, new RuntimeException("__observers.remove(observer)==false"));
+                    Log.d(Tag, this, observer, "__observers.remove(observer)==false");
                 }
             }
         } else {
-            Log.e(Tag, new RuntimeException("observer==null"));
+            Log.c(Tag, this, "observer==null");
         }
         return this;
     }
 
-    public static <T> Observable<T> emit(Observable<T> observable, T o){
-        return observable!=null ? observable.emit(o) : null;
+    public Observable<T> unsubscribe(){
+        synchronized (__observers) {
+            for (Observer<T> observer : __observers) {
+                unsubscribe(observer);
+            }
+        }
+        return this;
     }
 
-    public static Observable<?> complete(Observable<?> observable){
-        return observable!=null ? observable.complete() : null;
+    public Observable<T> replay(int limit){
+        if(limit==0){
+            __replayer = null;
+        } else if(__replayer==null){
+            __replayer = new Replayer<>(limit);
+        } else {
+            __replayer.limit(limit);
+        }
+        return this;
     }
 
-    public static Observable<?> error(Observable<?> observable, Throwable e){
-        return observable!=null ? observable.error(e) : null;
-    }
+    public static <T> Observable<Task<T, T>> emit(Observable<T> observable, T o){ return observable.emit(o); }
 
-    public static <T> Just<T> Just(){ return new Just<>(); }
+    public static <T> Observable<Task<Collection<T>, Collection<T>>> foreach(Observable<T> observable, T o, T... items){ return observable.foreach(o, items); }
+
+    public static <T> Observable<Task<Collection<T>, Collection<T>>> foreach(Observable<T> observable, T[] items){ return observable.foreach(items); }
 }
