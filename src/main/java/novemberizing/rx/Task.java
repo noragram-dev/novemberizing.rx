@@ -37,21 +37,25 @@ public abstract class Task<T, Z> implements Executable {
     }
 
     protected void complete() {
-        Executor executor = __executor;
+        if(!__completed) {
+            Executor executor = __executor;
 
-        __completed = true;
-        __executor = null;
+            __completed = true;
+            __executor = null;
 
-        __replayer.complete(out);
+            __replayer.complete(out);
 
-        if(__completionPort!=null){
-            __completionPort.complete();
-        }
+            if (__completionPort != null) {
+                __completionPort.complete();
+            }
 
-        if(executor!=null) {
-            executor.completed(this);
+            if (executor != null) {
+                executor.completed(this);
+            } else {
+                Log.d(Tag, "executor is null");
+            }
         } else {
-            Log.d(Tag, "executor is null");
+            Log.d(Tag, "completed");
         }
     }
 

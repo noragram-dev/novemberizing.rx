@@ -1,5 +1,6 @@
 package novemberizing.rx;
 
+import com.google.gson.annotations.Expose;
 import novemberizing.ds.Executor;
 import novemberizing.util.Log;
 
@@ -28,7 +29,8 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
 
     protected static class Task<T, Z> {
         private Operator.Next<?, Z> __task;
-        private final T in;
+        @Expose private final T in;
+        private Operator<T, Z> __operator;
 
         public T in(){ return in; }
 
@@ -40,13 +42,17 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
             __task.error(e);
         }
 
-        public void complete(){
+        public final void complete(){
             __task.complete(this);
+            if (__operator.__observer != null) {
+                __operator.__observer.onNext(this);
+            }
         }
 
-        protected <U> Task(Operator.Next<U, Z> task, T in){
+        protected <U> Task(Operator.Next<U, Z> task, T in, Operator<T, Z> operator){
             __task = task;
             this.in = in;
+            __operator = operator;
         }
     }
 
@@ -60,7 +66,12 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
 
         @Override
         protected void execute() {
-            __operator.in(this, new Operator.Task<>(this, in));
+            __operator.in(this, new Operator.Task<>(this, in, __operator));
+        }
+
+        @Override
+        protected void complete(Operator.Task<?, Z> task){
+            complete();
         }
 
         @Override
@@ -89,7 +100,7 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
         @Override
         protected void execute() {
             for(T o : in){
-                __operator.in(this, new Operator.Task<>(this, o));
+                __operator.in(this, new Operator.Task<>(this, o, __operator));
             }
         }
 
@@ -138,6 +149,7 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
 
     private final HashSet<Observable<T>> __observables = new HashSet<>();
     private Scheduler __observeOn = Scheduler.New();
+    protected Observer<Operator.Task<T, U>> __observer = Subscribers.Just("internal observer");
 
     @Override
     public Scheduler observeOn() { return __observeOn; }
@@ -194,25 +206,25 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
     protected U set(U v){
         __current = snapshot(v);
         if(__replayer!=null) {
-            Log.e(Tag, "check this logic");
+            Log.d(Tag, "check this logic");
             __replayer.add(snapshot(__current));
         }
         return snapshot(__current);
     }
 
     protected Throwable exception(Throwable e){
-        Log.e(Tag, "check this logic");
+        Log.d(Tag, "check this logic");
         if(__replayer!=null){
-            Log.e(Tag, "check this logic");
+            Log.d(Tag, "check this logic");
             __replayer.error(e);
         }
         return e;
     }
 
     protected U done(){
-        Log.e(Tag, "check this logic");
+        Log.d(Tag, "check this logic");
         if(__replayer!=null){
-            Log.e(Tag, "check this logic");
+            Log.d(Tag, "check this logic");
             __replayer.complete(__current);
         }
         return __current;

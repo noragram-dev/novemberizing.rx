@@ -16,6 +16,25 @@ public abstract class Sync<T, U> extends Operator<T, U> {
     private final LinkedList<Operator.Task<T, U>> __tasks = new LinkedList<>();
     private Operator.Task<T, U> __now;
 
+    public Sync(){
+        __observer = new Subscriber<Task<T, U>>() {
+            @Override
+            public void onNext(Task<T, U> o) {
+                __next(o);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        };
+    }
+
     @Override
     protected void in(Operator.Next<?, U> next, Operator.Task<T, U> task){
         synchronized (__tasks){
@@ -28,8 +47,11 @@ public abstract class Sync<T, U> extends Operator<T, U> {
         }
     }
 
-    private void __next(Operator.Next<?, U> next){
+    private void __next(Operator.Task<T, U> next){
         synchronized (__tasks){
+            if(next!=__now){
+                Log.e(Tag, "next!=__now");
+            }
             __now = null;
             while(__tasks.size()>0){
                 __now = __tasks.pollFirst();
