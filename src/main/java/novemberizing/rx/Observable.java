@@ -1,6 +1,5 @@
 package novemberizing.rx;
 
-import novemberizing.rx.observables.Just;
 import novemberizing.util.Log;
 
 import java.util.Collection;
@@ -200,13 +199,13 @@ public class Observable<T> {
         return task.__completionPort;
     }
 
-    public Observable<Task<T, Throwable>> error(Throwable e){
+    protected Observable<Task<T, Throwable>> error(Throwable e){
         Error<T> task = new Error<>(e, this);
         __observableOn.dispatch(task);
         return task.__completionPort;
     }
 
-    public Observable<Task<T, T>> complete(){
+    protected Observable<Task<T, T>> complete(){
         Complete<T> task = new Complete<>(snapshot(__current), this);
         __observableOn.dispatch(task);
         return task.__completionPort;
@@ -254,7 +253,7 @@ public class Observable<T> {
         return this;
     }
 
-    public Observable<T> replay(int limit){
+    protected Observable<T> replay(int limit){
         if(limit==0){
             __replayer = null;
         } else if(__replayer==null){

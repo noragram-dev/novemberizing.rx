@@ -45,7 +45,7 @@ public abstract class Task<T, U> implements Executable {
         __completionPort = completionPort;
     }
 
-    public void complete() {
+    protected void complete() {
         Executor executor = __executor;
 
         __completed = true;
@@ -57,7 +57,7 @@ public abstract class Task<T, U> implements Executable {
         executor.completed(this);
     }
 
-    public void error(Throwable e) {
+    protected void error(Throwable e) {
         Executor executor = __executor;
 
         __completed = true;
@@ -71,9 +71,9 @@ public abstract class Task<T, U> implements Executable {
         executor.completed(this);
     }
 
-    public abstract void execute();
+    protected abstract void execute();
 
-    synchronized public boolean executed(){ return __executed; }
+    synchronized protected boolean executed(){ return __executed; }
 
     @Override
     public void execute(Executor executor) {
