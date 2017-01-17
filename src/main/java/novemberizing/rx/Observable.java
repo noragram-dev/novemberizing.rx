@@ -144,7 +144,6 @@ public class Observable<T> {
         }
     }
 
-
     private final LinkedHashSet<Observer<T>> __observers = new LinkedHashSet<>();
     protected T __current;
     protected Replayer<T> __replayer;
@@ -154,7 +153,6 @@ public class Observable<T> {
         __replayer = replayer;
         __current = __replayer.last();
     }
-
 
     public Observable(){
         __replayer = null;
