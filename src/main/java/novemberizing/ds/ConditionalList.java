@@ -14,10 +14,11 @@ import static novemberizing.ds.Constant.Infinite;
  * @author novemberizing, me@novemberizing.net
  * @since 2017. 1. 17.
  */
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class ConditionalList<T> {
     private static final String Tag = "ConditionalList";
 
-    private LinkedList<T> __o = new LinkedList<T>();
+    private LinkedList<T> __o = new LinkedList<>();
     private Lock __sync = new ReentrantLock();
     private Condition __condition = __sync.newCondition();
 
@@ -57,7 +58,7 @@ public class ConditionalList<T> {
 
     public void resume(boolean all){
         if(all){
-            __condition.signalAll();;
+            __condition.signalAll();
         } else {
             __condition.signal();
         }

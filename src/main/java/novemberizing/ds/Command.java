@@ -7,6 +7,7 @@ import novemberizing.util.Log;
  * @author novemberizing, me@novemberizing.net
  * @since 2017. 1. 17.
  */
+@SuppressWarnings({"WeakerAccess", "unused"})
 public abstract class Command implements Executable {
     private static final String Tag = "Command";
 

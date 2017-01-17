@@ -6,8 +6,6 @@ package novemberizing.ds;
  * @since 2017. 1. 17.
  */
 public interface Executor extends Cyclable {
-
-
     void executed(Executable executable);
     void completed(Executable executable);
 
@@ -16,5 +14,4 @@ public interface Executor extends Cyclable {
     void dispatch(Executable executable);
     void dispatch(Executable executable, Executable... executables);
     void dispatch(Executable[] executables);
-
 }
