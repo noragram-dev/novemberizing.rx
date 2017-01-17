@@ -17,9 +17,11 @@ public class Example {
 
         observable.subscribe(Subscribers.Just("observable.just(string) >"));
 
-        Observable.emit(observable, "1").subscribe(Subscribers.Just("completion() >"));
+        Observable.foreach(observable, args).subscribe(Subscribers.Just("completion(task) >"));
 
-        Observable.foreach(observable, args).subscribe(Subscribers.Just("completion() >"));
+        Observable.error(observable, new RuntimeException("")).subscribe(Subscribers.Just("completion(error) >"));
+
+        Observable.complete(observable).subscribe(Subscribers.Just("completion(complete) >"));
 
         Scheduler.Local().clear();
     }

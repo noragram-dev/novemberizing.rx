@@ -13,8 +13,8 @@ public class Example {
 
 
         Log.depth(3);
-        // Log.disable(Log.FLOW | Log.DEBUG | Log.HEADER);
-        Log.disable(Log.FLOW | Log.HEADER);
+        Log.disable(Log.FLOW | Log.DEBUG | Log.HEADER);
+        // Log.disable(Log.FLOW | Log.HEADER);
 
         novemberizing.rx.example.observables.Example.main(args);
     }

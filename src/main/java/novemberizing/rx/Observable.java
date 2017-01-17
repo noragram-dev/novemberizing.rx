@@ -1,5 +1,6 @@
 package novemberizing.rx;
 
+import novemberizing.rx.observables.Just;
 import novemberizing.util.Log;
 
 import java.util.Collection;
@@ -15,7 +16,6 @@ import static novemberizing.ds.Constant.Infinite;
  */
 public class Observable<T> {
     private static final String Tag = "Observable";
-
 
     protected static class Emit<T> extends Task<T, T> {
         protected Observable<T> __observable;
@@ -95,7 +95,13 @@ public class Observable<T> {
             super(null);
             __observable = observable;
             __exception = e;
-//            __completionPort = new Observable<>();
+        }
+
+        public Error(Throwable e, Observable<Task<T, Throwable>> completionPort,Observable<T> observable) {
+            super(null, completionPort);
+            __observable = observable;
+            __exception = e;
+            __completionPort.replay(Infinite);
         }
 
         @Override
@@ -125,7 +131,12 @@ public class Observable<T> {
         public Complete(T current, Observable<T> observable) {
             super(current);
             __observable = observable;
-//            __completionPort = new Observable<>();
+        }
+
+        public Complete(T current, Observable<Task<T, T>> completionPort, Observable<T> observable) {
+            super(current, completionPort);
+            __observable = observable;
+            __completionPort.replay(Infinite);
         }
 
         @Override
@@ -259,4 +270,18 @@ public class Observable<T> {
     public static <T> Observable<Task<Collection<T>, Collection<T>>> foreach(Observable<T> observable, T o, T... items){ return observable.foreach(o, items); }
 
     public static <T> Observable<Task<Collection<T>, Collection<T>>> foreach(Observable<T> observable, T[] items){ return observable.foreach(items); }
+
+
+    public static <T> Observable<Task<T, T>> complete(Observable<T> observable) {
+        Complete<T> task = new Complete<>(observable.snapshot(observable.__current), new Observable<>() ,observable);
+        observable.__observableOn.dispatch(task);
+        return task.__completionPort;
+    }
+
+    public static <T> Observable<Task<T, Throwable>> error(Observable<T> observable, Throwable e){
+        Error<T> task = new Error<>(e, new Observable<>() ,observable);
+        observable.__observableOn.dispatch(task);
+        return task.__completionPort;
+    }
+
 }
