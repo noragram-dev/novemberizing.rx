@@ -36,4 +36,6 @@ public abstract class Scheduler implements Executor {
         }
         return scheduler;
     }
+
+    public abstract void execute(Executable executable);
 }

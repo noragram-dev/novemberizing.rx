@@ -134,7 +134,7 @@ public class Observable<T> {
     }
 
     private final LinkedHashSet<Observer<T>> __observers = new LinkedHashSet<>();
-    private T __current;
+    protected T __current;
     protected Replayer<T> __replayer;
     protected Scheduler __observableOn = Scheduler.New();
     protected boolean __completed = false;
@@ -202,7 +202,7 @@ public class Observable<T> {
     }
 
     @SafeVarargs
-    protected final Task<Collection<T>, T> foreach(T o, T... items){
+    private final Task<Collection<T>, T> foreach(T o, T... items){
 
         LinkedList<T> objects = new LinkedList<>();
         objects.addLast(o);
@@ -215,7 +215,7 @@ public class Observable<T> {
         return task;
     }
 
-    protected Task<Collection<T>, T> foreach(T[] items){
+    private final Task<Collection<T>, T> foreach(T[] items){
         LinkedList<T> objects = new LinkedList<>();
         for(T item : items){
             objects.addLast(item);
@@ -294,17 +294,17 @@ public class Observable<T> {
         return this;
     }
 
-    public static <T> Task<T, T> emit(Observable<T> observable, T o){ return observable.emit(o); }
+    public static <T> Task<T, T> Emit(Observable<T> observable, T o){ return observable.emit(o); }
 
     @SafeVarargs
-    public static <T> Task<Collection<T>, T> foreach(Observable<T> observable, T o, T... items){ return observable.foreach(o, items); }
+    public static <T> Task<Collection<T>, T> Foreach(Observable<T> observable, T o, T... items){ return observable.foreach(o, items); }
 
-    public static <T> Task<Collection<T>, T> foreach(Observable<T> observable, T[] items){ return observable.foreach(items); }
+    public static <T> Task<Collection<T>, T> Foreach(Observable<T> observable, T[] items){ return observable.foreach(items); }
 
 
-    public static <T> Task<T, T> complete(Observable<T> observable) { return observable.complete(); }
+    public static <T> Task<T, T> Complete(Observable<T> observable) { return observable.complete(); }
 
-    public static <T> Task<T, T> error(Observable<T> observable, Throwable e){ return observable.error(e); }
+    public static <T> Task<T, T> Error(Observable<T> observable, Throwable e){ return observable.error(e); }
 
     protected static <T> void onSubscribe(Observer<T> observer, Observable<T> observable){
         if(observer instanceof Operator){

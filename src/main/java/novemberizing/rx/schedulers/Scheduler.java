@@ -87,6 +87,18 @@ class Scheduler extends novemberizing.rx.Scheduler {
     }
 
     @Override
+    public void execute(Executable executable){
+        if (executable != null) {
+            if (!add(executable)) {
+                Log.d(Tag, this, "add(executable)==false");
+            }
+            executable.execute(this);
+        } else {
+            Log.d(Tag, this, "executable==null");
+        }
+    }
+
+    @Override
     public void clear() {
         int remain;
         __q.lock();
