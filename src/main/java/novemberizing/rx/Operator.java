@@ -22,7 +22,6 @@ public class Operator<T, U> extends Observable<U> implements Observer<T> {
     @Override
     public Scheduler observeOn() { return __observeOn; }
 
-    @Override
     public Observer<T> observeOn(Scheduler scheduler){
         __observeOn = scheduler;
         return this;
@@ -53,7 +52,6 @@ public class Operator<T, U> extends Observable<U> implements Observer<T> {
         complete();
     }
 
-    @Override
     public void onSubscribe(Observable<T> observable) {
         if(observable!=null) {
             synchronized (__observables){
@@ -66,7 +64,6 @@ public class Operator<T, U> extends Observable<U> implements Observer<T> {
         }
     }
 
-    @Override
     public void onUnsubscribe(Observable<T> observable) {
         if(observable!=null) {
             synchronized (__observables){

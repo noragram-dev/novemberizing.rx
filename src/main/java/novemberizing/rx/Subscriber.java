@@ -102,16 +102,13 @@ public abstract class Subscriber<T> implements Observer<T> {
     private final HashSet<Observable<T>> __observables = new HashSet<>();
     private Scheduler __observeOn = Scheduler.New();
 
-    @Override
     public Scheduler observeOn() { return __observeOn; }
 
-    @Override
     public Observer<T> observeOn(Scheduler scheduler){
         __observeOn = scheduler;
         return this;
     }
 
-    @Override
     public void onSubscribe(Observable<T> observable) {
         if(observable!=null) {
             synchronized (__observables){
@@ -124,7 +121,6 @@ public abstract class Subscriber<T> implements Observer<T> {
         }
     }
 
-    @Override
     public void onUnsubscribe(Observable<T> observable) {
         if(observable!=null) {
             synchronized (__observables){

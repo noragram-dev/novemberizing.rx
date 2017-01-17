@@ -19,7 +19,7 @@ public class Example {
 
         Observable.foreach(observable, args).subscribe(Subscribers.Just("completion(task) >"));
 
-        Observable.error(observable, new RuntimeException("")).subscribe(Subscribers.Just("completion(error) >"));
+        Observable.error(observable, new RuntimeException("message")).subscribe(Subscribers.Just("completion(error) >"));
 
         Observable.complete(observable).subscribe(Subscribers.Just("completion(complete) >"));
 

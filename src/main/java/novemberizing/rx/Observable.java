@@ -165,6 +165,13 @@ public class Observable<T> {
     protected Replayer<T> __replayer;
     protected Scheduler __observableOn = Scheduler.New();
 
+    protected Scheduler observableOn(){ return __observableOn; }
+
+    public Observable<T> observableOn(Scheduler scheduler){
+        __observableOn = scheduler;
+        return this;
+    }
+
     protected T snapshot(T o){ return o; }
 
     protected Observable<Task<T, T>> emit(T o){
@@ -215,7 +222,7 @@ public class Observable<T> {
         if(observer!=null){
             synchronized (__observers){
                 if(__observers.add(observer)){
-                    observer.onSubscribe(this);
+                    onSubscribe(observer,this);
                     if(__replayer!=null){
                         __replayer.replay(observer);
                     }
@@ -233,7 +240,7 @@ public class Observable<T> {
         if(observer!=null){
             synchronized (__observers){
                 if(__observers.remove(observer)){
-                    observer.onUnsubscribe(this);
+                    onUnsubscribe(observer,this);
                 } else {
                     Log.d(Tag, this, observer, "__observers.remove(observer)==false");
                 }
@@ -281,6 +288,26 @@ public class Observable<T> {
         Error<T> task = new Error<>(e, new Observable<>() ,observable);
         observable.__observableOn.dispatch(task);
         return task.__completionPort;
+    }
+
+    protected static <T> void onSubscribe(Observer<T> observer, Observable<T> observable){
+        if(observer instanceof Operator){
+            Operator<T, ?> operator = (Operator<T, ?>) observer;
+            operator.onSubscribe(observable);
+        } else if(observer!=null){
+            Subscriber<T> subscriber = (Subscriber<T>) observer;
+            subscriber.onSubscribe(observable);
+        }
+    }
+
+    protected static <T> void onUnsubscribe(Observer<T> observer, Observable<T> observable){
+        if(observer instanceof Operator){
+            Operator<T, ?> operator = (Operator<T, ?>) observer;
+            operator.onUnsubscribe(observable);
+        } else if(observer!=null){
+            Subscriber<T> subscriber = (Subscriber<T>) observer;
+            subscriber.onUnsubscribe(observable);
+        }
     }
 
 }

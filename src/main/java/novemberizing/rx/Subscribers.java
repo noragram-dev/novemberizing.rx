@@ -22,7 +22,7 @@ public class Subscribers {
 
         @Override
         public void onError(Throwable e) {
-            Log.i(__tag, "error", e);
+            Log.i(__tag, "error", e.getMessage());
         }
 
         @Override
