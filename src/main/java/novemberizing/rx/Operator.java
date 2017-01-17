@@ -16,8 +16,18 @@ import java.util.LinkedList;
 public abstract class Operator<T, U> extends Observable<U> implements Observer<T> {
     private static final String Tag = "Operator";
 
+    protected static abstract class Next<T, Z> extends novemberizing.rx.Task<T, Z> {
+        protected void complete(Operator.Task<?, Z> task){
+            complete();
+        }
+
+        public Next(T in) {
+            super(in);
+        }
+    }
+
     protected static class Task<T, Z> {
-        private novemberizing.rx.Task<?, Z> __task;
+        private Operator.Next<?, Z> __task;
         private final T in;
 
         public T in(){ return in; }
@@ -31,16 +41,16 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
         }
 
         public void complete(){
-            __task.complete();
+            __task.complete(this);
         }
 
-        protected <U> Task(novemberizing.rx.Task<U, Z> task, T in){
+        protected <U> Task(Operator.Next<U, Z> task, T in){
             __task = task;
             this.in = in;
         }
     }
 
-    public static class Exec<T, Z> extends novemberizing.rx.Task<T, Z> {
+    public static class Exec<T, Z> extends Operator.Next<T, Z> {
         protected Operator<T, Z> __operator;
 
         public Exec(T in, Operator<T, Z> operator) {
@@ -66,10 +76,10 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
         }
     }
 
-    public static class Execs<T, Z> extends novemberizing.rx.Task<Collection<T>, Z> {
+    public static class Execs<T, Z> extends Operator.Next<Collection<T>, Z> {
 
         protected Operator<T, Z> __operator;
-        protected LinkedList<Operator.Task<T, Z>> __completions = new LinkedList<>();
+        protected LinkedList<Operator.Task<?, Z>> __completions = new LinkedList<>();
 
         public Execs(Collection<T> in, Operator<T, Z> operator) {
             super(in);
@@ -81,6 +91,12 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
             for(T o : in){
                 __operator.on(new Operator.Task<>(this, o), o);
             }
+        }
+
+        @Override
+        protected void complete(Operator.Task<?, Z> task){
+            __completions.add(task);
+            complete();
         }
 
         @Override
