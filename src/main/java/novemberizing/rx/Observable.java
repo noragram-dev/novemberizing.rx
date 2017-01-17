@@ -4,6 +4,7 @@ import novemberizing.rx.functions.OnComplete;
 import novemberizing.rx.functions.OnError;
 import novemberizing.rx.functions.OnNext;
 import novemberizing.rx.operators.Composer;
+import novemberizing.rx.operators.Condition;
 import novemberizing.rx.operators.Sync;
 import novemberizing.util.Log;
 
@@ -388,6 +389,14 @@ public class Observable<T> {
 
     public <U, Z> Composer<T, U, Z> compose(Observable<U> secondary, novemberizing.ds.func.Pair<T, U, Z> f){
         return (Composer<T, U, Z>) subscribe(Operator.Composer(secondary,f));
+    }
+
+    public <U, Z> Condition<T, U, Z> condition(Observable<U> observable, novemberizing.ds.func.Pair<T, U, Boolean> condition , novemberizing.ds.func.Pair<T, U, Z> f){
+        return (Condition<T, U, Z>) subscribe(Operator.Condition(observable,condition,f));
+    }
+
+    public <Z> Operator<T, Z> condition(Func<T, Boolean> condition, Func<T, Z> f){
+        return subscribe(Operator.Condition(condition, f));
     }
 
     public Observable<T> replay(int limit){

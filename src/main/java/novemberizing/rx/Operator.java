@@ -3,6 +3,7 @@ package novemberizing.rx;
 import com.google.gson.annotations.Expose;
 import novemberizing.ds.Executor;
 import novemberizing.rx.operators.Composer;
+import novemberizing.rx.operators.Condition;
 import novemberizing.rx.operators.Sync;
 import novemberizing.util.Log;
 
@@ -332,6 +333,24 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
         return new Composer<>(secondary, f);
     }
 
+    public static <T, U, Z> Condition<T, U, Z> Condition(Observable<U> observable, novemberizing.ds.func.Pair<T, U, Boolean> condition , novemberizing.ds.func.Pair<T, U, Z> f){
+        return new Condition<>(observable,condition,f);
+    }
 
+    public static <T, Z> Operator<T, Z> Condition(Func<T, Boolean> condition, Func<T, Z> f){
+        return new Operator<T, Z>() {
+            @Override
+            protected void on(Task<T, Z> task, T in) {
+                try {
+                    if (condition.call(in)) {
+                        task.next(f.call(in));
+                    }
+                } catch(Exception e){
+                    task.error(e);
+                }
+                task.complete();
+            }
+        };
+    }
 
 }
