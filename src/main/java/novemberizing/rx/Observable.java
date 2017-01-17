@@ -380,6 +380,31 @@ public class Observable<T> {
         return this;
     }
 
+    public <S> Operator<S, T> previous(Operator<S, T> op){
+        return (Operator<S, T>) op.subscribe(new Subscriber<T>() {
+            @Override
+            public void onNext(T o) {
+                emit(o);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                error(e);
+            }
+
+            @Override
+            public void onComplete() {
+                complete();
+            }
+        });
+    }
+
+    public <S> Operator<S, T> previous(Func<S, T> f){ return previous(Operator.Op(f)); }
+
+    public <S> Operator<S, T> previous(novemberizing.ds.on.Pair<Operator.Task<S, T>, S> f){
+        return previous(Operator.Op(f));
+    }
+
     public <Z> Operator<T, Z> next(Func<T, Z> f){ return subscribe(f); }
     public <Z> Operator<T, Z> next(Operator<T, Z> op){ return subscribe(op); }
     public <Z> Operator<T, Z> next(novemberizing.ds.on.Pair<Operator.Task<T, Z>,T> f){ return subscribe(f); }
