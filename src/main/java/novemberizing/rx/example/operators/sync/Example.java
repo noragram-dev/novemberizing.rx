@@ -1,6 +1,10 @@
-package novemberizing.rx.example.operators.append;
+package novemberizing.rx.example.operators.sync;
 
-import novemberizing.rx.*;
+
+import novemberizing.rx.Func;
+import novemberizing.rx.Operator;
+import novemberizing.rx.Scheduler;
+import novemberizing.rx.Subscribers;
 
 import static novemberizing.ds.Constant.Infinite;
 
@@ -12,18 +16,18 @@ import static novemberizing.ds.Constant.Infinite;
 public class Example {
 
     public static void main(String[] args){
-        Operator<String, String> op = Operator.Op(new Func<String, String>() {
+        Operator<String, String> op = new Run<>(new Func<String, String>() {
             @Override
             public String call(String o) {
                 return o + "th";
             }
         });
 
-        op.replay(Infinite).subscribe(Subscribers.Just("operator.append(string) 1>"));
+        op.replay(Infinite).subscribe(Subscribers.Just("operator.sync(string) 1>"));
 
         op.exec("-1").subscribe(Subscribers.Just("completion(task) 2>"));
 
-        op.subscribe(Subscribers.Just("operator.append(string) 3>"));
+        op.subscribe(Subscribers.Just("operator.sync(string) 3>"));
 
         op.foreach(args).subscribe(Subscribers.Just("completion(task) 4>"));
 

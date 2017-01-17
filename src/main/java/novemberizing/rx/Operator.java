@@ -16,7 +16,7 @@ import java.util.LinkedList;
 public abstract class Operator<T, U> extends Observable<U> implements Observer<T> {
     private static final String Tag = "Operator";
 
-    protected static abstract class Next<T, Z> extends novemberizing.rx.Task<T, Z> {
+    public static abstract class Next<T, Z> extends novemberizing.rx.Task<T, Z> {
         protected void complete(Operator.Task<?, Z> task){
             complete();
         }
@@ -60,7 +60,7 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
 
         @Override
         protected void execute() {
-            __operator.on(new Operator.Task<>(this, in), in);
+            __operator.in(this, new Operator.Task<>(this, in));
         }
 
         @Override
@@ -89,7 +89,7 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
         @Override
         protected void execute() {
             for(T o : in){
-                __operator.on(new Operator.Task<>(this, o), o);
+                __operator.in(this, new Operator.Task<>(this, o));
             }
         }
 
@@ -101,7 +101,6 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
 
         @Override
         protected void complete() {
-            Log.i(Tag, in.size());
             if(__completions.size()==in.size()) {
                 Executor executor = __executor;
 
@@ -120,7 +119,7 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
                     Log.d(Tag, "executor is null");
                 }
             } else {
-                Log.i(Tag, __completions.size());
+                Log.d(Tag, __completions.size());
             }
         }
 
@@ -148,7 +147,11 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
         return this;
     }
 
-    protected abstract void on(Task<T, U> task, T in);
+    protected void in(Operator.Next<?, U> next, Operator.Task<T, U> task){
+        on(task, task.in());
+    }
+
+    protected abstract void on(Operator.Task<T, U> task, T in);
 
     public final novemberizing.rx.Task<T, U> exec(T o){
         Exec<T, U> task = new Exec<>(o, this);

@@ -101,9 +101,9 @@ class Scheduler extends novemberizing.rx.Scheduler {
     @Override
     public void clear() {
         int remain;
-        __q.lock();
         running(true);
         do {
+            __q.lock();
             while (__q.size() > 0) {
                 Executable executable = __q.pop();
                 __q.unlock();
@@ -116,13 +116,14 @@ class Scheduler extends novemberizing.rx.Scheduler {
                     Log.d(Tag, this, "executable==null");
                 }
                 __q.lock();
+
             }
             synchronized (__executables){
                 remain = __executables.size();
             }
+            __q.unlock();
         } while(remain>0);
         running(false);
-        __q.unlock();
     }
 
     @Override
