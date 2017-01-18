@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose;
 import novemberizing.ds.Executor;
 import novemberizing.rx.operators.Composer;
 import novemberizing.rx.operators.Condition;
+import novemberizing.rx.operators.Switch;
 import novemberizing.rx.operators.Sync;
 import novemberizing.util.Log;
 
@@ -368,6 +369,12 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
             }
         };
     }
+
+    public static <T, Z> Switch<T, Z> Switch(Func<T, Integer> hash){
+        return new Switch<>(hash);
+    }
+
+//    public static <T, Z> Block<T, Z> Block()
 
     protected static <T, Z> novemberizing.rx.Task<Collection<Z>, Z> Bulk(Operator<T, Z> operator, Collection<Z> list){
         return Observable.Bulk(operator, list);

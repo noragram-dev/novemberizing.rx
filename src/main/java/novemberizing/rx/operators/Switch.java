@@ -1,6 +1,5 @@
 package novemberizing.rx.operators;
 
-import novemberizing.rx.Block;
 import novemberizing.rx.Func;
 import novemberizing.rx.Operator;
 import novemberizing.rx.Subscriber;
@@ -19,7 +18,6 @@ public class Switch<T, Z> extends Operator<T, Z> {
     protected Func<T, Integer> __hash;
     protected HashMap<Integer, Block<T, Z>> __cases = new HashMap<>();
     protected Block<T, Z> __default;
-    protected final Switch<T, Z> __self = this;
 
     public Switch(Func<T, Integer> hash){
         __hash = hash;
@@ -45,36 +43,40 @@ public class Switch<T, Z> extends Operator<T, Z> {
         return this;
     }
 
+    protected void execute(Block<T, Z> block, Task<T, Z> task, T in){
+        block.exec(in).subscribe(new Subscriber<Z>() {
+            @Override
+            public void onNext(Z o) {
+                Log.i(Tag, task, o);
+                task.next(o);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.e(Tag, e);
+            }
+
+            @Override
+            public void onComplete() {
+                Log.i(Tag, task);
+                task.complete();
+            }
+        });
+    }
+
     @Override
     protected void on(Task<T, Z> task, T in) {
         Integer i = __hash.call(in);
         if(i!=null){
             Block<T, Z> block = __cases.get(i);
             if(block!=null){
-                block.exec(in).subscribe(new Subscriber<Z>() {
-                    private LinkedList<Z> __items = new LinkedList<>();
-                    @Override
-                    public void onNext(Z o) {
-                        __items.addLast(o);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.e(Tag, e);
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        Operator.Bulk(__self, __items);
-                        task.complete();
-                    }
-                });
+                execute(block, task, in);
             } else if(__default!=null) {
                 __default.exec(in).subscribe(new Subscriber<Z>() {
-                    private LinkedList<Z> __items = new LinkedList<>();
                     @Override
                     public void onNext(Z o) {
-                        __items.addLast(o);
+                        task.next(o);
+                        Log.i(Tag, task, o);
                     }
 
                     @Override
@@ -84,7 +86,7 @@ public class Switch<T, Z> extends Operator<T, Z> {
 
                     @Override
                     public void onComplete() {
-                        Operator.Bulk(__self, __items);
+                        Log.i(Tag, task);
                         task.complete();
                     }
                 });
@@ -94,10 +96,10 @@ public class Switch<T, Z> extends Operator<T, Z> {
             }
         } else if(__default!=null) {
             __default.exec(in).subscribe(new Subscriber<Z>() {
-                private LinkedList<Z> __items = new LinkedList<>();
                 @Override
                 public void onNext(Z o) {
-                    __items.addLast(o);
+                    task.next(o);
+                    Log.i(Tag, task, o);
                 }
 
                 @Override
@@ -107,8 +109,8 @@ public class Switch<T, Z> extends Operator<T, Z> {
 
                 @Override
                 public void onComplete() {
-                    Operator.Bulk(__self, __items);
                     task.complete();
+                    Log.i(Tag, task);
                 }
             });
         } else {

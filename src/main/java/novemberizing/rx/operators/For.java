@@ -1,6 +1,5 @@
 package novemberizing.rx.operators;
 
-import novemberizing.rx.Block;
 import novemberizing.rx.Operator;
 
 /**

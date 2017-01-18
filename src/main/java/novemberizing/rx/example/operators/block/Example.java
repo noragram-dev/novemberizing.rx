@@ -1,12 +1,14 @@
 package novemberizing.rx.example.operators.block;
 
-import novemberizing.rx.Block;
+import novemberizing.rx.operators.Block;
 import novemberizing.rx.Func;
 import novemberizing.rx.Operator;
 import novemberizing.rx.Subscribers;
 
 /**
- * Created by novemberizing on 2017-01-18.
+ *
+ * @author novemberizing, me@novemberizing.net
+ * @since 2017. 1. 18.
  */
 public class Example {
 
@@ -25,7 +27,7 @@ public class Example {
             }
         };
 
-        stoi.subscribe(Subscribers.Just("stoi >"));
+        stoi.subscribe(Subscribers.Just("op(stoi) 1>"));
 
         Operator<Integer, String> itos = Operator.Op(new novemberizing.rx.Func<Integer, String>() {
             @Override
@@ -34,21 +36,24 @@ public class Example {
             }
         });
 
-        itos.subscribe(Subscribers.Just("stoi >"));
+        itos.subscribe(Subscribers.Just("op(stoi) 2>"));
 
 
         {
             Block<String, String> block = new Block<>();
-            block.start().append(stoi).append(itos).append(stoi).end(itos).subscribe(Subscribers.Just("block >"));
-            block.exec("1").subscribe(Subscribers.Just("block(task) 1>"));
+            block.start().append(stoi).append(itos).append(stoi).end(itos).subscribe(Subscribers.Just("block 3>"));
+            block.exec("1").subscribe(Subscribers.Just("completion(block(task)) 4>"));
+            block.foreach(args).subscribe(Subscribers.Just("completion(block(task)) 5>"));
 
             itos.exec(1);
         }
 
         {
             Block<String, String> block = new Block<>();
-            block.start().append(stoi).append(itos).append(stoi).end(f).subscribe(Subscribers.Just("block >"));
-            block.exec("1").subscribe(Subscribers.Just("block(task) 2>"));
+            block.start().append(stoi).append(itos).append(stoi).end(f).subscribe(Subscribers.Just("block 6>"));
+            block.exec("1").subscribe(Subscribers.Just("completion(block(task)) 7>"));
+
+            block.foreach(args).subscribe(Subscribers.Just("completion(block(task)) 8>"));
 
             itos.exec(1);
         }

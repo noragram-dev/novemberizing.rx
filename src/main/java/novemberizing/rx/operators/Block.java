@@ -1,5 +1,7 @@
-package novemberizing.rx;
+package novemberizing.rx.operators;
 
+import novemberizing.rx.Operator;
+import novemberizing.rx.Subscriber;
 import novemberizing.util.Log;
 
 import java.util.Collection;
@@ -12,7 +14,6 @@ import java.util.LinkedList;
  */
 @SuppressWarnings("WeakerAccess")
 public class Block<T, Z> extends Operator<T, Z> {
-
 
     public static class Statement<T, Z, U, V> {
         private static final String Tag = "Statement";
@@ -28,6 +29,12 @@ public class Block<T, Z> extends Operator<T, Z> {
 
         public <W> Statement<T, Z, V, W> append(Operator<V, W> op){
             Statement<T, Z, V, W> next = new Statement<>(__parent, op);
+            __next = next;
+            return next;
+        }
+
+        public <W> Statement<T, Z, V, W> append(novemberizing.rx.Func<V, W> f){
+            Statement<T, Z, V, W> next = new Statement<>(__parent, Operator.Op(f));
             __next = next;
             return next;
         }
@@ -64,10 +71,8 @@ public class Block<T, Z> extends Operator<T, Z> {
                         __next.foreach(task, __items);
                         __items.clear();
                     } else {
-                        //if(__end){
-                            Log.e(Tag, new RuntimeException("block is not close"));
-                            __items.clear();
-                        //}
+                        Log.e(Tag, new RuntimeException("block is not close"));
+                        __items.clear();
                         task.complete();
                     }
                 }
@@ -80,9 +85,6 @@ public class Block<T, Z> extends Operator<T, Z> {
                 @Override
                 public void onNext(V o) {
                     Log.f(Tag, this, o);
-                    if(__end){
-                        Log.i(Tag, "end");
-                    }
                     __items.addLast(o);
                 }
 
@@ -98,12 +100,9 @@ public class Block<T, Z> extends Operator<T, Z> {
                         __next.foreach(task, __items);
                         __items.clear();
                     } else {
-                        // if(__end){
-                            Log.e(Tag, new RuntimeException("block is not close"));
-                            __items.clear();
-                        // }
+                        Log.e(Tag, new RuntimeException("block is not close"));
+                        __items.clear();
                         task.complete();
-                        Log.f(Tag, "");
                     }
                 }
             });
@@ -119,14 +118,10 @@ public class Block<T, Z> extends Operator<T, Z> {
         }
         public void foreach(Operator.Task<T, Z> task, Collection<U> items){
             __operator.bulk(items).subscribe(new Subscriber<Z>() {
-                private LinkedList<Z> __items = new LinkedList<>();
                 @Override
                 public void onNext(Z o) {
                     Log.f(Tag, this, o);
-                    if(__end){
-                        Log.f(Tag, "end");
-                    }
-                    __items.addLast(o);
+                    task.next(o);
                 }
 
                 @Override
@@ -138,31 +133,19 @@ public class Block<T, Z> extends Operator<T, Z> {
                 @Override
                 public void onComplete() {
                     Log.f(Tag, this, "complete");
-                    if(__next!=null && __items.size()>0) {
-                        __next.foreach(task, __items);
-                        __items.clear();
-                    } else {
-                        if(__end){
-                            Operator.Bulk(__parent, __items);
-                            __items.clear();
-                        }
-                        task.complete();
-                        Log.f(Tag, "");
-                    }
+//                    Operator.Bulk(__parent, __items);
+//                    __items.clear();
+                    task.complete();
                 }
             });
         }
 
         public void exec(Operator.Task<T, Z> task, U in){
             __operator.exec(in).subscribe(new Subscriber<Z>() {
-                private LinkedList<Z> __items = new LinkedList<>();
                 @Override
                 public void onNext(Z o) {
                     Log.f(Tag, this, o);
-                    if(__end){
-                        Log.i(Tag, "end");
-                    }
-                    __items.addLast(o);
+                    task.next(o);
                 }
 
                 @Override
@@ -173,19 +156,7 @@ public class Block<T, Z> extends Operator<T, Z> {
                 @Override
                 public void onComplete() {
                     Log.f(Tag, this, "complete");
-                    if(__next!=null && __items.size()>0) {
-                        __next.foreach(task, __items);
-                        __items.clear();
-                    } else {
-                        if(__end){
-                            for(Z o : __items){
-                                __parent.emit(o);
-                            }
-                            __items.clear();
-                        }
-                        task.complete();
-                        Log.f(Tag, "");
-                    }
+                    task.complete();
                 }
             });
         }
@@ -203,6 +174,12 @@ public class Block<T, Z> extends Operator<T, Z> {
 
         public <W> Statement<T, Z, U, W> append(Operator<U, W> op){
             Statement<T, Z, U, W> next = new Statement<>(__parent, op);
+            __next = next;
+            return next;
+        }
+
+        public <W> Statement<T, Z, U, W> append(novemberizing.rx.Func<U, W> f){
+            Statement<T, Z, U, W> next = new Statement<>(__parent, Operator.Op(f));
             __next = next;
             return next;
         }
@@ -288,12 +265,4 @@ public class Block<T, Z> extends Operator<T, Z> {
     protected void on(Task<T, Z> task, T in) {
         __header.in(task, in);
     }
-
-    public <U, V> Statement<T, Z, U, V> append(Operator<U, V> op){
-
-        return null;
-    }
-
-
-
 }
