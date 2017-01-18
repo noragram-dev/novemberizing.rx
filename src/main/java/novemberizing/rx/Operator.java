@@ -162,6 +162,12 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
         return this;
     }
 
+    protected Operator.Next<?, U> re(Operator.Task<T, U> task){
+        task.__task.__executed = false;
+        __observableOn.dispatch(task.__task);
+        return task.__task;
+    }
+
     protected void in(Operator.Next<?, U> next, Operator.Task<T, U> task){
         on(task, task.in());
     }
