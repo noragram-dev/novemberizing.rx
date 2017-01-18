@@ -232,6 +232,13 @@ public class Observable<T> {
         return task;
     }
 
+    private Task<Collection<T>, T> bulk(Collection<T> items){
+
+        Emits<T> task = new Emits<>(items, this);
+        __observableOn.dispatch(task);
+        return task;
+    }
+
     protected Task<T, T> error(Throwable e){
         Error<T> task = new Error<>(e, this);
         __observableOn.dispatch(task);
@@ -444,6 +451,8 @@ public class Observable<T> {
     public static <T> Task<Collection<T>, T> Foreach(Observable<T> observable, T o, T... items){ return observable.foreach(o, items); }
 
     public static <T> Task<Collection<T>, T> Foreach(Observable<T> observable, T[] items){ return observable.foreach(items); }
+
+    public static <T> Task<Collection<T>,T> Bulk(Observable<T> observable, Collection<T> list){ return observable.bulk(list); }
 
 
     public static <T> Task<T, T> Complete(Observable<T> observable) { return observable.complete(); }

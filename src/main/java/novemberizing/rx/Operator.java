@@ -152,7 +152,7 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
 
     private final HashSet<Observable<T>> __observables = new HashSet<>();
     private Scheduler __observeOn = Scheduler.New();
-    protected Observer<Operator.Task<T, U>> __observer = Subscribers.Just("internal observer");
+    protected Observer<Operator.Task<T, U>> __observer = null;
 
     @Override
     public Scheduler observeOn() { return __observeOn; }
@@ -197,6 +197,16 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
         LinkedList<T> list = new LinkedList<>();
         Collections.addAll(list, items);
 
+        Execs<T, U> task = new Execs<>(list, this);
+        if(__observableOn==Scheduler.Self()){
+            __observableOn.execute(task);
+        } else {
+            __observableOn.dispatch(task);
+        }
+        return task;
+    }
+
+    public final novemberizing.rx.Task<Collection<T>, U> bulk(Collection<T> list){
         Execs<T, U> task = new Execs<>(list, this);
         if(__observableOn==Scheduler.Self()){
             __observableOn.execute(task);
@@ -352,5 +362,11 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
             }
         };
     }
+
+    protected static <T, Z> novemberizing.rx.Task<Collection<Z>, Z> Bulk(Operator<T, Z> operator, Collection<Z> list){
+        return Observable.Bulk(operator, list);
+    }
+
+//    protected static <Z> novemberizing.rx.Task<Collection<T>, Z>
 
 }
