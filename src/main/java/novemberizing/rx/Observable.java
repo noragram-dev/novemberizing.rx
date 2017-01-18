@@ -221,7 +221,7 @@ public class Observable<T> {
         return task;
     }
 
-    private final Task<Collection<T>, T> foreach(T[] items){
+    private Task<Collection<T>, T> foreach(T[] items){
         LinkedList<T> objects = new LinkedList<>();
         for(T item : items){
             objects.addLast(item);
@@ -352,6 +352,9 @@ public class Observable<T> {
         }
         return operator;
     }
+
+//    public Observable<T> subscribe()
+
 
     public Observable<T> unsubscribe(Observer<T> observer){
         if(observer!=null){
