@@ -1,5 +1,6 @@
 package novemberizing.rx.example.operators.block;
 
+import novemberizing.rx.Scheduler;
 import novemberizing.rx.operators.Block;
 import novemberizing.ds.func.Single;
 import novemberizing.rx.Operator;
@@ -64,30 +65,6 @@ public class Example {
         }
 
         stoi.foreach(args);
-
-//
-
-//
-//
-//
-//
-//        {
-//            Block<String, String> block = new Block<>();
-//            block.start().append(stoi).append(itos).append(stoi).end(itos).subscribe(Subscribers.Just("block 3>"));
-//            block.exec("1").subscribe(Subscribers.Just("completion(block(task)) 4>"));
-//            block.foreach(args).subscribe(Subscribers.Just("completion(block(task)) 5>"));
-//
-//            itos.exec(1);
-//        }
-//
-//        {
-//            Block<String, String> block = new Block<>();
-//            block.start().append(stoi).append(itos).append(stoi).end(f).subscribe(Subscribers.Just("block 6>"));
-//            block.exec("1").subscribe(Subscribers.Just("completion(block(task)) 7>"));
-//
-//            block.foreach(args).subscribe(Subscribers.Just("completion(block(task)) 8>"));
-//
-//            itos.exec(1);
-//        }
+        Scheduler.Local().clear();
     }
 }

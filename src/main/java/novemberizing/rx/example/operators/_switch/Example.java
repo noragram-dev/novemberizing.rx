@@ -1,6 +1,7 @@
 package novemberizing.rx.example.operators._switch;
 
 import novemberizing.ds.func.Single;
+import novemberizing.rx.Scheduler;
 import novemberizing.rx.Subscribers;
 import novemberizing.rx.operators.Block;
 import novemberizing.rx.operators.Switch;
@@ -45,6 +46,7 @@ public class Example {
 
             op.foreach(args).subscribe(Subscribers.Just("completion(task) 4>"));
         }
+        Scheduler.Local().clear();
     }
 
 }

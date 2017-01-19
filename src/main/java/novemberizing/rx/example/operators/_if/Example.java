@@ -2,6 +2,7 @@ package novemberizing.rx.example.operators._if;
 
 import novemberizing.ds.func.Single;
 import novemberizing.rx.Operator;
+import novemberizing.rx.Scheduler;
 import novemberizing.rx.Subscribers;
 import novemberizing.rx.operators.Block;
 import novemberizing.rx.operators.If;
@@ -61,7 +62,7 @@ public class Example {
 
             op.foreach(args);
         }
-
+        Scheduler.Local().clear();
     }
 
 }

@@ -37,6 +37,7 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
         public T in(){ return in; }
 
         public final void next(Z o){
+            __task.out = o;
             __task.next(o);
         }
 
@@ -72,7 +73,7 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
         }
 
         @Override
-        protected void complete(Operator.Task<?, Z> task){
+        public void complete(Operator.Task<?, Z> task){
             complete();
         }
 
@@ -394,5 +395,19 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
         return Observable.Bulk(operator, list);
     }
 
+    protected static <T, Z> void Complete(Operator.Exec<T, Z> exec){
+        exec.complete();
+    }
 
+    protected static <T, Z> void Complete(Operator.Execs<T, Z> exec){
+        exec.complete();
+    }
+
+    public static <T> While<T> While(Block.Op<T, T> block, novemberizing.ds.func.Single<T, Boolean> condition){
+        return new While<>(block,condition);
+    }
+
+    public static <T> While<T> While(novemberizing.ds.func.Single<T, Boolean> condition, Block.Op<T, T> block){
+        return new While<>(condition, block);
+    }
 }

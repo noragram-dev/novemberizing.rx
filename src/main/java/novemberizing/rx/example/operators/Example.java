@@ -1,6 +1,7 @@
 package novemberizing.rx.example.operators;
 
 
+import novemberizing.rx.Scheduler;
 
 /**
  *
@@ -17,6 +18,8 @@ public class Example {
 //        novemberizing.rx.example.operators.chain.Example.main(args);
 //        novemberizing.rx.example.operators.block.Example.main(args);
 //        novemberizing.rx.example.operators._switch.Example.main(args);
-        novemberizing.rx.example.operators._if.Example.main(args);
+//        novemberizing.rx.example.operators._if.Example.main(args);
+        novemberizing.rx.example.operators._while.Example.main(args);
+        Scheduler.Local().clear();
     }
 }
