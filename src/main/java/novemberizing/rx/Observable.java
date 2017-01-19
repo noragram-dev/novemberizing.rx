@@ -1,5 +1,7 @@
 package novemberizing.rx;
 
+import com.google.gson.annotations.Expose;
+import novemberizing.ds.Executor;
 import novemberizing.ds.func.Single;
 import novemberizing.rx.functions.OnComplete;
 import novemberizing.rx.functions.OnError;
@@ -51,6 +53,14 @@ public class Observable<T> {
             }
             complete();
         }
+
+        @Override
+        protected void complete() {
+            if(!__completed){
+                __observable.emits.decrease();
+            }
+            super.complete();
+        }
     }
 
     protected static class Emits<T> extends Task<Collection<T>, T> {
@@ -82,6 +92,14 @@ public class Observable<T> {
                 }
             }
             complete();
+        }
+
+        @Override
+        protected void complete() {
+            if(!__completed){
+                __observable.emits.decrease(in.size());
+            }
+            super.complete();
         }
     }
 
@@ -141,6 +159,7 @@ public class Observable<T> {
     }
 
     private final LinkedHashSet<Observer<T>> __observers = new LinkedHashSet<>();
+    @Expose public final Counter emits = new Counter();
     protected T __current;
     protected Replayer<T> __replayer;
     protected Scheduler __observableOn = Scheduler.New();
@@ -203,8 +222,10 @@ public class Observable<T> {
         synchronized (this) {
             __current = snapshot(o);
         }
+        emits.increase();
         Emit<T> task = new Emit<>(o, this);
         __observableOn.dispatch(task);
+
         return task;
     }
 
@@ -216,9 +237,10 @@ public class Observable<T> {
         for(T item : items){
             objects.addLast(item);
         }
-
+        emits.increase(objects.size());
         Emits<T> task = new Emits<>(objects, this);
         __observableOn.dispatch(task);
+
         return task;
     }
 
@@ -227,16 +249,19 @@ public class Observable<T> {
         for(T item : items){
             objects.addLast(item);
         }
-
+        emits.increase(objects.size());
         Emits<T> task = new Emits<>(objects, this);
         __observableOn.dispatch(task);
+
         return task;
     }
 
     private Task<Collection<T>, T> bulk(Collection<T> items){
 
+        emits.increase(items.size());
         Emits<T> task = new Emits<>(items, this);
         __observableOn.dispatch(task);
+
         return task;
     }
 

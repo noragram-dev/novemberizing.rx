@@ -13,7 +13,7 @@ import java.util.LinkedList;
  */
 public abstract class Sync<T, U> extends Operator<T, U> {
     private static final String Tag = "Sync";
-    private final LinkedList<Operator.Task<T, U>> __tasks = new LinkedList<>();
+    private final LinkedList<Task<T, U>> __tasks = new LinkedList<>();
     private Operator.Task<T, U> __now;
 
     public Sync(){
