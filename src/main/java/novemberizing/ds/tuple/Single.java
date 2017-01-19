@@ -1,12 +1,14 @@
 package novemberizing.ds.tuple;
 
+import com.google.gson.annotations.Expose;
+
 /**
  *
  * @author novemberizing, me@novemberizing.net
  * @since 2017. 1. 18.
  */
 public class Single<A> extends Empty {
-    public A first;
+    @Expose public A first;
     public Single(){
         this.first = null;
     }
