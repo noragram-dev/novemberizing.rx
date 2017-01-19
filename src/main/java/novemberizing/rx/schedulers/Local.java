@@ -11,13 +11,13 @@ import novemberizing.ds.Factory;
  */
 public class Local extends Scheduler {
 
-    private static Factory<Scheduler> __factory = null;
-    private static ThreadLocal<Scheduler> __schedulers = new ThreadLocal<>();
+    private static Factory<novemberizing.rx.Scheduler> __factory = null;
+    private static ThreadLocal<novemberizing.rx.Scheduler> __schedulers = new ThreadLocal<>();
 
-    public static void Set(Factory<Scheduler> factory){ __factory = factory; }
+    public static void Set(Factory<novemberizing.rx.Scheduler> factory){ __factory = factory; }
 
-    public static Scheduler Get(){
-        Scheduler scheduler = __schedulers.get();
+    public static novemberizing.rx.Scheduler Get(){
+        novemberizing.rx.Scheduler scheduler = __schedulers.get();
         if(scheduler==null){
             scheduler = __factory!=null ? __factory.create() : new Local();
             if(scheduler==null){
