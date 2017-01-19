@@ -60,11 +60,6 @@ public class Block {
         return block.header(new Block.Header.Func<>(block,f));
     }
 
-    public static void main(String[] args){
-
-    }
-
-
     public static class Next<T, V, Z> extends Subscriber<V> {
         protected Operator.Task<T, Z> __task;
         protected Line<T, V, ?, Z> __next;

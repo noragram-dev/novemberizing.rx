@@ -15,7 +15,8 @@ public class Example {
 //        novemberizing.rx.example.operators.async.Example.main(args);
 //        novemberizing.rx.example.operators.composer.Example.main(args);
 //        novemberizing.rx.example.operators.chain.Example.main(args);
-        novemberizing.rx.example.operators.block.Example.main(args);
+//        novemberizing.rx.example.operators.block.Example.main(args);
 //        novemberizing.rx.example.operators._switch.Example.main(args);
+        novemberizing.rx.example.operators._if.Example.main(args);
     }
 }

@@ -3,10 +3,7 @@ package novemberizing.rx;
 import com.google.gson.annotations.Expose;
 import novemberizing.ds.Executor;
 import novemberizing.ds.func.Single;
-import novemberizing.rx.operators.Composer;
-import novemberizing.rx.operators.Condition;
-import novemberizing.rx.operators.Switch;
-import novemberizing.rx.operators.Sync;
+import novemberizing.rx.operators.*;
 import novemberizing.util.Log;
 
 import java.util.Collection;
@@ -371,16 +368,31 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
         };
     }
 
-//    public static <T, Z> Switch<T, Z> Switch(Single<T, Integer> hash){
-//        return new Switch<>(hash);
-//    }
+    public static <T, Z> Switch<T, Z> Switch(Single<T, Integer> hash){
+        return new Switch<>(hash);
+    }
 
-//    public static <T, Z> Block<T, Z> Block()
+    public static <T, Z> Block.Op<T, Z> Block(Single<T, Z> f){
+        return Block.<T, Z, Z>begin(f).ret(new Single<Z, Z>() {
+            @Override
+            public Z call(Z o) {
+                return o;
+            }
+        });
+    }
+
+
+    public static <T, Z> If<T, Z> If(Single<T, Boolean> condition, Block.Op<T, Z> block){
+        return new If<>(condition, block);
+    }
+
+    public static <T, Z> If<T, Z> If(Single<T, Boolean> condition, novemberizing.ds.func.Single<T, Z> f){
+        return new If<>(condition, f);
+    }
 
     protected static <T, Z> novemberizing.rx.Task<Collection<Z>, Z> Bulk(Operator<T, Z> operator, Collection<Z> list){
         return Observable.Bulk(operator, list);
     }
 
-//    protected static <Z> novemberizing.rx.Task<Collection<T>, Z>
 
 }
