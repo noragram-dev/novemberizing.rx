@@ -37,6 +37,7 @@ public class Map<K, V> extends Operator<novemberizing.ds.tuple.Pair<K, V>, novem
         synchronized (__map){
             __map.put(in.first, in.second);
         }
+        task.complete();
     }
 
     public Set<java.util.Map.Entry<K, V>> entries(){

@@ -14,7 +14,8 @@ hs_err_pid*
 .gradle
 /build/
 
-example/
+src/main/java/novemberizing/rx/example/
+src/main/java/novemberizing/rx/example
 
 # Ignore Gradle GUI config
 gradle-app.setting
