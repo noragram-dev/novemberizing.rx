@@ -14,17 +14,14 @@ public class While<T> extends Operator<T, T> {
 
     protected Block.Op<T, T> __block;
     protected novemberizing.ds.func.Single<T, Boolean> __condition;
-    protected boolean __do;
 
-    public While(Block.Op<T, T> block, novemberizing.ds.func.Single<T, Boolean> condition){
-        __do = true;
+    public While(novemberizing.ds.func.Single<T, Boolean> condition, Block.Op<T, T> block){
         __block = block;
         __condition = condition;
     }
 
-    public While(novemberizing.ds.func.Single<T, Boolean> condition, Block.Op<T, T> block){
-        __do = false;
-        __block = block;
+    public While(novemberizing.ds.func.Single<T, Boolean> condition, novemberizing.ds.func.Single<T, T> f){
+        __block = Operator.Block(f);
         __condition = condition;
     }
 
@@ -74,15 +71,11 @@ public class While<T> extends Operator<T, T> {
 
     @Override
     protected void on(Operator.Task<T, T> task, T in) {
-        if(__do){
+        if(__condition.call(in)){
             execute(__block, task, in);
         } else {
-            if(__condition.call(in)){
-                execute(__block, task, in);
-            } else {
-                task.next(in);
-                task.complete();
-            }
+            task.next(in);
+            task.complete();
         }
     }
 }

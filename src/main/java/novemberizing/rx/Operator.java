@@ -403,11 +403,19 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
         exec.complete();
     }
 
-    public static <T> While<T> While(Block.Op<T, T> block, novemberizing.ds.func.Single<T, Boolean> condition){
-        return new While<>(block,condition);
+    public static <T> Until<T> Until(Block.Op<T, T> block, novemberizing.ds.func.Single<T, Boolean> condition){
+        return new Until<>(block,condition);
     }
 
     public static <T> While<T> While(novemberizing.ds.func.Single<T, Boolean> condition, Block.Op<T, T> block){
         return new While<>(condition, block);
+    }
+
+    public static <T> Until<T> Until(novemberizing.ds.func.Single<T, T> f, novemberizing.ds.func.Single<T, Boolean> condition){
+        return new Until<>(f,condition);
+    }
+
+    public static <T> While<T> While(novemberizing.ds.func.Single<T, Boolean> condition, novemberizing.ds.func.Single<T, T> f){
+        return new While<>(condition, f);
     }
 }
