@@ -15,7 +15,7 @@ public class Example {
         Log.disable(Log.FLOW | Log.DEBUG);
 
 
-        novemberizing.rx.example.observables.Example.main(args);
+//        novemberizing.rx.example.observables.Example.main(args);
         novemberizing.rx.example.operators.Example.main(args);
     }
 }

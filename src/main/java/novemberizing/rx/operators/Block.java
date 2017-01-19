@@ -12,24 +12,390 @@ import java.util.LinkedList;
  * @author novemberizing, me@novemberizing.net
  * @since 2017. 1. 18.
  */
-@SuppressWarnings("WeakerAccess")
-public class Block<T, Z> extends Operator<T, Z> {
+@SuppressWarnings({"WeakerAccess", "DanglingJavadoc"})
+public class Block {
+    private static final String Tag = "Block";
 
-    /**
-     *
-     *
-     * Block.Func(...)
-     *
-     * Block.Run(...)
-     *
-     *
-     * Block.Call(...)
-     */
+    public static class Op<T, Z> extends Operator<T, Z> {
+        protected boolean __ret = false;
+        protected Header<T, ?, Z> __header = null;
 
-    @Override
-    protected void on(Task<T, Z> task, T in) {
+        public boolean ret(){ return __ret; }
+
+        protected void ret(boolean v){ __ret = v; }
+
+        @Override
+        protected void on(Task<T, Z> task, T in) {
+            __header.in(task, in);
+        }
+
+        protected Block.Header.On<T, Z> header(Block.Header.On<T, Z> on){
+            __header = on;
+            return on;
+        }
+
+        protected <U> Block.Header.Run<T, U, Z> header(Block.Header.Run<T, U, Z> run){
+            __header = run;
+            return run;
+        }
+
+        protected <U> Block.Header.Func<T, U, Z> header(Block.Header.Func<T, U, Z> func){
+            __header = func;
+            return func;
+        }
+    }
+
+    public static <T, Z> Block.Header.On<T, Z> begin(){
+        Block.Op<T, Z> block = new Block.Op<>();
+        return block.header(new Block.Header.On<>(block));
+    }
+
+    public static <T, U, Z> Block.Header.Run<T, U, Z> begin(novemberizing.ds.func.Empty<U> f){
+        Block.Op<T, Z> block = new Block.Op<>();
+        return block.header(new Block.Header.Run<>(block,f));
+    }
+
+    public static <T, U, Z> Block.Header.Func<T, U, Z> begin(novemberizing.ds.func.Single<T, U> f){
+        Block.Op<T, Z> block = new Block.Op<>();
+        return block.header(new Block.Header.Func<>(block,f));
+    }
+
+    public static void main(String[] args){
 
     }
+
+
+    public static class Next<T, V, Z> extends Subscriber<V> {
+        protected Operator.Task<T, Z> __task;
+        protected Line<T, V, ?, Z> __next;
+        protected final LinkedList<V> __items = new LinkedList<>();
+        protected novemberizing.ds.func.Pair<T, V, Boolean> __condition;
+        protected novemberizing.ds.func.Pair<T, V, V> __composer;
+
+        public Next(Operator.Task<T, Z> task, Block.Line<T, V, ?, Z> next, novemberizing.ds.func.Pair<T, V, Boolean> condition, novemberizing.ds.func.Pair<T, V, V> composer){
+            __task = task;
+            __next = next;
+            __condition = condition;
+            __composer = composer;
+        }
+
+        @Override
+        public void onNext(V o) {
+            synchronized (this){
+                if(__condition==null || __condition.call(__task.in(), o)) {
+                    __items.addLast(__composer!=null ? __composer.call(__task.in(), o) : o);
+                }
+            }
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            Log.e(Tag, e);
+        }
+
+        @Override
+        public void onComplete() {
+            if(__next!=null){
+                if(__items.size()>0){
+                    __next.bulk(__task, __items);
+                } else {
+                    Log.d(Tag, "return void");
+                    __task.complete();
+                }
+            } else {
+                Log.d(Tag, "return void");
+                __task.complete();
+            }
+        }
+    }
+
+    public static class Complete<T, Z> extends Subscriber<Z> {
+        protected Operator.Task<T, Z> __task;
+
+        public Complete(Operator.Task<T, Z> task){
+            __task = task;
+        }
+
+        @Override
+        public void onNext(Z o) {
+            __task.next(o);
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            __task.error(e);
+        }
+
+        @Override
+        public void onComplete() {
+            __task.complete();
+        }
+    }
+
+    public static class Line<T, U, V, Z> {
+        protected Operator<U, V> __operator;
+        protected Block.Op<T, Z> __parent;
+        protected Line<T, V, ?, Z> __next;
+        protected novemberizing.ds.func.Pair<T, V, V> __composer;
+        protected novemberizing.ds.func.Pair<T, V, Boolean> __condition;
+        /**
+         * ret()
+         * close()
+         */
+        public Line(Block.Op<T, Z> parent, Operator<U, V> operator){
+            __parent = parent;
+            __operator = operator;
+            __next = null;
+            __composer = null;
+            __condition = null;
+        }
+
+        public Line<T, U, V, Z> composer(novemberizing.ds.func.Pair<T, V, V> composer){
+            __composer = composer;
+            return this;
+        }
+
+        public Line<T, U, V, Z> condition(novemberizing.ds.func.Pair<T, V, Boolean> condition){
+            __condition = condition;
+            return this;
+        }
+
+        public <W> Line<T, V, W, Z> next(Operator<V, W> op){
+            Line<T, V, W, Z> next = new Line<>(__parent, op);
+            __next = next;
+            return next;
+        }
+
+        public <W> Line<T, V, W, Z> next(novemberizing.ds.func.Single<V,W> f){ return next(Operator.Op(f)); }
+
+        public Block.Op<T, Z>  ret(){
+            if(__parent.ret()){
+                Log.e(Tag, new RuntimeException("__parent.ret()"));
+                return __parent;
+            }
+            __parent.ret(true);
+            return __parent;
+        }
+
+        public Block.Op<T, Z>  ret(novemberizing.ds.func.Empty<Z> f){
+            return ret(new novemberizing.ds.func.Single<V, Z>(){
+                @Override
+                public Z call(V o) {
+                    return f.call();
+                }
+            });
+        }
+
+        public Block.Op<T, Z>  ret(novemberizing.ds.func.Single<V,Z> f){ return ret(Operator.Op(f)); }
+
+        public Block.Op<T, Z>  ret(Operator<V,Z> op){
+            if(__parent.ret()){
+                Log.e(Tag, new RuntimeException("__parent.ret()"));
+                return __parent;
+            }
+            __parent.ret(true);
+            __next = new Footer<>(__parent, op);
+            return __parent;
+        }
+
+        protected void exec(Operator.Task<T, Z> task, U o){
+            __operator.exec(o).subscribe(new Next<>(task, __next, __condition, __composer));
+        }
+        protected void bulk(Operator.Task<T, Z> task, Collection<U> items){
+            __operator.bulk(items).subscribe(new Next<>(task, __next, __condition, __composer));
+        }
+    }
+
+    public static class Footer<T, V, Z> extends Block.Line<T, V, Z, Z> {
+
+        public Footer(Op<T, Z> parent, Operator<V, Z> operator) {
+            super(parent, operator);
+        }
+
+        protected void exec(Operator.Task<T, Z> task, V o){
+            __operator.exec(o).subscribe(new Block.Complete<>(task));
+        }
+        protected void bulk(Operator.Task<T, Z> task, Collection<V> items){
+            __operator.bulk(items).subscribe(new Block.Complete<>(task));
+        }
+
+    }
+
+    protected static abstract class Header<T, U, Z> {
+        protected Block.Op<T, Z> __parent;
+        protected Line<T, U, ?, Z> __next;
+        protected novemberizing.ds.func.Pair<T, U, U> __composer;
+        protected novemberizing.ds.func.Pair<T, U, Boolean> __condition;
+
+        public Header(Op<T, Z> parent) {
+            __parent = parent;
+        }
+
+        protected abstract void in(Operator.Task<T, Z> task, T in);
+
+        public Header<T, U, Z> composer(novemberizing.ds.func.Pair<T, U, U> composer){
+            __composer = composer;
+            return this;
+        }
+
+        public Header<T, U, Z> condition(novemberizing.ds.func.Pair<T, U, Boolean> condition){
+            __condition = condition;
+            return this;
+        }
+
+        public <V> Line<T, U, V, Z> next(Operator<U, V> op){
+            Line<T, U, V, Z> next = new Line<>(__parent, op);
+            __next = next;
+            return next;
+        }
+
+        public <V> Line<T, U, V, Z> next(novemberizing.ds.func.Single<U, V> f){ return next(Operator.Op(f)); }
+
+        public Block.Op<T, Z>  ret(){
+            if(__parent.ret()){
+                Log.e(Tag, new RuntimeException("__parent.ret()"));
+                return __parent;
+            }
+            __parent.ret(true);
+            return __parent;
+        }
+
+        public Block.Op<T, Z>  ret(novemberizing.ds.func.Empty<Z> f){
+            return ret(new novemberizing.ds.func.Single<U, Z>(){
+                @Override
+                public Z call(U o) {
+                    return f.call();
+                }
+            });
+        }
+
+        public Block.Op<T, Z>  ret(novemberizing.ds.func.Single<U ,Z> f){ return ret(Operator.Op(f)); }
+
+        public Block.Op<T, Z>  ret(Operator<U ,Z> op){
+            if(__parent.ret()){
+                Log.e(Tag, new RuntimeException("__parent.ret()"));
+                return __parent;
+            }
+            __parent.ret(true);
+            __next = new Footer<>(__parent, op);
+            return __parent;
+        }
+
+        public static class Func<T, U, Z> extends Header<T, U, Z> {
+            private novemberizing.ds.func.Single<T, U> __func;
+
+            public Func(Op<T, Z> parent, novemberizing.ds.func.Single<T, U> f) {
+                super(parent);
+                __func = f;
+            }
+
+            @Override
+            protected void in(Operator.Task<T, Z> task, T in) {
+                __next.exec(task, __func.call(in));
+            }
+        }
+
+        public static class Run<T, U, Z> extends Header<T, U, Z> {
+            private novemberizing.ds.func.Empty<U> __func;
+
+            public Run(Op<T, Z> parent, novemberizing.ds.func.Empty<U> f) {
+                super(parent);
+                __func = f;
+            }
+
+            @Override
+            protected void in(Operator.Task<T, Z> task, T in) {
+                __next.exec(task, __func.call());
+            }
+        }
+
+        public static class On<T, Z> extends Header<T, T, Z> {
+
+            public On(Op<T, Z> parent) {
+                super(parent);
+            }
+
+            @Override
+            protected void in(Operator.Task<T, Z> task, T in) {
+                __next.exec(task, in);
+            }
+        }
+
+//        public static class Call<T, U, V, Z> extends Header<T, U, V, Z> {
+//            private novemberizing.ds.func.Empty<U> __func;
+//
+//            public Call(Op<T, Z> parent, novemberizing.ds.func.Empty<U> f, Operator<U, V> operator) {
+//                super(parent, operator);
+//                __func = f;
+//            }
+//
+//            @Override
+//            protected void in(Operator.Task<T, Z> task, T in) {
+//                __operator.exec(__func.call()).subscribe(new Next<>(task, __next, __condition, __composer));
+//            }
+//        }
+//
+//        public static class Func<T, U, V, Z> extends Header<T, U, V, Z> {
+//            private novemberizing.ds.func.Single<T, U> __func;
+//
+//            public Func(Op<T, Z> parent, novemberizing.ds.func.Single<T, U> f, Operator<U, V> operator) {
+//                super(parent, operator);
+//                __func = f;
+//            }
+//
+//            @Override
+//            protected void in(Operator.Task<T, Z> task, T in) {
+//                __operator.exec(__func.call(in)).subscribe(new Next<>(task, __next, __condition, __composer));
+//            }
+//        }
+    }
+
+
+
+//    public static class Header {
+//        public static class Line<T, Z> {
+//            public void exec(Operator.Task<T, Z> task, T in){
+//
+//            }
+//        }
+//
+//        public static class On<T, Z> extends Header.Line<T, Z> {
+//
+//        }
+//    }
+//
+//    public static class Op<T, Z> extends Operator<T, Z> {
+//        protected Header.Line<T, Z> __header;
+//
+//        @Override
+//        protected void on(Operator.Task<T, Z> task, T in) {
+//            __header.exec(task, in);
+//        }
+//    }
+//
+//    public static class On<T, Z> extends Op<T, Z> {
+//
+//        public Header.Line<T, Z> begin(){
+//            return null;
+//        }
+//    }
+//
+//    public static <T, U, Z> Block.On<T, Z> On(novemberizing.ds.func.Single<T, U> f){
+//        /**
+//         * T U
+//         */
+//    }
+//
+//    public static class void main(String[] args){
+//        Block.On
+////        Block.On()
+//    }
+
+//    public static class Func<T, Z> extends Operator<T, Z> {
+//
+//    }
+
+
 
 //    public static class Statement<T, Z, U, V> {
 //        private static final String Tag = "Statement";

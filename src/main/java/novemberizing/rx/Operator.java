@@ -32,7 +32,7 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
         }
     }
 
-    protected static class Task<T, Z> {
+    public static class Task<T, Z> {
         private Operator.Next<?, Z> __task;
         @Expose private final T in;
         private Operator<T, Z> __operator;
@@ -371,9 +371,9 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
         };
     }
 
-    public static <T, Z> Switch<T, Z> Switch(Single<T, Integer> hash){
-        return new Switch<>(hash);
-    }
+//    public static <T, Z> Switch<T, Z> Switch(Single<T, Integer> hash){
+//        return new Switch<>(hash);
+//    }
 
 //    public static <T, Z> Block<T, Z> Block()
 
