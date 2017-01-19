@@ -1,6 +1,6 @@
 package novemberizing.rx.example.operators.composer;
 
-import novemberizing.rx.Func;
+import novemberizing.ds.func.Single;
 import novemberizing.rx.Operator;
 import novemberizing.rx.Scheduler;
 import novemberizing.rx.Subscribers;
@@ -17,7 +17,7 @@ import static novemberizing.ds.Constant.Infinite;
 public class Example {
 
     public static void main(String[] args){
-        Operator<String, String> order = new Order<>(new Func<String, String>() {
+        Operator<String, String> order = new Order<>(new Single<String, String>() {
             @Override
             public String call(String o) {
                 return o + "th";
@@ -34,7 +34,7 @@ public class Example {
 
         Scheduler.Local().clear();
 
-        Operator<String, String> unorder = new Unorder<>(new Func<String, String>() {
+        Operator<String, String> unorder = new Unorder<>(new Single<String, String>() {
             @Override
             public String call(String o) {
                 return o + "th";

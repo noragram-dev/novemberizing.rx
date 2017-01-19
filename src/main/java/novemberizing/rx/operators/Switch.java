@@ -1,6 +1,6 @@
 package novemberizing.rx.operators;
 
-import novemberizing.rx.Func;
+import novemberizing.ds.func.Single;
 import novemberizing.rx.Operator;
 import novemberizing.rx.Subscriber;
 import novemberizing.util.Log;
@@ -15,11 +15,11 @@ import java.util.LinkedList;
  */
 public class Switch<T, Z> extends Operator<T, Z> {
     private static final String Tag = "Switch";
-    protected Func<T, Integer> __hash;
+    protected Single<T, Integer> __hash;
     protected HashMap<Integer, Block<T, Z>> __cases = new HashMap<>();
     protected Block<T, Z> __default;
 
-    public Switch(Func<T, Integer> hash){
+    public Switch(Single<T, Integer> hash){
         __hash = hash;
     }
 

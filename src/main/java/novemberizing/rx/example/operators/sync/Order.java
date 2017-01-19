@@ -1,6 +1,6 @@
 package novemberizing.rx.example.operators.sync;
 
-import novemberizing.rx.Func;
+import novemberizing.ds.func.Single;
 import novemberizing.rx.Operator;
 import novemberizing.rx.operators.Sync;
 
@@ -13,7 +13,7 @@ import java.util.Random;
  */
 public class Order<T, U> extends Sync<T, U> {
     private int __sleep = 100;
-    private Func<T, U> __func;
+    private Single<T, U> __func;
 
     @Override
     protected void on(Task<T, U> task, T in) {
@@ -32,7 +32,7 @@ public class Order<T, U> extends Sync<T, U> {
         }.start();
     }
 
-    public Order(Func<T, U> f){
+    public Order(Single<T, U> f){
         __func = f;
     }
 }

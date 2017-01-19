@@ -1,7 +1,7 @@
 package novemberizing.rx.example.operators.sync;
 
 
-import novemberizing.rx.Func;
+import novemberizing.ds.func.Single;
 import novemberizing.rx.Operator;
 import novemberizing.rx.Scheduler;
 import novemberizing.rx.Subscribers;
@@ -16,7 +16,7 @@ import static novemberizing.ds.Constant.Infinite;
 public class Example {
 
     public static void main(String[] args){
-        Operator<String, String> op = new Order<>(new Func<String, String>() {
+        Operator<String, String> op = new Order<>(new Single<String, String>() {
             @Override
             public String call(String o) {
                 return o + "th";

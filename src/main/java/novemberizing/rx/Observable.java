@@ -1,5 +1,6 @@
 package novemberizing.rx;
 
+import novemberizing.ds.func.Single;
 import novemberizing.rx.functions.OnComplete;
 import novemberizing.rx.functions.OnError;
 import novemberizing.rx.functions.OnNext;
@@ -338,7 +339,7 @@ public class Observable<T> {
         return this;
     }
 
-    public <Z> Operator<T, Z> subscribe(Func<T, Z> f){ return subscribe(Operator.Op(f)); }
+    public <Z> Operator<T, Z> subscribe(Single<T, Z> f){ return subscribe(Operator.Op(f)); }
 
     public <Z> Operator<T, Z> subscribe(novemberizing.ds.on.Pair<Operator.Task<T, Z>,T> f){ return subscribe(Operator.Op(f)); }
 
@@ -409,17 +410,17 @@ public class Observable<T> {
         });
     }
 
-    public <S> Operator<S, T> previous(Func<S, T> f){ return previous(Operator.Op(f)); }
+    public <S> Operator<S, T> previous(Single<S, T> f){ return previous(Operator.Op(f)); }
 
     public <S> Operator<S, T> previous(novemberizing.ds.on.Pair<Operator.Task<S, T>, S> f){
         return previous(Operator.Op(f));
     }
 
-    public <Z> Operator<T, Z> next(Func<T, Z> f){ return subscribe(f); }
+    public <Z> Operator<T, Z> next(Single<T, Z> f){ return subscribe(f); }
     public <Z> Operator<T, Z> next(Operator<T, Z> op){ return subscribe(op); }
     public <Z> Operator<T, Z> next(novemberizing.ds.on.Pair<Operator.Task<T, Z>,T> f){ return subscribe(f); }
 
-    public <Z> Sync<T, Z> sync(Func<T, Z> f){ return (Sync<T, Z>) subscribe(Operator.Sync(f)); }
+    public <Z> Sync<T, Z> sync(Single<T, Z> f){ return (Sync<T, Z>) subscribe(Operator.Sync(f)); }
     public <Z> Sync<T, Z> sync(novemberizing.ds.on.Pair<Operator.Task<T, Z>,T> f){ return (Sync<T, Z>) subscribe(Operator.Sync(f)); }
 
     public <U, Z> Composer<T, U, Z> compose(Observable<U> secondary, novemberizing.ds.func.Pair<T, U, Z> f){
@@ -430,7 +431,7 @@ public class Observable<T> {
         return (Condition<T, U, Z>) subscribe(Operator.Condition(observable,condition,f));
     }
 
-    public <Z> Operator<T, Z> condition(Func<T, Boolean> condition, Func<T, Z> f){
+    public <Z> Operator<T, Z> condition(Single<T, Boolean> condition, Single<T, Z> f){
         return subscribe(Operator.Condition(condition, f));
     }
 

@@ -1,6 +1,6 @@
 package novemberizing.rx.operators;
 
-import novemberizing.rx.Func;
+import novemberizing.ds.func.Single;
 import novemberizing.rx.Operator;
 import novemberizing.rx.Subscriber;
 import novemberizing.util.Log;
@@ -18,13 +18,13 @@ public class If<T, Z> extends Operator<T, Z> {
     private final If<T, Z> __self = this;
     private Block<T, Z> __else;
 
-    protected LinkedList<novemberizing.ds.tuple.Pair<Func<T, Boolean>,Block<T, Z>>> __conditions = new LinkedList<>();
+    protected LinkedList<novemberizing.ds.tuple.Pair<Single<T, Boolean>,Block<T, Z>>> __conditions = new LinkedList<>();
 
-    public If(Func<T, Boolean> condition, Block<T, Z> block){
+    public If(Single<T, Boolean> condition, Block<T, Z> block){
         __conditions.addLast(new novemberizing.ds.tuple.Pair<>(condition, block));
     }
 
-    public If<T, Z> _elseif(Func<T, Boolean> condition, Block<T, Z> block){
+    public If<T, Z> _elseif(Single<T, Boolean> condition, Block<T, Z> block){
         if(__else!=null) {
             Log.e(Tag, "__else!=null");
         } else {
@@ -44,7 +44,7 @@ public class If<T, Z> extends Operator<T, Z> {
 
     @Override
     protected void on(Task<T, Z> task, T in) {
-        for(novemberizing.ds.tuple.Pair<Func<T, Boolean>,Block<T, Z>> condition : __conditions){
+        for(novemberizing.ds.tuple.Pair<Single<T, Boolean>,Block<T, Z>> condition : __conditions){
             if(condition.first.call(in)){
                 condition.second.exec(in).subscribe(new Subscriber<Z>() {
                     private LinkedList<Z> __items = new LinkedList<>();

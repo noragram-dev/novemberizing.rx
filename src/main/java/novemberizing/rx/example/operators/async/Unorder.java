@@ -1,6 +1,6 @@
 package novemberizing.rx.example.operators.async;
 
-import novemberizing.rx.Func;
+import novemberizing.ds.func.Single;
 import novemberizing.rx.Operator;
 
 import java.util.Random;
@@ -12,7 +12,7 @@ import java.util.Random;
  */
 public class Unorder<T, U> extends Operator<T, U> {
     private int __sleep = 100;
-    private Func<T, U> __func;
+    private Single<T, U> __func;
 
     @Override
     protected void on(Task<T, U> task, T in) {
@@ -31,7 +31,7 @@ public class Unorder<T, U> extends Operator<T, U> {
         }.start();
     }
 
-    public Unorder(Func<T, U> f){
+    public Unorder(Single<T, U> f){
         __func = f;
     }
 }

@@ -1,6 +1,9 @@
 package novemberizing.rx.example.operators.append;
 
-import novemberizing.rx.*;
+import novemberizing.ds.func.Single;
+import novemberizing.rx.Operator;
+import novemberizing.rx.Subscribers;
+import novemberizing.rx.Scheduler;
 
 import static novemberizing.ds.Constant.Infinite;
 
@@ -12,7 +15,7 @@ import static novemberizing.ds.Constant.Infinite;
 public class Example {
 
     public static void main(String[] args){
-        Operator<String, String> op = Operator.Op(new Func<String, String>() {
+        Operator<String, String> op = Operator.Op(new Single<String, String>() {
             @Override
             public String call(String o) {
                 return o + "th";

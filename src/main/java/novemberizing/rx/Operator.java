@@ -2,6 +2,7 @@ package novemberizing.rx;
 
 import com.google.gson.annotations.Expose;
 import novemberizing.ds.Executor;
+import novemberizing.ds.func.Single;
 import novemberizing.rx.operators.Composer;
 import novemberizing.rx.operators.Condition;
 import novemberizing.rx.operators.Switch;
@@ -290,7 +291,7 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
         }
     }
 
-    public static <T, Z> Operator<T, Z> Op(Func<T, Z> f){
+    public static <T, Z> Operator<T, Z> Op(Single<T, Z> f){
         return new Operator<T, Z>() {
             @Override
             public void on(Task<T, Z> task, T in) {
@@ -318,7 +319,7 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
         };
     }
 
-    public static <T, Z> Sync<T, Z> Sync(Func<T, Z> f){
+    public static <T, Z> Sync<T, Z> Sync(Single<T, Z> f){
         return new Sync<T, Z>() {
             @Override
             protected void on(Task<T, Z> task, T in) {
@@ -354,7 +355,7 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
         return new Condition<>(observable,condition,f);
     }
 
-    public static <T, Z> Operator<T, Z> Condition(Func<T, Boolean> condition, Func<T, Z> f){
+    public static <T, Z> Operator<T, Z> Condition(Single<T, Boolean> condition, Single<T, Z> f){
         return new Operator<T, Z>() {
             @Override
             protected void on(Task<T, Z> task, T in) {
@@ -370,7 +371,7 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
         };
     }
 
-    public static <T, Z> Switch<T, Z> Switch(Func<T, Integer> hash){
+    public static <T, Z> Switch<T, Z> Switch(Single<T, Integer> hash){
         return new Switch<>(hash);
     }
 
