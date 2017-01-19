@@ -1,6 +1,7 @@
 package novemberizing.rx.schedulers;
 
 import novemberizing.ds.ConditionalList;
+import novemberizing.ds.Cyclable;
 import novemberizing.ds.Executable;
 import novemberizing.util.Log;
 
@@ -11,7 +12,8 @@ import java.util.HashSet;
  * @author novemberizing, me@novemberizing.net
  * @since 2017. 1. 17.
  */
-class Scheduler extends novemberizing.rx.Scheduler {
+@SuppressWarnings("WeakerAccess")
+class Scheduler extends novemberizing.rx.Scheduler implements Cyclable {
     private static final String Tag = "Scheduler";
 
     protected ConditionalList<Executable> __q;
