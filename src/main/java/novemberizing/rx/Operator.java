@@ -319,6 +319,30 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
         };
     }
 
+//    public static <T, Z> Operator<T, Z> Op(Operator<T, Z> op){
+//        return new Operator<T, Z>() {
+//            @Override
+//            protected void on(Task<T, Z> task, T in) {
+//                op.exec(in).subscribe(new Subscriber<Z>() {
+//                    @Override
+//                    public void onNext(Z o) {
+//                        task.next(o);
+//                    }
+//
+//                    @Override
+//                    public void onError(Throwable e) {
+//                        task.error(e);
+//                    }
+//
+//                    @Override
+//                    public void onComplete() {
+//                        task.complete();
+//                    }
+//                });
+//            }
+//        };
+//    }
+
     public static <T, Z> Sync<T, Z> Sync(Single<T, Z> f){
         return new Sync<T, Z>() {
             @Override
