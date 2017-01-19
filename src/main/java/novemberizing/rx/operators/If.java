@@ -28,6 +28,10 @@ public class If<T, Z> extends Operator<T, Z> {
         __conditions.addLast(new novemberizing.ds.tuple.Pair<>(condition, Operator.Block(f)));
     }
 
+    public If(Single<T, Boolean> condition, Operator<T, Z> op){
+        __conditions.addLast(new novemberizing.ds.tuple.Pair<>(condition, Operator.Block(op)));
+    }
+
     public If<T, Z> _elseif(Single<T, Boolean> condition, Block.Op<T, Z> block){
         if(__else!=null) {
             Log.e(Tag, "__else!=null");
@@ -46,6 +50,15 @@ public class If<T, Z> extends Operator<T, Z> {
         return this;
     }
 
+    public If<T, Z> _elseif(Single<T, Boolean> condition, Operator<T, Z> op){
+        if(__else!=null) {
+            Log.e(Tag, "__else!=null");
+        } else {
+            __conditions.addLast(new novemberizing.ds.tuple.Pair<>(condition, Operator.Block(op)));
+        }
+        return this;
+    }
+
     public If<T, Z> _else(Block.Op<T, Z> block){
         if(__else!=null){
             Log.e(Tag, "__else!=null");
@@ -60,6 +73,15 @@ public class If<T, Z> extends Operator<T, Z> {
             Log.e(Tag, "__else!=null");
         } else {
             __else = Operator.Block(f);
+        }
+        return this;
+    }
+
+    public If<T, Z> _else(Operator<T, Z> op){
+        if(__else!=null){
+            Log.e(Tag, "__else!=null");
+        } else {
+            __else = Operator.Block(op);
         }
         return this;
     }

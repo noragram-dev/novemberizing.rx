@@ -44,6 +44,17 @@ public class Switch<T, Z> extends Operator<T, Z> {
         return this;
     }
 
+    public Switch<T, Z> _case(int i, Operator<T, Z> op){
+        if(__default!=null){
+            Log.e(Tag, "__default!=null");
+        } else if(__cases.get(i)!=null) {
+            Log.e(Tag, "__case is exist");
+        } else {
+            __cases.put(i, Operator.Block(op));
+        }
+        return this;
+    }
+
     public Switch<T, Z> _default(Block.Op<T, Z> block){
         if(__default!=null){
             Log.e(Tag, "__default!=null");
@@ -59,6 +70,15 @@ public class Switch<T, Z> extends Operator<T, Z> {
             Log.e(Tag, "__default!=null");
         } else {
             __default = Operator.Block(f);
+        }
+        return this;
+    }
+
+    public Switch<T, Z> _default(Operator<T, Z> op){
+        if(__default!=null){
+            Log.e(Tag, "__default!=null");
+        } else {
+            __default = Operator.Block(op);
         }
         return this;
     }

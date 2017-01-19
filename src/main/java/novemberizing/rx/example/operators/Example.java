@@ -19,7 +19,9 @@ public class Example {
 //        novemberizing.rx.example.operators.block.Example.main(args);
 //        novemberizing.rx.example.operators._switch.Example.main(args);
 //        novemberizing.rx.example.operators._if.Example.main(args);
-        novemberizing.rx.example.operators._while.Example.main(args);
+//        novemberizing.rx.example.operators._while.Example.main(args);
+        novemberizing.rx.example.operators._for.Example.main(args);
         Scheduler.Local().clear();
     }
 }
+

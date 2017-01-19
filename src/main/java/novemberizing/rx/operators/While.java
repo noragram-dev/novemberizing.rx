@@ -25,6 +25,11 @@ public class While<T> extends Operator<T, T> {
         __condition = condition;
     }
 
+    public While(novemberizing.ds.func.Single<T, Boolean> condition, Operator<T, T> op){
+        __block = Operator.Block(op);
+        __condition = condition;
+    }
+
     public void execute(Block.Op<T, T> block, Operator.Task<T, T> task, T in){
         Log.f(Tag, "");
         Exec<T, T> exec = (Exec<T, T>) block.exec(in);
@@ -63,6 +68,9 @@ public class While<T> extends Operator<T, T> {
                         execute(block, task, exec.in);
                     }
                 } else {
+                    if(!executed()){
+                        task.next(exec.in);
+                    }
                     task.complete();
                 }
             }

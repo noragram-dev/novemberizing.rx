@@ -2,6 +2,8 @@ package novemberizing.rx;
 
 import com.google.gson.annotations.Expose;
 import novemberizing.ds.Executor;
+import novemberizing.ds.func.Empty;
+import novemberizing.ds.func.Pair;
 import novemberizing.ds.func.Single;
 import novemberizing.rx.operators.*;
 import novemberizing.util.Log;
@@ -382,6 +384,20 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
         });
     }
 
+    public static <T, Z> Block.Op<T, Z> Block(Operator<T, Z> op){
+        return Block.<T, T, Z>begin(new Single<T, T>(){
+            @Override
+            public T call(T o) {
+                return o;
+            }
+        }).next(op).ret(new Single<Z, Z>() {
+            @Override
+            public Z call(Z o) {
+                return o;
+            }
+        });
+    }
+
 
     public static <T, Z> If<T, Z> If(Single<T, Boolean> condition, Block.Op<T, Z> block){
         return new If<>(condition, block);
@@ -389,6 +405,10 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
 
     public static <T, Z> If<T, Z> If(Single<T, Boolean> condition, novemberizing.ds.func.Single<T, Z> f){
         return new If<>(condition, f);
+    }
+
+    public static <T, Z> If<T, Z> If(Single<T, Boolean> condition, Operator<T, Z> op){
+        return new If<>(condition, op);
     }
 
     protected static <T, Z> novemberizing.rx.Task<Collection<Z>, Z> Bulk(Operator<T, Z> operator, Collection<Z> list){
@@ -407,15 +427,35 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
         return new Until<>(block,condition);
     }
 
-    public static <T> While<T> While(novemberizing.ds.func.Single<T, Boolean> condition, Block.Op<T, T> block){
-        return new While<>(condition, block);
-    }
-
     public static <T> Until<T> Until(novemberizing.ds.func.Single<T, T> f, novemberizing.ds.func.Single<T, Boolean> condition){
         return new Until<>(f,condition);
     }
 
+    public static <T> Until<T> Until(Operator<T, T> op, novemberizing.ds.func.Single<T, Boolean> condition){
+        return new Until<>(op,condition);
+    }
+
+    public static <T> While<T> While(novemberizing.ds.func.Single<T, Boolean> condition, Block.Op<T, T> block){
+        return new While<>(condition, block);
+    }
+
     public static <T> While<T> While(novemberizing.ds.func.Single<T, Boolean> condition, novemberizing.ds.func.Single<T, T> f){
         return new While<>(condition, f);
+    }
+
+    public static <T> While<T> While(novemberizing.ds.func.Single<T, Boolean> condition, Operator<T, T> f){
+        return new While<>(condition, f);
+    }
+
+    public static <T, U> For<T, U> For(Empty<U> initializer, Pair<T, U, Boolean> condition, Single<U, U> internal, novemberizing.ds.func.Single<T, T> external){
+        return new For<>(initializer, condition, internal, external);
+    }
+
+    public static <T, U> For<T, U> For(Empty<U> initializer, Pair<T, U, Boolean> condition, Single<U, U> internal, Operator<T, T> external){
+        return new For<>(initializer, condition, internal, external);
+    }
+
+    public static <T, U> For<T, U> For(Empty<U> initializer, Pair<T, U, Boolean> condition, Single<U, U> internal, Block.Op<T, T> external){
+        return new For<>(initializer, condition, internal, external);
     }
 }
