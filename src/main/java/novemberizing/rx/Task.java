@@ -2,6 +2,10 @@ package novemberizing.rx;
 
 import novemberizing.ds.Executable;
 import novemberizing.ds.Executor;
+import novemberizing.ds.func.Single;
+import novemberizing.rx.operators.Composer;
+import novemberizing.rx.operators.Condition;
+import novemberizing.rx.operators.Sync;
 import novemberizing.util.Log;
 
 import static novemberizing.ds.Constant.Infinite;
@@ -105,4 +109,54 @@ public abstract class Task<T, Z> implements Executable {
 
     public Observable<Z> unsubscribe(Observer<Z> observer){ return __completionPort!=null ? __completionPort.unsubscribe(observer) : null; }
     public Observable<Z> unsubscribe(){ return __completionPort!=null ? __completionPort.unsubscribe() : null; }
+
+
+    public <U> Sync<Z, U> sync(Single<Z, U> f){
+        if(__completionPort==null){
+            __completionPort = new Observable<>(__replayer);
+        }
+        return (Sync<Z, U>) __completionPort.subscribe(Operator.Sync(f));
+    }
+    public <U> Sync<Z, U> sync(novemberizing.ds.on.Pair<Operator.Task<Z, U>, Z> f){
+        if(__completionPort==null){
+            __completionPort = new Observable<>(__replayer);
+        }
+        return (Sync<Z, U>) __completionPort.subscribe(Operator.Sync(f));
+    }
+
+    public <U, V> Composer<Z, U, V> compose(Observable<U> secondary, novemberizing.ds.func.Pair<Z, U, V> f){
+        if(__completionPort==null){
+            __completionPort = new Observable<>(__replayer);
+        }
+        return (Composer<Z, U, V>) __completionPort.subscribe(Operator.Composer(secondary,f));
+    }
+
+    public <U, V> Condition<Z, U, V> condition(Observable<U> observable, novemberizing.ds.func.Pair<Z, U, Boolean> condition , novemberizing.ds.func.Pair<Z, U, V> f){
+        if(__completionPort==null){
+            __completionPort = new Observable<>(__replayer);
+        }
+        return (Condition<Z, U, V>) __completionPort.subscribe(Operator.Condition(observable,condition,f));
+    }
+
+    public <U> Operator<Z, U> condition(Single<Z, Boolean> condition, Single<Z, U> f){
+        if(__completionPort==null){
+            __completionPort = new Observable<>(__replayer);
+        }
+        return __completionPort.subscribe(Operator.Condition(condition, f));
+    }
+
+    public Observable<Z> replay(int limit){
+        if(__completionPort==null){
+            __completionPort = new Observable<>(__replayer);
+        }
+        if(limit==0){
+            __completionPort.__replayer = null;
+        } else if(__replayer==null){
+            __completionPort.__replayer = new Replayer<>(limit);
+        } else {
+            __completionPort.__replayer.limit(limit);
+        }
+        return __completionPort;
+    }
+
 }
