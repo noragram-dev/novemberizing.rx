@@ -2,6 +2,9 @@ package novemberizing.rx;
 
 import com.google.gson.annotations.Expose;
 import novemberizing.ds.Executor;
+import novemberizing.ds.Func;
+import novemberizing.ds.On;
+import novemberizing.ds.Tuple;
 import novemberizing.ds.func.Empty;
 import novemberizing.ds.func.Pair;
 import novemberizing.ds.func.Single;
@@ -25,6 +28,8 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
         protected void complete(Operator.Task<?, Z> task){
             complete();
         }
+
+
 
         public Next(T in) {
             super(in);
@@ -166,12 +171,6 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
         return this;
     }
 
-    protected Operator.Next<?, U> re(Operator.Task<T, U> task){
-        task.__task.__executed = false;
-        __observableOn.dispatch(task.__task);
-        return task.__task;
-    }
-
     protected void in(Operator.Next<?, U> next, Operator.Task<T, U> task){
         on(task, task.in());
     }
@@ -299,6 +298,61 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
         } else {
             Log.d(Tag, this, null, "observable==null");
         }
+    }
+
+
+    public static <Z> Req<novemberizing.ds.tuple.Empty, Z> Req(novemberizing.ds.func.Empty<Z> func, novemberizing.ds.on.Single<Z> ret){
+        return null;
+    }
+
+    public static <A, Z> Req<novemberizing.ds.tuple.Single<A>, Z> Req(A first, novemberizing.ds.func.Single<A, Z> func, novemberizing.ds.on.Single<Z> ret){
+
+
+        /**
+         * first, func call
+         */
+        return null;
+    }
+
+    public static <A, B, Z> Req<novemberizing.ds.tuple.Pair<A, B>, Z> Req(A first, B second, novemberizing.ds.func.Pair<A, B, Z> func, novemberizing.ds.on.Single<Z> ret){
+        return null;
+    }
+
+    public static <A, B, C, Z> Req<novemberizing.ds.tuple.Triple<A, B, C>, Z> Req(A first, B second, C third ,novemberizing.ds.func.Triple<A, B, C, Z> func, novemberizing.ds.on.Single<Z> ret){
+        return null;
+    }
+
+    /**
+     *
+     * @param ret
+     * @param <Z>
+     * @return
+     */
+
+    public static <Z> Req<novemberizing.ds.tuple.Empty, Z> Req(novemberizing.ds.on.Single<novemberizing.ds.on.Single<Z>> on, novemberizing.ds.on.Single<Z> ret){
+        return null;
+    }
+
+    /**
+     *
+     * @param first
+     * @param func
+     * @param ret
+     * @param <A>
+     * @param <Z>
+     * @return
+     */
+
+    public static <A, Z> Req<novemberizing.ds.tuple.Single<A>, Z> Req(A first, novemberizing.ds.on.Single<A> func, novemberizing.ds.on.Single<Z> ret){
+        return null;
+    }
+
+    public static <A, B, Z> Req<novemberizing.ds.tuple.Pair<A, B>, Z> Req(A first, B second, novemberizing.ds.on.Pair<A, B> func, novemberizing.ds.on.Single<Z> ret){
+        return null;
+    }
+
+    public static <A, B, C, Z> Req<novemberizing.ds.tuple.Triple<A, B, C>, Z> Req(A first, B second, C third ,novemberizing.ds.on.Triple<A, B, C> func, novemberizing.ds.on.Single<Z> ret){
+        return null;
     }
 
     public static <T, Z> Operator<T, Z> Op(Single<T, Z> f){
