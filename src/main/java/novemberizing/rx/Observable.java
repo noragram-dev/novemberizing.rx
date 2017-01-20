@@ -221,7 +221,12 @@ public class Observable<T> {
     protected Req<T> req(Req<T> req){
         requests.increase();
         req.set(this);
-        req.exec();
+        Scheduler current = Scheduler.Self();
+        if(current==__observableOn) {
+            req.exec();
+        } else {
+            __observableOn.dispatch(req);
+        }
         return req;
     }
 

@@ -47,10 +47,10 @@ public abstract class Task<T, Z> implements Executable {
             __completed = true;
             __executor = null;
 
-            __replayer.complete(out);
-
             if (__completionPort != null) {
                 __completionPort.complete();
+            } else {
+                __replayer.complete(out);
             }
 
             if (executor != null) {
@@ -87,16 +87,19 @@ public abstract class Task<T, Z> implements Executable {
     public boolean completed() { return __completed; }
 
     public void next(Z o) {
-        __replayer.add(o);
+
         if (__completionPort != null) {
             __completionPort.emit(o);
+        } else {
+            __replayer.add(o);
         }
     }
 
     public void error(Throwable e) {
-        __replayer.error(e);
         if (__completionPort != null) {
             __completionPort.error(e);
+        } else {
+            __replayer.error(e);
         }
     }
 
