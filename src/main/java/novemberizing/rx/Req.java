@@ -60,7 +60,7 @@ public class Req<Z> implements Executable {
                 }
             }
         };
-        __req = new On.Exec.Single<>(Tuple.New(first), on, __ret);
+        __req = new On.Exec.Single<>(new novemberizing.ds.tuple.Single<>(first), on, __ret);
         __observable = null;
         __completionPort = null;
         __replayer = new Replayer<>(Infinite);
@@ -81,7 +81,7 @@ public class Req<Z> implements Executable {
                 }
             }
         };
-        __req = new On.Exec.Pair<>(Tuple.New(first, second), on, __ret);
+        __req = new On.Exec.Pair<>(new novemberizing.ds.tuple.Pair<>(first, second), on, __ret);
         __observable = null;
         __completionPort = null;
         __replayer = new Replayer<>(Infinite);
@@ -102,7 +102,7 @@ public class Req<Z> implements Executable {
                 }
             }
         };
-        __req = new On.Exec.Triple<>(Tuple.New(first, second, third), on, __ret);
+        __req = new On.Exec.Triple<>(new novemberizing.ds.tuple.Triple<>(first, second, third), on, __ret);
         __observable = null;
         __completionPort = null;
         __replayer = new Replayer<>(Infinite);
@@ -148,7 +148,7 @@ public class Req<Z> implements Executable {
                 }
             }
         };
-        __req = new Func.Exec.Single<>(Tuple.New(first), func, __ret);
+        __req = new Func.Exec.Single<>(new novemberizing.ds.tuple.Single<>(first), func, __ret);
         __observable = null;
         __completionPort = null;
         __replayer = new Replayer<>(Infinite);
@@ -171,7 +171,7 @@ public class Req<Z> implements Executable {
                 }
             }
         };
-        __req = new Func.Exec.Pair<>(Tuple.New(first, second), func, __ret);
+        __req = new Func.Exec.Pair<>(new novemberizing.ds.tuple.Pair<>(first, second), func, __ret);
         __observable = null;
         __completionPort = null;
         __replayer = new Replayer<>(Infinite);
@@ -194,7 +194,7 @@ public class Req<Z> implements Executable {
                 }
             }
         };
-        __req = new Func.Exec.Triple<>(Tuple.New(first, second, third), func, __ret);
+        __req = new Func.Exec.Triple<>(new novemberizing.ds.tuple.Triple<>(first, second, third), func, __ret);
         __observable = null;
         __completionPort = null;
         __replayer = new Replayer<>(Infinite);
