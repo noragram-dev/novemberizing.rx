@@ -25,12 +25,9 @@ public class Req<Z> {
             @Override
             public void on(Res<Z> o) {
                 try {
-                    __out = o.out();
-                    __observable.emit(o.out());
-                    __replayer.add(o.out());
+                    next(o.out());
                 } catch(Exception e){
-                    __observable.error(e);
-                    __replayer.error(e);
+                    error(e);
                 }
             }
         };
@@ -45,12 +42,9 @@ public class Req<Z> {
             @Override
             public void on(Res<Z> o) {
                 try {
-                    __out = o.out();
-                    __observable.emit(o.out());
-                    __replayer.add(o.out());
+                    next(o.out());
                 } catch(Exception e){
-                    __observable.error(e);
-                    __replayer.error(e);
+                    error(e);
                 }
             }
         };
@@ -65,12 +59,9 @@ public class Req<Z> {
             @Override
             public void on(Res<Z> o) {
                 try {
-                    __out = o.out();
-                    __observable.emit(o.out());
-                    __replayer.add(o.out());
+                    next(o.out());
                 } catch(Exception e){
-                    __observable.error(e);
-                    __replayer.error(e);
+                    error(e);
                 }
             }
         };
@@ -85,12 +76,9 @@ public class Req<Z> {
             @Override
             public void on(Res<Z> o) {
                 try {
-                    __out = o.out();
-                    __observable.emit(o.out());
-                    __replayer.add(o.out());
+                    next(o.out());
                 } catch(Exception e){
-                    __observable.error(e);
-                    __replayer.error(e);
+                    error(e);
                 }
             }
         };
@@ -105,15 +93,11 @@ public class Req<Z> {
             @Override
             public void on(Res<Z> o) {
                 try {
-                    __out = o.out();
-                    __observable.emit(o.out());
-                    __replayer.add(o.out());
+                    next(o.out());
                 } catch(Exception e){
-                    __observable.error(e);
-                    __replayer.error(e);
+                    error(e);
                 } finally {
-                    o.complete();
-                    __replayer.complete(o.out());
+                    complete();
                 }
             }
         };
@@ -128,15 +112,11 @@ public class Req<Z> {
             @Override
             public void on(Res<Z> o) {
                 try {
-                    __out = o.out();
-                    __observable.emit(o.out());
-                    __replayer.add(o.out());
+                    next(o.out());
                 } catch(Exception e){
-                    __observable.error(e);
-                    __replayer.error(e);
+                    error(e);
                 } finally {
-                    o.complete();
-                    __replayer.complete(o.out());
+                    complete();
                 }
             }
         };
@@ -151,15 +131,11 @@ public class Req<Z> {
             @Override
             public void on(Res<Z> o) {
                 try {
-                    __out = o.out();
-                    __observable.emit(o.out());
-                    __replayer.add(o.out());
+                    next(o.out());
                 } catch(Exception e){
-                    __observable.error(e);
-                    __replayer.error(e);
+                    error(e);
                 } finally {
-                    o.complete();
-                    __replayer.complete(o.out());
+                    complete();
                 }
             }
         };
@@ -174,15 +150,11 @@ public class Req<Z> {
             @Override
             public void on(Res<Z> o) {
                 try {
-                    __out = o.out();
-                    __observable.emit(o.out());
-                    __replayer.add(o.out());
+                    next(o.out());
                 } catch(Exception e){
-                    __observable.error(e);
-                    __replayer.error(e);
+                    error(e);
                 } finally {
-                    o.complete();
-                    __replayer.complete(o.out());
+                    complete();
                 }
             }
         };
@@ -200,9 +172,23 @@ public class Req<Z> {
         try {
             __req.exec();
         } catch(Exception e){
-            __observable.error(e);
-            __replayer.error(e);
-            __replayer.complete(__out);
+            error(e);
+            complete();
         }
+    }
+
+    private void error(Throwable e){
+        __observable.error(e);
+        __replayer.error(e);
+    }
+
+    private void next(Z o){
+        __out = o;
+        __observable.emit(o);
+        __replayer.add(o);
+    }
+
+    private void complete(){
+        __replayer.complete(__out);
     }
 }
