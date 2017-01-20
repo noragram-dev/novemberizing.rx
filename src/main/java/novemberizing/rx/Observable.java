@@ -161,7 +161,7 @@ public class Observable<T> {
     private final LinkedHashSet<Observer<T>> __observers = new LinkedHashSet<>();
     @Expose public final Counter emits = new Counter();
     @Expose public final Counter requests = new Counter();
-    protected T __current;
+    @Expose protected T __current;
     protected Replayer<T> __replayer;
     protected Scheduler __observableOn = Scheduler.New();
     protected boolean __completed = false;
@@ -290,6 +290,14 @@ public class Observable<T> {
         return task;
     }
 
+    protected void onStart(){
+
+    }
+
+    protected void onStop(){
+
+    }
+
     public Observable<T> subscribe(OnNext<T> onNext){
         return subscribe(new Subscribers.Just<T>(){
             @Override
@@ -367,6 +375,9 @@ public class Observable<T> {
                     if(__replayer!=null){
                         __replayer.replay(observer);
                     }
+                    if(__observers.size()==1){
+                        onStart();
+                    }
                 } else {
                     Log.d(Tag, this, observer, "__observers.add(observer)==false");
                 }
@@ -388,6 +399,9 @@ public class Observable<T> {
                     onSubscribe(operator,this);
                     if(__replayer!=null){
                         __replayer.replay(operator);
+                    }
+                    if(__observers.size()==0){
+                        onStop();
                     }
                 } else {
                     Log.d(Tag, this, operator, "__observers.add(observer)==false");
