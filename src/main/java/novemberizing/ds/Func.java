@@ -16,7 +16,8 @@ public interface Func {
                 __ret.on(__func.call());
             }
 
-            public Empty(novemberizing.ds.func.Empty<Z> func, novemberizing.ds.on.Single<Z> ret){
+            public Empty(novemberizing.ds.func.Empty<Z> func,
+                         novemberizing.ds.on.Single<Z> ret){
                 __func = func;
                 __ret = ret;
             }

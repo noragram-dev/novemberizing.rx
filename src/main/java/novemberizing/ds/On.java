@@ -7,10 +7,11 @@ package novemberizing.ds;
  */
 public interface On {
     class Exec {
-        public static class Empty<Z> {
+        public static class Empty<Z> implements novemberizing.ds.Exec  {
             private novemberizing.ds.on.Single<novemberizing.ds.on.Single<Z>> __on;
             private novemberizing.ds.on.Single<Z> __ret;
 
+            @Override
             public void exec(){
                 __on.on(__ret);
             }
@@ -21,11 +22,12 @@ public interface On {
             }
         }
 
-        public static class Single<A, Z> {
+        public static class Single<A, Z> implements novemberizing.ds.Exec  {
             private novemberizing.ds.tuple.Single<A> __tuple;
             private novemberizing.ds.on.Pair<A, novemberizing.ds.on.Single<Z>> __on;
             private novemberizing.ds.on.Single<Z> __ret;
 
+            @Override
             public void exec(){
                 __on.on(__tuple.first, __ret);
             }
@@ -37,11 +39,12 @@ public interface On {
             }
         }
 
-        public static class Pair<A, B, Z> {
+        public static class Pair<A, B, Z> implements novemberizing.ds.Exec  {
             private novemberizing.ds.tuple.Pair<A, B> __tuple;
             private novemberizing.ds.on.Triple<A, B, novemberizing.ds.on.Single<Z>> __on;
             private novemberizing.ds.on.Single<Z> __ret;
 
+            @Override
             public void exec(){
                 __on.on(__tuple.first, __tuple.second, __ret);
             }
@@ -53,11 +56,12 @@ public interface On {
             }
         }
 
-        public static class Triple<A, B, C, Z> {
+        public static class Triple<A, B, C, Z> implements novemberizing.ds.Exec  {
             private novemberizing.ds.tuple.Triple<A, B, C> __tuple;
             private novemberizing.ds.on.Quadruple<A, B, C, novemberizing.ds.on.Single<Z>> __on;
             private novemberizing.ds.on.Single<Z> __ret;
 
+            @Override
             public void exec(){
                 __on.on(__tuple.first, __tuple.second, __tuple.third, __ret);
             }
