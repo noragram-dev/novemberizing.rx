@@ -301,36 +301,36 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
     }
 
 
-    public static <Z> Req<novemberizing.ds.tuple.Empty, Z> Req(novemberizing.ds.func.Empty<Z> func){
-        return null;
+    public static <Z> Req<Z> Req(novemberizing.ds.func.Empty<Z> func){
+        return new Req<>(func);
     }
 
-    public static <A, Z> Req<novemberizing.ds.tuple.Single<A>, Z> Req(A first, novemberizing.ds.func.Single<A, Z> func){
-        return null;
+    public static <A, Z> Req<Z> Req(A first, novemberizing.ds.func.Single<A, Z> func){
+        return new Req<>(first, func);
     }
 
-    public static <A, B, Z> Req<novemberizing.ds.tuple.Pair<A, B>, Z> Req(A first, B second, novemberizing.ds.func.Pair<A, B, Z> func){
-        return null;
+    public static <A, B, Z> Req<Z> Req(A first, B second, novemberizing.ds.func.Pair<A, B, Z> func){
+        return new Req<>(first, second, func);
     }
 
-    public static <A, B, C, Z> Req<novemberizing.ds.tuple.Triple<A, B, C>, Z> Req(A first, B second, C third ,novemberizing.ds.func.Triple<A, B, C, Z> func){
-        return null;
+    public static <A, B, C, Z> Req<Z> Req(A first, B second, C third ,novemberizing.ds.func.Triple<A, B, C, Z> func){
+        return new Req<>(first, second, third, func);
     }
 
 
-    public static <Z> Req<novemberizing.ds.tuple.Empty, Z> Req(novemberizing.ds.on.Single<novemberizing.ds.on.Single<Z>> on){
+    public static <Z> Req<Z> Req(novemberizing.ds.on.Single<novemberizing.ds.on.Single<Z>> on){
         return new Req<>(on);
     }
 
-    public static <A, Z> Req<novemberizing.ds.tuple.Single<A>, Z> Req(A first, novemberizing.ds.on.Pair<A, novemberizing.ds.on.Single<Z>> on){
+    public static <A, Z> Req<Z> Req(A first, novemberizing.ds.on.Pair<A, novemberizing.ds.on.Single<Z>> on){
         return new Req<>(first, on);
     }
 
-    public static <A, B, Z> Req<novemberizing.ds.tuple.Pair<A, B>, Z> Req(A first, B second, novemberizing.ds.on.Triple<A, B, novemberizing.ds.on.Single<Z>> on){
+    public static <A, B, Z> Req<Z> Req(A first, B second, novemberizing.ds.on.Triple<A, B, novemberizing.ds.on.Single<Z>> on){
         return new Req<>(first, second, on);
     }
 
-    public static <A, B, C, Z> Req<novemberizing.ds.tuple.Triple<A, B, C>, Z> Req(A first, B second, C third ,novemberizing.ds.on.Quadruple<A, B, C, novemberizing.ds.on.Single<Z>> on){
+    public static <A, B, C, Z> Req<Z> Req(A first, B second, C third ,novemberizing.ds.on.Quadruple<A, B, C, novemberizing.ds.on.Single<Z>> on){
         return new Req<>(first, second, third, on);
     }
 

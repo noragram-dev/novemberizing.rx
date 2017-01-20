@@ -160,6 +160,7 @@ public class Observable<T> {
 
     private final LinkedHashSet<Observer<T>> __observers = new LinkedHashSet<>();
     @Expose public final Counter emits = new Counter();
+    @Expose public final Counter requests = new Counter();
     protected T __current;
     protected Replayer<T> __replayer;
     protected Scheduler __observableOn = Scheduler.New();
@@ -215,6 +216,13 @@ public class Observable<T> {
         __completed = true;
         unsubscribe();
         return __current;
+    }
+
+    protected Req<T> req(Req<T> req){
+        requests.increase();
+        req.set(this);
+        req.exec();
+        return req;
     }
 
     protected Task<T, T> emit(T o){
