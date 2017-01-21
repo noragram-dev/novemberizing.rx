@@ -243,6 +243,7 @@ public class Observable<T> {
            if(requests.get()==0) {
                req = __req(req);
            } else {
+               requests.increase();
                req.error(new RuntimeException("already requested"));
                req.complete();
            }
