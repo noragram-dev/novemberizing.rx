@@ -12,14 +12,14 @@ static const char * toString(Log::Type type)
 {
 	switch(type)
 	{
-	case Log::ERROR:		return "error";
-	case Log::WARNING:		return "warning";
-	case Log::CAUTION:		return "caution";
-	case Log::NOTICE:		return "notice";
-	case Log::INFORMATION:	return "information";
-	case Log::FLOW:			return "flow";
-	case Log::DEBUG:		return "debug";
-	case Log::VERBOSE:		return "verbose";
+	case Log::Error:		return "error";
+	case Log::Warning:		return "warning";
+	case Log::Caution:		return "caution";
+	case Log::Notice:		return "notice";
+	case Log::Information:	return "information";
+	case Log::Flow:			return "flow";
+	case Log::Debug:		return "debug";
+	case Log::Verbose:		return "verbose";
 	default:				return "unknown";
 	}
 	return "unknown";
@@ -45,6 +45,7 @@ void Log::write(Log::Type type, const char * file, type::uint32 line, const char
 	{
 		const type::uint32 size = 4096;
 		char str[size];
+#ifdef __RELEASE__
 		Log::Time current;
 		int n = snprintf(	str,
 							size,
@@ -61,6 +62,15 @@ void Log::write(Log::Type type, const char * file, type::uint32 line, const char
 							function,
 							::pthread_self(),
 							toString(type));
+#else
+		Log::Time current;
+		int n = snprintf(	str,
+							size,
+							"%s %lu %s > ",
+							function,
+							::pthread_self(),
+							toString(type));
+#endif //
 		va_list ap;
 		va_start(ap, format);
 		n+=vsnprintf(&str[n],size-n-1,format,ap);

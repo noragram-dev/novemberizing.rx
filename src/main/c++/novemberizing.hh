@@ -36,7 +36,8 @@ typedef size_t size;
 
 #ifdef WIN32
 
-unsigned long pthread_self(){ return 0; }
+#include <windows.h>
+DWORD pthread_self() { return GetCurrentThreadId(); }
 
 #endif // WIN32
 

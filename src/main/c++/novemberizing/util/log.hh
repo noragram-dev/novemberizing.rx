@@ -40,14 +40,14 @@ public:	    class Time
 			};
 public:		typedef enum __Type
 			{
-				ERROR = 0x00000001 <<  0,
-				WARNING = 0x00000001 <<  1,
-				CAUTION = 0x00000001 <<  2,
-				NOTICE = 0x00000001 <<  3,
-				INFORMATION = 0x00000001 <<  4,
-				DEBUG = 0x00000001 <<  5,
-				FLOW = 0x00000001 <<  6,
-				VERBOSE = 0x00000001 <<  7,
+				Error = 0x00000001 <<  0,
+				Warning = 0x00000001 <<  1,
+				Caution = 0x00000001 <<  2,
+				Notice = 0x00000001 <<  3,
+				Information = 0x00000001 <<  4,
+				Debug = 0x00000001 <<  5,
+				Flow = 0x00000001 <<  6,
+				Verbose = 0x00000001 <<  7,
 			} Type;
 public:		static Log o;
 private:	type::uint32 __types;
@@ -62,7 +62,7 @@ public:		virtual ~Log(void);
 } }
 
 #define FUNCTION_START(format,...)													\
-	novemberizing::util::Log::o.write(	novemberizing::util::Log::FLOW,				\
+	novemberizing::util::Log::o.write(	novemberizing::util::Log::Flow,				\
 										__FILE__,									\
 										__LINE__,									\
 										__func__,									\
@@ -70,7 +70,7 @@ public:		virtual ~Log(void);
 										##__VA_ARGS__)
 
 #define FUNCTION_END(format,...)													\
-	novemberizing::util::Log::o.write(	novemberizing::util::Log::FLOW,				\
+	novemberizing::util::Log::o.write(	novemberizing::util::Log::Flow,				\
 										__FILE__,									\
 										__LINE__,									\
 										__func__,									\
@@ -78,7 +78,7 @@ public:		virtual ~Log(void);
 										##__VA_ARGS__)
 
 #define ERROR_LOG(format,...)														\
-	novemberizing::util::Log::o.write(	novemberizing::util::Log::ERROR,			\
+	novemberizing::util::Log::o.write(	novemberizing::util::Log::Error,			\
 										__FILE__,									\
 										__LINE__,									\
 										__func__,									\
@@ -86,7 +86,7 @@ public:		virtual ~Log(void);
 										##__VA_ARGS__)
 
 #define WARNING_LOG(format,...)														\
-	novemberizing::util::Log::o.write(	novemberizing::util::Log::WARNING,			\
+	novemberizing::util::Log::o.write(	novemberizing::util::Log::Warning,			\
 										__FILE__,									\
 										__LINE__,									\
 										__func__,									\
@@ -94,7 +94,7 @@ public:		virtual ~Log(void);
 										##__VA_ARGS__)
 
 #define CAUTION_LOG(format,...)														\
-	novemberizing::util::Log::o.write(	novemberizing::util::Log::CAUTION,			\
+	novemberizing::util::Log::o.write(	novemberizing::util::Log::Caution,			\
 										__FILE__,									\
 										__LINE__,									\
 										__func__,									\
@@ -102,7 +102,7 @@ public:		virtual ~Log(void);
 										##__VA_ARGS__)
 
 #define NOTICE_LOG(format,...)														\
-	novemberizing::util::Log::o.write(	novemberizing::util::Log::NOTICE,			\
+	novemberizing::util::Log::o.write(	novemberizing::util::Log::Notice,			\
 										__FILE__,									\
 										__LINE__,									\
 										__func__,									\
@@ -110,7 +110,7 @@ public:		virtual ~Log(void);
 										##__VA_ARGS__)
 
 #define INFORMATION_LOG(format,...)													\
-	novemberizing::util::Log::o.write(	novemberizing::util::Log::INFORMATION,		\
+	novemberizing::util::Log::o.write(	novemberizing::util::Log::Information,		\
 										__FILE__,									\
 										__LINE__,									\
 										__func__,									\
@@ -118,7 +118,7 @@ public:		virtual ~Log(void);
 										##__VA_ARGS__)
 
 #define FLOW_LOG(format,...)														\
-	novemberizing::util::Log::o.write(	novemberizing::util::Log::FLOW,				\
+	novemberizing::util::Log::o.write(	novemberizing::util::Log::Flow,				\
 										__FILE__,									\
 										__LINE__,									\
 										__func__,									\
@@ -126,7 +126,7 @@ public:		virtual ~Log(void);
 										##__VA_ARGS__)
 
 #define DEBUG_LOG(format,...)														\
-	novemberizing::util::Log::o.write(	novemberizing::util::Log::DEBUG,			\
+	novemberizing::util::Log::o.write(	novemberizing::util::Log::Debug,			\
 										__FILE__,									\
 										__LINE__,									\
 										__func__,									\
@@ -134,7 +134,7 @@ public:		virtual ~Log(void);
 										##__VA_ARGS__)
 
 #define VERBOSE_LOG(format,...)														\
-	novemberizing::util::Log::o.write(	novemberizing::util::Log::VERBOSE,			\
+	novemberizing::util::Log::o.write(	novemberizing::util::Log::Verbose,			\
 										__FILE__,									\
 										__LINE__,									\
 										__func__,									\
