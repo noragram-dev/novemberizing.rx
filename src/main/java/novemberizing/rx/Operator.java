@@ -2,9 +2,6 @@ package novemberizing.rx;
 
 import com.google.gson.annotations.Expose;
 import novemberizing.ds.Executor;
-import novemberizing.ds.Func;
-import novemberizing.ds.On;
-import novemberizing.ds.Tuple;
 import novemberizing.ds.func.Empty;
 import novemberizing.ds.func.Pair;
 import novemberizing.ds.func.Single;
@@ -21,22 +18,23 @@ import java.util.LinkedList;
  * @author novemberizing, me@novemberizing.net
  * @since 2017. 1. 17.
  */
+@SuppressWarnings({"unused", "WeakerAccess"})
 public abstract class Operator<T, U> extends Observable<U> implements Observer<T> {
     private static final String Tag = "Operator";
 
-    public static abstract class Next<T, Z> extends novemberizing.rx.Task<T, Z> {
+    protected static abstract class Next<T, Z> extends novemberizing.rx.Task<T, Z> {
         protected void complete(Operator.Task<?, Z> task){
             complete();
         }
 
 
 
-        public Next(T in) {
+        private Next(T in) {
             super(in);
         }
     }
 
-    public static class Task<T, Z> {
+    public static class Task<T, Z> extends Local {
         private Operator.Next<?, Z> __task;
         @Expose private final T in;
         private Operator<T, Z> __operator;
@@ -67,9 +65,9 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
     }
 
     public static class Exec<T, Z> extends Operator.Next<T, Z> {
-        protected Operator<T, Z> __operator;
+        private Operator<T, Z> __operator;
 
-        public Exec(T in, Operator<T, Z> operator) {
+        private Exec(T in, Operator<T, Z> operator) {
             super(in);
             __operator = operator;
         }
@@ -99,10 +97,10 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
 
     public static class Execs<T, Z> extends Operator.Next<Collection<T>, Z> {
 
-        protected Operator<T, Z> __operator;
-        protected LinkedList<Operator.Task<?, Z>> __completions = new LinkedList<>();
+        private Operator<T, Z> __operator;
+        private LinkedList<Operator.Task<?, Z>> __completions = new LinkedList<>();
 
-        public Execs(Collection<T> in, Operator<T, Z> operator) {
+        private Execs(Collection<T> in, Operator<T, Z> operator) {
             super(in);
             __operator = operator;
         }
