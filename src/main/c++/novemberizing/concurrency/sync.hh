@@ -1,6 +1,8 @@
 #ifndef   __NOVEMBERIZING_CONCURRENCY__SYNC__HH__
 #define   __NOVEMBERIZING_CONCURRENCY__SYNC__HH__
 
+#include <novemberizing.hh>
+
 #include <novemberizing/util/log.hh>
 
 namespace novemberizing { namespace concurrency {

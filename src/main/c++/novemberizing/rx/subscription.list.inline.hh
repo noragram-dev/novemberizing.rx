@@ -30,6 +30,14 @@ inline typename SubscriptionList<T>::iterator SubscriptionList<T>::erase(typenam
 }
 
 template <class T>
+inline void SubscriptionList<T>::front(Subscription<T> * subscription)
+{
+    FUNCTION_START("");
+    __o.push_front(subscription);
+    FUNCTION_END("");
+}
+
+template <class T>
 inline void SubscriptionList<T>::back(Subscription<T> * subscription)
 {
     FUNCTION_START("");

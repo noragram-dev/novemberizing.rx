@@ -3,6 +3,8 @@
 
 #include <list>
 
+#include <novemberizing.hh>
+
 #include <novemberizing/util/log.hh>
 
 #include <novemberizing/concurrency/sync.hh>
@@ -21,6 +23,7 @@ private:    std::list<Subscription<T> *> __o;
 public:     inline typename SubscriptionList<T>::iterator begin(void);
 public:     inline typename SubscriptionList<T>::iterator end(void);
 public:     inline typename SubscriptionList<T>::iterator erase(typename SubscriptionList<T>::iterator it);
+public:		inline void front(Subscription<T> * subscription);
 public:     inline void back(Subscription<T> * subscription);
 public:     inline SubscriptionList(void);
 public:     inline virtual ~SubscriptionList(void);

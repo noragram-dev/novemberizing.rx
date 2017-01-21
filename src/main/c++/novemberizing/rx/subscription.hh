@@ -1,6 +1,8 @@
 #ifndef   __NOVEMBERIZING_RX__SUBSCRIPTION__HH__
 #define   __NOVEMBERIZING_RX__SUBSCRIPTION__HH__
 
+#include <novemberizing.hh>
+
 #include <novemberizing/util/log.hh>
 
 #include <novemberizing/ds/throwable.hh>

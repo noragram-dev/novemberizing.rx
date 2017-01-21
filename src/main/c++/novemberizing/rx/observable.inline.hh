@@ -4,22 +4,6 @@
 namespace novemberizing { namespace rx {
 
 template <class T>
-inline void Observable<T>::pub(Observable<T> & observable, const T & o)
-{
-    FUNCTION_START("");
-    observable.emit(o);
-    FUNCTION_END("");
-}
-
-template <class T>
-inline void Observable<T>::pub(Observable<T> & observable, const T && o)
-{
-    FUNCTION_START("");
-    observable.emit(o);
-    FUNCTION_END("");
-}
-
-template <class T>
 inline void Observable<T>::emit(const T & o)
 {
     FUNCTION_START("");

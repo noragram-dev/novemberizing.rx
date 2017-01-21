@@ -1,6 +1,8 @@
 #ifndef   __NOVEMBERIZING_DS__EXCEPTION__HH__
 #define   __NOVEMBERIZING_DS__EXCEPTION__HH__
 
+#include <novemberizing.hh>
+
 #include <novemberizing/util/log.hh>
 
 #include <novemberizing/ds/throwable.hh>

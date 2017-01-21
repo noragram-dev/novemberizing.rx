@@ -1,6 +1,8 @@
 #ifndef   __NOVEMBERIZING_UTIL__LOGGER__HH__
 #define   __NOVEMBERIZING_UTIL__LOGGER__HH__
 
+#include <novemberizing.hh>
+
 #include <novemberizing/util/log.hh>
 
 namespace novemberizing { namespace util {

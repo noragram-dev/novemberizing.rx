@@ -1,6 +1,8 @@
 #ifndef   __NOVEMBERIZING_RX__OBSERVABLE__HH__
 #define   __NOVEMBERIZING_RX__OBSERVABLE__HH__
 
+#include <novemberizing.hh>
+
 #include <novemberizing/util/log.hh>
 
 #include <novemberizing/ds/throwable.hh>
@@ -24,8 +26,6 @@ template <class T> class Observer;
 template <class T>
 class Observable : public Emittable<T>
 {
-public:     inline static void pub(Observable<T> & observable, const T & o);
-public:     inline static void pub(Observable<T> & observable, const T && o);
 private:    SubscriptionList<T> __subscriptionList;
 protected:  inline virtual void emit(const T & o);
 protected:  inline virtual void error(const Throwable & e);
