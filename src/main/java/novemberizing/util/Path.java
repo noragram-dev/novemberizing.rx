@@ -46,7 +46,7 @@ public class Path {
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public File touch() throws IOException {
         File f = new File(__full);
-        f.mkdir();
+        mkdir();
         f.createNewFile();
         return f;
     }
