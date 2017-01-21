@@ -20,6 +20,18 @@ public class Req<Z> implements Executable {
 
     public static class Callback<Z> implements novemberizing.ds.on.Single<Z> {
         private Req<Z> __req;
+        public void next(Z o, boolean completed){
+            __req.next(o);
+            if(completed){
+                complete();
+            }
+        }
+        public void error(Throwable e, boolean completed){
+            __req.error(e);
+            if(completed){
+                complete();
+            }
+        }
         public void next(Z o){ __req.next(o); }
         public void error(Throwable e){ __req.error(e); }
         public void complete(){ __req.complete(); }
