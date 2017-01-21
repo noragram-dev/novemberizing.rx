@@ -11,6 +11,7 @@ import java.util.LinkedList;
  * @since 2017. 1. 21.
  */
 public class Path {
+    private static final String Tag = "path";
 
     private final String __full;
     private LinkedList<String> __parents;
@@ -30,10 +31,9 @@ public class Path {
             path += dir;
             File f = new File(path);
             if(!f.mkdir()){
-                return false;
-            } else {
-                path += "/";
+                Log.w(Tag, "f.mkdir()==false");
             }
+            path += "/";
         }
         return true;
     }
@@ -43,8 +43,10 @@ public class Path {
         return f.exists();
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public boolean touch() throws IOException {
         File f = new File(__full);
+        f.mkdir();
         return f.createNewFile();
     }
 
