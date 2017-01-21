@@ -19,7 +19,7 @@ inline void Subscription<T>::emit(const T & o)
     {
         __observer->onNext(o);
     }
-    catch (const Exception & e)
+    catch (const Throwable & e)
     {
         __observer->onError(e);
     }
@@ -27,7 +27,7 @@ inline void Subscription<T>::emit(const T & o)
 }
 
 template <class T>
-inline void Subscription<T>::error(const Exception & e)
+inline void Subscription<T>::error(const Throwable & e)
 {
     FUNCTION_START("");
     __observer->onError(e);

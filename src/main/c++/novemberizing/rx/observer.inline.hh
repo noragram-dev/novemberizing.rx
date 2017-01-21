@@ -11,7 +11,7 @@ inline Observer<T>::Observer(void)
 }
 
 template <class T>
-inline Observer<T<::~Observer(void)
+inline Observer<T>::~Observer(void)
 {
     FUNCTION_START("");
     FUNCTION_END("");

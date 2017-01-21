@@ -1,7 +1,17 @@
 #ifndef   __NOVEMBERIZING_RX__SUBSCRIPTION_LIST__HH__
 #define   __NOVEMBERIZING_RX__SUBSCRIPTION_LIST__HH__
 
+#include <list>
+
+#include <novemberizing/util/log.hh>
+
+#include <novemberizing/concurrency/sync.hh>
+
+#include <novemberizing/rx/subscription.hh>
+
 namespace novemberizing { namespace rx {
+
+using namespace concurrency;
 
 template <class T>
 class SubscriptionList : public Sync
@@ -18,6 +28,6 @@ public:     inline virtual ~SubscriptionList(void);
 
 } }
 
-#include <novemberizing/rx/subscription.line.inline.hh>
+#include <novemberizing/rx/subscription.list.inline.hh>
 
 #endif // __NOVEMBERIZING_RX__SUBSCRIPTION_LIST__HH__

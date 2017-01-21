@@ -23,7 +23,7 @@ template <class T>
 inline void Observable<T>::emit(const T & o)
 {
     FUNCTION_START("");
-    for (Subscriptions<T>::iterator it = __subscriptions.begin(); it != __subscriptions.end();)
+    for (SubscriptionList<T>::iterator it = __subscriptionList.begin(); it != __subscriptionList.end();)
     {
         Subscription<T> * subscription = *it;
         if (subscription != nullptr)
@@ -36,23 +36,23 @@ inline void Observable<T>::emit(const T & o)
                 }
                 else
                 {
-                    it = __subscriptions.erase(it);
+                    it = __subscriptionList.erase(it);
                 }
             });
         }
         else
         {
-            it = __subscriptions.erase(it);
+            it = __subscriptionList.erase(it);
         }
     }
     FUNCTION_END("");
 }
 
 template <class T>
-inline void Observable<T>::error(const Exception & e)
+inline void Observable<T>::error(const Throwable & e)
 {
     FUNCTION_START("");
-    for (Subscriptions<T>::iterator it = __subscriptions.begin(); it != __subscriptions.end();)
+    for (SubscriptionList<T>::iterator it = __subscriptionList.begin(); it != __subscriptionList.end();)
     {
         Subscription<T> * subscription = *it;
         if (subscription != nullptr)
@@ -65,13 +65,13 @@ inline void Observable<T>::error(const Exception & e)
                 }
                 else
                 {
-                    it = __subscriptions.erase(it);
+                    it = __subscriptionList.erase(it);
                 }
             });
         }
         else
         {
-            it = __subscriptions.erase(it);
+            it = __subscriptionList.erase(it);
         }
     }
     FUNCTION_END("");
@@ -81,7 +81,7 @@ template <class T>
 inline void Observable<T>::complete()
 {
     FUNCTION_START("");
-    for (Subscriptions<T>::iterator it = __subscriptions.begin(); it != __subscriptions.end();)
+    for (SubscriptionList<T>::iterator it = __subscriptionList.begin(); it != __subscriptionList.end();)
     {
         Subscription<T> * subscription = *it;
         if (subscription != nullptr)
@@ -94,13 +94,13 @@ inline void Observable<T>::complete()
                 }
                 else
                 {
-                    it = __subscriptions.erase(it);
+                    it = __subscriptionList.erase(it);
                 }
             });
         }
         else
         {
-            it = __subscriptions.erase(it);
+            it = __subscriptionList.erase(it);
         }
     }
     FUNCTION_END("");
@@ -111,7 +111,7 @@ inline Subscription<T> * Observable<T>::subscribe(Observer<T> * observer)
 {
     FUNCTION_START("");
     Subscription<T> * subscription = new Subscription<T>(this, observer);
-    __subscriptions.back(subscription);
+    __subscriptionList.back(subscription);
     FUNCTION_END("");
     return subscription;
 }

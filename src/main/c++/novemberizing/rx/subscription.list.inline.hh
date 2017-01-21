@@ -1,10 +1,12 @@
 #ifndef   __NOVEMBERIZING_RX__SUBSCRIPTION_LIST__INLINE__HH__
 #define   __NOVEMBERIZING_RX__SUBSCRIPTION_LIST__INLINE__HH__
 
+#include <novemberizing/rx/subscription.list.hh>
+
 namespace novemberizing { namespace rx {
 
 template <class T>
-inline typename SubscriptionList<T>::iterator SubscriptionList<T>begin(void)
+inline typename SubscriptionList<T>::iterator SubscriptionList<T>::begin(void)
 {
     FUNCTION_START("");
     FUNCTION_END("");
@@ -20,7 +22,7 @@ inline typename SubscriptionList<T>::iterator SubscriptionList<T>::end(void)
 }
 
 template <class T>
-inline typename SubscriptionList<T>::iterator SubscriptionList<T>::erase(typename Subscriptions<T>::iterator it)
+inline typename SubscriptionList<T>::iterator SubscriptionList<T>::erase(typename SubscriptionList<T>::iterator it)
 {
     FUNCTION_START("");
     FUNCTION_END("");
