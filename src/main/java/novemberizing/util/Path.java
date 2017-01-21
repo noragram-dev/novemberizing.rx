@@ -44,10 +44,11 @@ public class Path {
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public boolean touch() throws IOException {
+    public File touch() throws IOException {
         File f = new File(__full);
         f.mkdir();
-        return f.createNewFile();
+        f.createNewFile();
+        return f;
     }
 
     public Path(String s){
