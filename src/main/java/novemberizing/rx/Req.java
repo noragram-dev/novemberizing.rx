@@ -33,9 +33,17 @@ public class Req<Z> implements Executable {
             @Override
             public void on(Res<Z> o) {
                 try {
-                    next(o.out());
+                    if(o.exception()!=null) {
+                        error(o.exception());
+                    } else {
+                        next(o.out());
+                    }
                 } catch(Exception e){
                     error(e);
+                } finally {
+                    if(o.completed()){
+                        complete();
+                    }
                 }
             }
         };
@@ -54,9 +62,17 @@ public class Req<Z> implements Executable {
             @Override
             public void on(Res<Z> o) {
                 try {
-                    next(o.out());
+                    if(o.exception()!=null) {
+                        error(o.exception());
+                    } else {
+                        next(o.out());
+                    }
                 } catch(Exception e){
                     error(e);
+                } finally {
+                    if(o.completed()){
+                        complete();
+                    }
                 }
             }
         };
@@ -74,10 +90,19 @@ public class Req<Z> implements Executable {
         __ret = new novemberizing.ds.on.Single<Res<Z>>(){
             @Override
             public void on(Res<Z> o) {
+
                 try {
-                    next(o.out());
+                    if(o.exception()!=null) {
+                        error(o.exception());
+                    } else {
+                        next(o.out());
+                    }
                 } catch(Exception e){
                     error(e);
+                } finally {
+                    if(o.completed()){
+                        complete();
+                    }
                 }
             }
         };
@@ -96,9 +121,17 @@ public class Req<Z> implements Executable {
             @Override
             public void on(Res<Z> o) {
                 try {
-                    next(o.out());
+                    if(o.exception()!=null) {
+                        error(o.exception());
+                    } else {
+                        next(o.out());
+                    }
                 } catch(Exception e){
                     error(e);
+                } finally {
+                    if(o.completed()){
+                        complete();
+                    }
                 }
             }
         };
