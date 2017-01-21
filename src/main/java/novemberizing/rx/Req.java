@@ -18,36 +18,33 @@ import static novemberizing.ds.Constant.Infinite;
 public class Req<Z> implements Executable {
     private static final String Tag = "Req";
 
+    public static class Callback<Z> implements novemberizing.ds.on.Single<Z> {
+        private Req<Z> __req;
+        public void next(Z o){ __req.next(o); }
+        public void error(Throwable e){ __req.error(e); }
+        public void complete(){ __req.complete(); }
+        public Callback(Req<Z> req){
+            __req = req;
+        }
+
+        @Override
+        public void on(Z o) {
+            __req.next(o);
+        }
+    }
+
     private Observable<Z> __completionPort;
     private Replayer<Z> __replayer;
     private Z __out;
     private Observable<Z> __observable;
-    private final novemberizing.ds.Exec __req;
-    private final novemberizing.ds.on.Single<Res<Z>> __ret;
+    private final Req.Callback<Z> __callback = new Callback<>(this);
+    private final novemberizing.ds.Exec<Callback<Z>> __req;
     private boolean __completed;
     private Executor __executor;
     private boolean __executed;
 
-    public Req(novemberizing.ds.on.Single<novemberizing.ds.on.Single<Res<Z>>> on){
-        __ret = new novemberizing.ds.on.Single<Res<Z>>(){
-            @Override
-            public void on(Res<Z> o) {
-                try {
-                    if(o.exception()!=null) {
-                        error(o.exception());
-                    } else {
-                        next(o.out());
-                    }
-                } catch(Exception e){
-                    error(e);
-                } finally {
-                    if(o.completed()){
-                        complete();
-                    }
-                }
-            }
-        };
-        __req = new On.Exec.Empty<>(on, __ret);
+    public Req(novemberizing.ds.on.Single<Req.Callback<Z>> on){
+        __req = new On.Exec.Empty<>(on);
         __observable = null;
         __completionPort = null;
         __replayer = new Replayer<>(Infinite);
@@ -57,26 +54,8 @@ public class Req<Z> implements Executable {
         __executed = false;
     }
 
-    public <A> Req(A first, novemberizing.ds.on.Pair<A, novemberizing.ds.on.Single<Res<Z>>> on){
-        __ret = new novemberizing.ds.on.Single<Res<Z>>(){
-            @Override
-            public void on(Res<Z> o) {
-                try {
-                    if(o.exception()!=null) {
-                        error(o.exception());
-                    } else {
-                        next(o.out());
-                    }
-                } catch(Exception e){
-                    error(e);
-                } finally {
-                    if(o.completed()){
-                        complete();
-                    }
-                }
-            }
-        };
-        __req = new On.Exec.Single<>(new novemberizing.ds.tuple.Single<>(first), on, __ret);
+    public <A> Req(A first, novemberizing.ds.on.Pair<A, Req.Callback<Z>> on){
+        __req = new On.Exec.Single<>(new novemberizing.ds.tuple.Single<>(first), on);
         __observable = null;
         __completionPort = null;
         __replayer = new Replayer<>(Infinite);
@@ -86,27 +65,8 @@ public class Req<Z> implements Executable {
         __executed = false;
     }
 
-    public <A, B> Req(A first, B second, novemberizing.ds.on.Triple<A, B, novemberizing.ds.on.Single<Res<Z>>> on){
-        __ret = new novemberizing.ds.on.Single<Res<Z>>(){
-            @Override
-            public void on(Res<Z> o) {
-
-                try {
-                    if(o.exception()!=null) {
-                        error(o.exception());
-                    } else {
-                        next(o.out());
-                    }
-                } catch(Exception e){
-                    error(e);
-                } finally {
-                    if(o.completed()){
-                        complete();
-                    }
-                }
-            }
-        };
-        __req = new On.Exec.Pair<>(new novemberizing.ds.tuple.Pair<>(first, second), on, __ret);
+    public <A, B> Req(A first, B second, novemberizing.ds.on.Triple<A, B, Req.Callback<Z>> on){
+        __req = new On.Exec.Pair<>(new novemberizing.ds.tuple.Pair<>(first, second), on);
         __observable = null;
         __completionPort = null;
         __replayer = new Replayer<>(Infinite);
@@ -116,26 +76,8 @@ public class Req<Z> implements Executable {
         __executed = false;
     }
 
-    public <A, B, C> Req(A first, B second, C third ,novemberizing.ds.on.Quadruple<A, B, C, novemberizing.ds.on.Single<Res<Z>>> on){
-        __ret = new novemberizing.ds.on.Single<Res<Z>>(){
-            @Override
-            public void on(Res<Z> o) {
-                try {
-                    if(o.exception()!=null) {
-                        error(o.exception());
-                    } else {
-                        next(o.out());
-                    }
-                } catch(Exception e){
-                    error(e);
-                } finally {
-                    if(o.completed()){
-                        complete();
-                    }
-                }
-            }
-        };
-        __req = new On.Exec.Triple<>(new novemberizing.ds.tuple.Triple<>(first, second, third), on, __ret);
+    public <A, B, C> Req(A first, B second, C third ,novemberizing.ds.on.Quadruple<A, B, C, Req.Callback<Z>> on){
+        __req = new On.Exec.Triple<>(new novemberizing.ds.tuple.Triple<>(first, second, third), on);
         __observable = null;
         __completionPort = null;
         __replayer = new Replayer<>(Infinite);
@@ -145,20 +87,9 @@ public class Req<Z> implements Executable {
         __executed = false;
     }
 
-    public Req(novemberizing.ds.func.Empty<Res<Z>> func){
-        __ret = new novemberizing.ds.on.Single<Res<Z>>(){
-            @Override
-            public void on(Res<Z> o) {
-                try {
-                    next(o.out());
-                } catch(Exception e){
-                    error(e);
-                } finally {
-                    complete();
-                }
-            }
-        };
-        __req = new Func.Exec.Empty<>(func, __ret);
+    public Req(novemberizing.ds.func.Empty<Z> func){
+
+        __req = new Func.Exec.Empty<>(func);
         __observable = null;
         __completionPort = null;
         __replayer = new Replayer<>(Infinite);
@@ -168,20 +99,9 @@ public class Req<Z> implements Executable {
         __executed = false;
     }
 
-    public <A> Req(A first, novemberizing.ds.func.Single<A, Res<Z>> func){
-        __ret = new novemberizing.ds.on.Single<Res<Z>>(){
-            @Override
-            public void on(Res<Z> o) {
-                try {
-                    next(o.out());
-                } catch(Exception e){
-                    error(e);
-                } finally {
-                    complete();
-                }
-            }
-        };
-        __req = new Func.Exec.Single<>(new novemberizing.ds.tuple.Single<>(first), func, __ret);
+    public <A> Req(A first, novemberizing.ds.func.Single<A, Z> func){
+
+        __req = new Func.Exec.Single<>(new novemberizing.ds.tuple.Single<>(first), func);
         __observable = null;
         __completionPort = null;
         __replayer = new Replayer<>(Infinite);
@@ -191,20 +111,9 @@ public class Req<Z> implements Executable {
         __executed = false;
     }
 
-    public <A, B> Req(A first, B second, novemberizing.ds.func.Pair<A, B, Res<Z>> func){
-        __ret = new novemberizing.ds.on.Single<Res<Z>>(){
-            @Override
-            public void on(Res<Z> o) {
-                try {
-                    next(o.out());
-                } catch(Exception e){
-                    error(e);
-                } finally {
-                    complete();
-                }
-            }
-        };
-        __req = new Func.Exec.Pair<>(new novemberizing.ds.tuple.Pair<>(first, second), func, __ret);
+    public <A, B> Req(A first, B second, novemberizing.ds.func.Pair<A, B, Z> func){
+
+        __req = new Func.Exec.Pair<>(new novemberizing.ds.tuple.Pair<>(first, second), func);
         __observable = null;
         __completionPort = null;
         __replayer = new Replayer<>(Infinite);
@@ -214,20 +123,9 @@ public class Req<Z> implements Executable {
         __executed = false;
     }
 
-    public <A, B, C> Req(A first, B second, C third ,novemberizing.ds.func.Triple<A, B, C, Res<Z>> func){
-        __ret = new novemberizing.ds.on.Single<Res<Z>>(){
-            @Override
-            public void on(Res<Z> o) {
-                try {
-                    next(o.out());
-                } catch(Exception e){
-                    error(e);
-                } finally {
-                    complete();
-                }
-            }
-        };
-        __req = new Func.Exec.Triple<>(new novemberizing.ds.tuple.Triple<>(first, second, third), func, __ret);
+    public <A, B, C> Req(A first, B second, C third ,novemberizing.ds.func.Triple<A, B, C, Z> func){
+
+        __req = new Func.Exec.Triple<>(new novemberizing.ds.tuple.Triple<>(first, second, third), func);
         __observable = null;
         __completionPort = null;
         __replayer = new Replayer<>(Infinite);
@@ -265,7 +163,7 @@ public class Req<Z> implements Executable {
 
     protected void exec(){
         try {
-            __req.exec();
+            __req.exec(__callback);
         } catch(Exception e){
             error(e);
             complete();
