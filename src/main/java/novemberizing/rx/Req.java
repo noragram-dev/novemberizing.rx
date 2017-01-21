@@ -182,7 +182,7 @@ public class Req<Z> implements Executable {
         }
     }
 
-    private void error(Throwable e){
+    protected void error(Throwable e){
         __observable.error(e);
         if(__completionPort!=null){
             __completionPort.error(e);
@@ -191,7 +191,7 @@ public class Req<Z> implements Executable {
         }
     }
 
-    private void next(Z o){
+    protected void next(Z o){
         __out = o;
         __observable.emit(o);
         if(__completionPort!=null) {

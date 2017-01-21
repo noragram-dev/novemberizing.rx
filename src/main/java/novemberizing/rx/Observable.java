@@ -226,18 +226,28 @@ public class Observable<T> {
         return __current;
     }
 
-    protected Req<T> req(Req<T> req){
-        if(requests.__once &&  requests.get()==0) {
-            requests.increase();
-            req.set(this);
-            Scheduler current = Scheduler.Self();
-            if (current == __observableOn) {
-                req.exec();
-            } else {
-                __observableOn.dispatch(req);
-            }
+    private Req<T> __req(Req<T> req){
+        requests.increase();
+        req.set(this);
+        Scheduler current = Scheduler.Self();
+        if (current == __observableOn) {
+            req.exec();
         } else {
-            req.complete();
+            __observableOn.dispatch(req);
+        }
+        return req;
+    }
+
+    protected Req<T> req(Req<T> req){
+        if(requests.__once){
+           if(requests.get()==0) {
+               req = __req(req);
+           } else {
+               req.error(new RuntimeException("already requested"));
+               req.complete();
+           }
+        } else {
+            req = __req(req);
         }
         return req;
     }
