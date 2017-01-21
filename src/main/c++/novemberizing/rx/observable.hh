@@ -31,6 +31,7 @@ protected:  inline virtual void emit(const T & o);
 protected:  inline virtual void error(const Throwable & e);
 protected:  inline virtual void complete();
 public:     inline virtual Subscription<T> * subscribe(Observer<T> * observer);
+public:		inline virtual void publish(const T & o){} /** @todo: implement this. */
 public:     inline Observable(void);
 public:     inline virtual ~Observable(void);
 public:     friend Subscription<T>;
