@@ -158,9 +158,17 @@ public class Observable<T> {
         }
     }
 
+    public static class Requests<T> extends Counter {
+        private boolean __once = false;
+
+        public void once(boolean v){ __once = v; }
+
+        public boolean once(){ return __once; }
+    }
+
     private final LinkedHashSet<Observer<T>> __observers = new LinkedHashSet<>();
     @Expose public final Counter emits = new Counter();
-    @Expose public final Counter requests = new Counter();
+    @Expose public final Requests<T> requests = new Requests<>();
     @Expose protected T __current;
     protected Replayer<T> __replayer;
     protected Scheduler __observableOn = Scheduler.New();
@@ -219,13 +227,17 @@ public class Observable<T> {
     }
 
     protected Req<T> req(Req<T> req){
-        requests.increase();
-        req.set(this);
-        Scheduler current = Scheduler.Self();
-        if(current==__observableOn) {
-            req.exec();
+        if(requests.__once &&  requests.get()==0) {
+            requests.increase();
+            req.set(this);
+            Scheduler current = Scheduler.Self();
+            if (current == __observableOn) {
+                req.exec();
+            } else {
+                __observableOn.dispatch(req);
+            }
         } else {
-            __observableOn.dispatch(req);
+            req.complete();
         }
         return req;
     }

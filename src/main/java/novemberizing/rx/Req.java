@@ -208,6 +208,8 @@ public class Req<Z> implements Executable {
             __completed = true;
             __executor = null;
 
+            __observable.requests.decrease();
+
             if (__completionPort != null) {
                 __completionPort.complete();
             } else {
