@@ -51,6 +51,13 @@ public class Path {
         return f;
     }
 
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public void del(){
+        File f = new File(__full);
+        f.delete();
+    }
+
     public Path(String s){
         __full = s;
         __parents = new LinkedList<>();
