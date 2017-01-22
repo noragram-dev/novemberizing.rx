@@ -15,7 +15,7 @@ using namespace concurrency;
 using namespace ds;
 
 template <class T>
-class Emittable
+class Emittable : public Sync
 {
 protected:  inline virtual void emit(const T & o) = 0;
 protected:	inline virtual void emit(const T && o) = 0;

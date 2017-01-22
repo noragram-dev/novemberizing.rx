@@ -91,7 +91,7 @@ inline void Observable<T>::error(const Throwable & e)
 }
 
 template <class T>
-inline void Observable<T>::complete()
+inline void Observable<T>::complete(void)
 {
     FUNCTION_START("");
     for (SubscriptionList<T>::iterator it = __subscriptionList.begin(); it != __subscriptionList.end();)

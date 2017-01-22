@@ -4,37 +4,52 @@
 namespace novemberizing { namespace rx {
 
 template <class T>
-Player<T>::__Replay::__Replay(const T & o) : __o(o) {}
+Player<T>::Replay::Replay(const T & o) : __o(o) {}
 
 template <class T>
-Player<T>::__Replay::~Replay(void){}
+Player<T>::Replay::~Replay(void){}
 
 template <class T>
-void Player<T>::__Replay::on(Observer<T> * observer)
+void Player<T>::Replay::on(Observer<T> * observer)
 {
 	observer->onNext(__o);
 }
 
 template <class T>
-Player<T>::__Error::__Error(const Throwable & e) : __e(e) {}
+Player<T>::Replay::List::List(std::initializer_list<T> items) : __items(items) {}
 
 template <class T>
-Player<T>::__Error::~__Error(void){}
+Player<T>::Replay::List::~List(void){}
 
 template <class T>
-void Player<T>::__Error::on(Observer<T> * observer)
+void Player<T>::Replay::List::on(Observer<T> * observer)
+{
+	for(std::list<T>::iterator it = __items.begin();it!=__items.end();it++)
+	{
+		observer->onNext(*it);
+	}
+}
+
+template <class T>
+Player<T>::Replay::Error::Error(const Throwable & e) : __e(e) {}
+
+template <class T>
+Player<T>::Replay::Error::~Error(void){}
+
+template <class T>
+void Player<T>::Replay::Error::on(Observer<T> * observer)
 {
 	observer->onError(e);
 }
 
 template <class T>
-Player<T>::__Complete::__Complete(void){}
+Player<T>::Replay::Complete::Complete(void){}
 
 template <class T>
-Player<T>::__Complete::~__Complete(void){}
+Player<T>::Replay::Complete::~Complete(void){}
 
 template <class T>
-void Player<T>::__Complete::on(Observer<T> * observer)
+void Player<T>::Replay::Complete::on(Observer<T> * observer)
 {
 	observer->onComplete();
 }
@@ -42,25 +57,25 @@ void Player<T>::__Complete::on(Observer<T> * observer)
 template <class T>
 inline void Player<T>::emit(const T & o)
 {
-	synchronized(&__replays,__replays.push(new __Replay<T>(o)));
+	synchronized(&__replays,__replays.push(new Replay<T>(o)));
 }
 
 template <class T>
 inline void Player<T>::emit(const T && o)
 {
-	synchronized(&__replays,__replays.push(new __Replay<T>(o)));
+	synchronized(&__replays,__replays.push(new Replay<T>(o)));
 }
 
 template <class T>
 inline void Player<T>::error(const Throwable & e)
 {
-	synchronized(&__replays, __replays.push(new __Error<T>(e)));
+	synchronized(&__replays, __replays.push(new Replay::Error<T>(e)));
 }
 
 template <class T>
 inline void Player<T>::complete()
 {
-	synchronized(&__replays, __replays.push(new __Complete<T>()));
+	synchronized(&__replays, __replays.push(new Replay::Complete<T>()));
 }
 
 template <class T>
