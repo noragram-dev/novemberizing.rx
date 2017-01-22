@@ -1,6 +1,8 @@
 #ifndef   __NOVEMBERIZING_RX__OBSERVABLE__HH__
 #define   __NOVEMBERIZING_RX__OBSERVABLE__HH__
 
+#include <initializer_list>
+
 #include <novemberizing.hh>
 
 #include <novemberizing/util/log.hh>
@@ -26,13 +28,18 @@ template <class T> class Observer;
 template <class T>
 class Observable : public Emittable<T>
 {
+public:		inline static Observable<T> just(const T & o);
+public:		inline static Observable<T> just(const T && o);
+public:		inline static Observable<T> just(std::initializer_list<T> items);
 private:    SubscriptionList<T> __subscriptionList;
 protected:  inline virtual void emit(const T & o);
+protected:  inline virtual void emit(const T && o);
 protected:  inline virtual void error(const Throwable & e);
 protected:  inline virtual void complete();
 public:     inline virtual Subscription<T> * subscribe(Observer<T> * observer);
-public:		inline virtual void publish(const T & o){} /** @todo: implement this. */
+public:		inline Observable<T> & operator=(const Observable & observable);
 public:     inline Observable(void);
+public:		inline Observable(const Observable<T> observable);
 public:     inline virtual ~Observable(void);
 public:     friend Subscription<T>;
 };

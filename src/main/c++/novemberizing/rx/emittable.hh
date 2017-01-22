@@ -5,16 +5,20 @@
 
 #include <novemberizing/util/log.hh>
 
+#include <novemberizing/ds/throwable.hh>
+
 #include <novemberizing/concurrency/sync.hh>
 
 namespace novemberizing { namespace rx {
 
 using namespace concurrency;
+using namespace ds;
 
 template <class T>
 class Emittable
 {
 protected:  inline virtual void emit(const T & o) = 0;
+protected:	inline virtual void emit(const T && o) = 0;
 protected:  inline virtual void error(const Throwable & e) = 0;
 protected:  inline virtual void complete() = 0;
 public:		Emittable(void);

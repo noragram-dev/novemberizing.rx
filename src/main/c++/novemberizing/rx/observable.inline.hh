@@ -33,6 +33,35 @@ inline void Observable<T>::emit(const T & o)
 }
 
 template <class T>
+inline void Observable<T>::emit(const T && o)
+{
+    FUNCTION_START("");
+    for (SubscriptionList<T>::iterator it = __subscriptionList.begin(); it != __subscriptionList.end();)
+    {
+        Subscription<T> * subscription = *it;
+        if (subscription != nullptr)
+        {
+            synchronized(subscription, {
+                if (!subscription->unsubscribed())
+                {
+                    subscription->emit(o);
+                    it++;
+                }
+                else
+                {
+                    it = __subscriptionList.erase(it);
+                }
+            });
+        }
+        else
+        {
+            it = __subscriptionList.erase(it);
+        }
+    }
+    FUNCTION_END("");
+}
+
+template <class T>
 inline void Observable<T>::error(const Throwable & e)
 {
     FUNCTION_START("");
@@ -101,10 +130,24 @@ inline Subscription<T> * Observable<T>::subscribe(Observer<T> * observer)
 }
 
 template <class T>
+inline Observable<T> & Observable<T>::operator=(const Observable & observable)
+{
+    return *this;
+}
+
+template <class T>
 inline Observable<T>::Observable(void)
 {
     FUNCTION_START("");
     FUNCTION_END("");
+}
+
+template <class T>
+inline Observable<T>::Observable(const Observable<T> observable)
+{
+    /**
+     * must subscription's inherited ...
+     */
 }
 
 template <class T>
