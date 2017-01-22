@@ -1,12 +1,13 @@
-#ifndef   __NOVEMBERIZING_UTIL__LOG__INLINE__HH__
-#define   __NOVEMBERIZING_UTIL__LOG__INLINE__HH__
+#ifndef   __NOVEMBERIZING_UTIL__LOG__CC__
+#define   __NOVEMBERIZING_UTIL__LOG__CC__
+
+#include <list>
+#include <algorithm>
 
 #include <novemberizing/util/log.hh>
 #include <novemberizing/util/logger.hh>
 
 namespace novemberizing { namespace util {
-
-Log Log::o;
 
 static const char * toString(Log::Type type)
 {
@@ -45,7 +46,7 @@ void Log::write(Log::Type type, const char * file, type::uint32 line, const char
 	{
 		const type::uint32 size = 4096;
 		char str[size];
-#ifdef __RELEASE__
+#ifndef __RELEASE__
 		Log::Time current;
 		int n = snprintf(	str,
 							size,
@@ -148,6 +149,8 @@ Log::Time::Time(void)
 
 Log::Time::~Time(void) {}
 
+Log Log::o;
+
 } }
 
-#endif // __NOVEMBERIZING_UTIL__LOG__INLINE__HH__
+#endif // __NOVEMBERIZING_UTIL__LOG__CC__

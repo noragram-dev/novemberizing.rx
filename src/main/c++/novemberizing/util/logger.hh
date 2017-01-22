@@ -7,9 +7,11 @@
 
 namespace novemberizing { namespace util {
 
+class Log;
+
 class Logger
 {
-public:		void write(Log::Type type, Log::Time & current, const char * msg,type::uint32 len);
+public:		inline void write(Log::Type type, Log::Time & current, const char * msg,type::uint32 len);
 protected:	virtual void __write(Log::Type type, Log::Time & current, const char * msg,type::uint32 len) = 0;
 public:		inline Logger(void);
 public:		inline virtual ~Logger(void);
