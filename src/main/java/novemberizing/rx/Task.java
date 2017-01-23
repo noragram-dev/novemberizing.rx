@@ -114,6 +114,16 @@ public abstract class Task<T, Z> implements Executable {
     public Observable<Z> unsubscribe(Observer<Z> observer){ return __completionPort!=null ? __completionPort.unsubscribe(observer) : null; }
     public Observable<Z> unsubscribe(){ return __completionPort!=null ? __completionPort.unsubscribe() : null; }
 
+    public Observable<Z> once(novemberizing.ds.on.Single<Z> f){
+        return subscribe(new Subscribers.Just<Z>() {
+            @Override
+            public void onNext(Z o) {
+                f.on(o);
+                unsubscribe(this);
+            }
+        });
+    }
+
     public Observable<Z> on(novemberizing.ds.on.Single<Z> f){
         return subscribe(new Subscribers.Just<Z>() {
             @Override
@@ -140,7 +150,7 @@ public abstract class Task<T, Z> implements Executable {
             @Override
             public void onNext(Z o) {
                 f.on(o);
-                if(once){ unsubscribe(); }
+                if(once){ unsubscribe(this); }
             }
         });
     }
@@ -150,7 +160,7 @@ public abstract class Task<T, Z> implements Executable {
             @Override
             public void onError(Throwable e) {
                 f.on(e);
-                if(once){ unsubscribe(); }
+                if(once){ unsubscribe(this); }
             }
         });
     }

@@ -497,6 +497,16 @@ public class Observable<T> {
     public <Z> Operator<T, Z> next(Operator<T, Z> op){ return subscribe(op); }
     public <Z> Operator<T, Z> next(novemberizing.ds.on.Pair<Operator.Task<T, Z>,T> f){ return subscribe(f); }
 
+    public Observable<T> once(novemberizing.ds.on.Single<T> f){
+        return subscribe(new Subscribers.Just<T>() {
+            @Override
+            public void onNext(T o) {
+                f.on(o);
+                unsubscribe(this);
+            }
+        });
+    }
+
     public Observable<T> on(novemberizing.ds.on.Single<T> f){
         return subscribe(new Subscribers.Just<T>() {
             @Override
@@ -523,7 +533,7 @@ public class Observable<T> {
             @Override
             public void onNext(T o) {
                 f.on(o);
-                if(once){ unsubscribe(); }
+                if(once){ unsubscribe(this); }
             }
         });
     }
@@ -533,7 +543,7 @@ public class Observable<T> {
             @Override
             public void onError(Throwable e) {
                 f.on(e);
-                if(once){ unsubscribe(); }
+                if(once){ unsubscribe(this); }
             }
         });
     }
