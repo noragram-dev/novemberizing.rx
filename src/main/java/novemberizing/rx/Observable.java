@@ -214,7 +214,6 @@ public class Observable<T> {
         if(__replayer!=null){
             __replayer.error(e);
         }
-        __completed = true;
         unsubscribe();
         return e;
     }
@@ -223,7 +222,6 @@ public class Observable<T> {
         if(__replayer!=null){
             __replayer.complete(__current);
         }
-        __completed = true;
         unsubscribe();
         return __current;
     }
