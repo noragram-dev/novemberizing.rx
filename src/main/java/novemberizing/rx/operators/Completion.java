@@ -27,10 +27,9 @@ public class Completion<T, U, Z> extends Operator<T, Z> {
             @Override
             public void onNext(U o) {
                 synchronized (__self) {
-                    if(__completed) {
-                        if (__condition == null || __condition.call(__first, __second = o)) {
-                            emit(__func.call(__first, __second = o));
-                        }
+                    __second = o;
+                    if(__completed && (__condition==null || __condition.call(__first, __second))){
+                        emit(__func.call(__first, __second));
                     }
                 }
             }
@@ -70,13 +69,7 @@ public class Completion<T, U, Z> extends Operator<T, Z> {
 
     @Override
     public void onComplete(){
-        try {
-            if(__condition==null || __condition.call(__first, __second)) {
-                emit(__func.call(__first, __second));
-            }
-        } catch (Exception e) {
-            error(e);
-        }
+        emit(__func.call(__first, __second));
         super.onComplete();
     }
 }
