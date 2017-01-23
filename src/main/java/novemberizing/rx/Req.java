@@ -183,21 +183,25 @@ public class Req<Z> implements Executable {
     }
 
     protected void error(Throwable e){
-        __observable.error(e);
-        if(__completionPort!=null){
-            __completionPort.error(e);
-        } else {
-            __replayer.error(e);
+        if(!__completed) {
+            __observable.error(e);
+            if (__completionPort != null) {
+                __completionPort.error(e);
+            } else {
+                __replayer.error(e);
+            }
         }
     }
 
     protected void next(Z o){
-        __out = o;
-        __observable.emit(o);
-        if(__completionPort!=null) {
-            __completionPort.emit(o);
-        } else {
-            __replayer.add(o);
+        if(!__completed) {
+            __out = o;
+            __observable.emit(o);
+            if (__completionPort != null) {
+                __completionPort.emit(o);
+            } else {
+                __replayer.add(o);
+            }
         }
     }
 
