@@ -16,7 +16,7 @@ public class Completion<T, U, Z> extends Operator<T, Z> {
     private novemberizing.ds.func.Pair<T, U, Z> __func;
     private novemberizing.ds.func.Pair<T, U, Boolean> __condition;
     private final Completion<T, U, Z> __self = this;
-    private U __second;
+    private novemberizing.ds.tuple.Single<U> __second;
     private T __first;
 
     public Completion(Observable<U> observable, novemberizing.ds.func.Pair<T, U, Boolean> condition ,novemberizing.ds.func.Pair<T, U, Z> f){
@@ -27,9 +27,9 @@ public class Completion<T, U, Z> extends Operator<T, Z> {
             @Override
             public void onNext(U o) {
                 synchronized (__self) {
-                    __second = o;
-                    if(__completed && (__condition==null || __condition.call(__first, __second))){
-                        emit(__func.call(__first, __second));
+                    __second = new novemberizing.ds.tuple.Single<>(o);
+                    if(__completed && (__condition==null || __condition.call(__first, __second.first))){
+                        emit(__func.call(__first, __second.first));
                     }
                 }
             }
@@ -69,7 +69,14 @@ public class Completion<T, U, Z> extends Operator<T, Z> {
 
     @Override
     public void onComplete(){
-        emit(__func.call(__first, __second));
+        Log.e(Tag, "= 1 =");
+        if(__second!=null) {
+            Log.e(Tag, "= 2 =");
+            if(__condition==null || __condition.call(__first, __second.first)){
+                Log.e(Tag, "= 3 =");
+                emit(__func.call(__first, __second.first));
+            }
+        }
         super.onComplete();
     }
 }
