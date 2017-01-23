@@ -3,6 +3,7 @@ package novemberizing.rx;
 import novemberizing.ds.Executable;
 import novemberizing.ds.Executor;
 import novemberizing.ds.func.Single;
+import novemberizing.rx.operators.Completion;
 import novemberizing.rx.operators.Composer;
 import novemberizing.rx.operators.Condition;
 import novemberizing.rx.operators.Sync;
@@ -139,6 +140,13 @@ public abstract class Task<T, Z> implements Executable {
             __completionPort = new Observable<>(__replayer);
         }
         return (Condition<Z, U, V>) __completionPort.subscribe(Operator.Condition(observable,condition,f));
+    }
+
+    public <U, V> Completion<Z, U, V> completion(Observable<U> observable, novemberizing.ds.func.Pair<Z, U, Boolean> condition , novemberizing.ds.func.Pair<Z, U, V> f){
+        if(__completionPort==null){
+            __completionPort = new Observable<>(__replayer);
+        }
+        return (Completion<Z, U, V>) __completionPort.subscribe(Operator.Completion(observable,condition,f));
     }
 
     public <U> Operator<Z, U> condition(Single<Z, Boolean> condition, Single<Z, U> f){
