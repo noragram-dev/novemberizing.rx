@@ -47,7 +47,7 @@ public class Completion<T, U, Z> extends Operator<T, Z> {
                 Log.d(Tag, "");
                 synchronized (__self) {
                     __finished = true;
-                    if(__condition.call(__first, __second)){
+                    if(__condition==null || __condition.call(__first, __second)){
                         emit(__func.call(__first, __second));
                     }
                 }
@@ -62,7 +62,7 @@ public class Completion<T, U, Z> extends Operator<T, Z> {
         synchronized (__self) {
             __first = in;
             try {
-                if(__finished && __condition.call(__first , __second)) {
+                if(__finished && (__condition==null || __condition.call(__first , __second))) {
                     task.next(__func.call(__first = in, __second));
                 }
             } catch (Exception e) {

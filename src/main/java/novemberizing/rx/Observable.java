@@ -516,6 +516,10 @@ public class Observable<T> {
         return (Completion<T, U, Z>) subscribe(Operator.Condition(observable,condition,f));
     }
 
+    public <U, Z> Completion<T, U, Z> completion(Observable<U> observable, novemberizing.ds.func.Pair<T, U, Z> f){
+        return (Completion<T, U, Z>) subscribe(Operator.Condition(observable, null,f));
+    }
+
     public Observable<T> replay(int limit){
         if(limit==0){
             __replayer = null;

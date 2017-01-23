@@ -149,6 +149,13 @@ public abstract class Task<T, Z> implements Executable {
         return (Completion<Z, U, V>) __completionPort.subscribe(Operator.Completion(observable,condition,f));
     }
 
+    public <U, V> Completion<Z, U, V> completion(Observable<U> observable, novemberizing.ds.func.Pair<Z, U, V> f){
+        if(__completionPort==null){
+            __completionPort = new Observable<>(__replayer);
+        }
+        return (Completion<Z, U, V>) __completionPort.subscribe(Operator.Completion(observable, null,f));
+    }
+
     public <U> Operator<Z, U> condition(Single<Z, Boolean> condition, Single<Z, U> f){
         if(__completionPort==null){
             __completionPort = new Observable<>(__replayer);
