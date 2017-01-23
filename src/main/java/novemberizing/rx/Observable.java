@@ -1,7 +1,6 @@
 package novemberizing.rx;
 
 import com.google.gson.annotations.Expose;
-import novemberizing.ds.Executor;
 import novemberizing.ds.func.Single;
 import novemberizing.rx.functions.OnComplete;
 import novemberizing.rx.functions.OnError;
@@ -128,7 +127,7 @@ public class Observable<T> {
                     }
                 }
             }
-            error(__observable.exception(__exception));
+            __observable.error(__observable.exception(__exception));
             complete();
         }
     }
@@ -214,6 +213,7 @@ public class Observable<T> {
         if(__replayer!=null){
             __replayer.error(e);
         }
+        __completed = true;
         unsubscribe();
         return e;
     }
@@ -222,6 +222,7 @@ public class Observable<T> {
         if(__replayer!=null){
             __replayer.complete(__current);
         }
+        __completed = true;
         unsubscribe();
         return __current;
     }
