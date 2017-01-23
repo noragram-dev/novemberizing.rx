@@ -261,16 +261,19 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
 
     @Override
     public void onNext(T o) {
+        __completed = false;
         exec(o);
     }
 
     @Override
     public void onError(Throwable e) {
+        __completed = false;
         error(e);
     }
 
     @Override
     public void onComplete() {
+        __completed = true;
         complete();
     }
 

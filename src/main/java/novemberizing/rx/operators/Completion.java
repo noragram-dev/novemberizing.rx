@@ -59,19 +59,16 @@ public class Completion<T, U, Z> extends Operator<T, Z> {
 
     @Override
     public void onNext(T o) {
-        __completed = false;
         super.onNext(o);
     }
 
     @Override
     public void onError(Throwable e) {
-        __completed = false;
         super.onError(e);
     }
 
     @Override
     public void onComplete(){
-        __completed = true;
         if(__second!=null) {
             if(__condition==null || __condition.call(__first, __second.first)){
                 emit(__func.call(__first, __second.first));
