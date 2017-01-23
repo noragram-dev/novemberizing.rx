@@ -436,6 +436,10 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
         };
     }
 
+    public static <T, U, Z> Completion<T, U, Z> Completion(Observable<U> observable, novemberizing.ds.func.Pair<T, U, Boolean> condition , novemberizing.ds.func.Pair<T, U, Z> f){
+        return new Completion<>(observable,condition,f);
+    }
+
     public static <T, Z> Switch<T, Z> Switch(Single<T, Integer> hash){
         return new Switch<>(hash);
     }
