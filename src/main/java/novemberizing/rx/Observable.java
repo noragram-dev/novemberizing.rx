@@ -564,11 +564,11 @@ public class Observable<T> {
     }
 
     public <U, Z> Completion<T, U, Z> completion(Observable<U> observable, novemberizing.ds.func.Pair<T, U, Boolean> condition , novemberizing.ds.func.Pair<T, U, Z> f){
-        return (Completion<T, U, Z>) subscribe(Operator.Condition(observable,condition,f));
+        return (Completion<T, U, Z>) subscribe(Operator.Completion(observable,condition,f));
     }
 
     public <U, Z> Completion<T, U, Z> completion(Observable<U> observable, novemberizing.ds.func.Pair<T, U, Z> f){
-        return (Completion<T, U, Z>) subscribe(Operator.Condition(observable, null,f));
+        return (Completion<T, U, Z>) subscribe(Operator.Completion(observable, null,f));
     }
 
     public Observable<T> replay(int limit){
