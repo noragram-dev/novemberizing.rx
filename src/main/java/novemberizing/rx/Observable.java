@@ -127,7 +127,7 @@ public class Observable<T> {
                     }
                 }
             }
-            __observable.error(__observable.exception(__exception));
+            __observable.exception(__observable.exception(__exception));
             complete();
         }
     }
