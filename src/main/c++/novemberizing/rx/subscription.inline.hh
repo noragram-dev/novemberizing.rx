@@ -27,6 +27,21 @@ inline void Subscription<T>::emit(const T & o)
 }
 
 template <class T>
+inline void Subscription<T>::emit(const T && o)
+{
+    FUNCTION_START("");
+    try
+    {
+        __observer->onNext(o);
+    }
+    catch (const Throwable & e)
+    {
+        __observer->onError(e);
+    }
+    FUNCTION_END("");
+}
+
+template <class T>
 inline void Subscription<T>::error(const Throwable & e)
 {
     FUNCTION_START("");

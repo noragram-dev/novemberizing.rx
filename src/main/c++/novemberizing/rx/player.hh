@@ -20,7 +20,7 @@ private:	class Replay : public Play<T>
 						{
 						private:	std::list<T> __items;
 						public:		virtual void on(Observer<T> * observer);
-						public:		List(std::initializer_list<T> o);
+						public:		List(std::initializer_list<T> list);
 						public:		virtual ~List(void);
 						};
 			public:		class Error : public Play<T>
@@ -38,19 +38,23 @@ private:	class Replay : public Play<T>
 						};
 			private:	T __item;
 			public:		virtual void on(Observer<T> * observer);
-			public:		Replay(const T & o);
+			public:		Replay(const T & item);
 			public:		virtual ~Replay(void);
 			};
 private:	type::size __limit;
 private:	ConcurrencyList<Play<T> *> __replays;
 public:		inline virtual void on(Observer<T> * observer);
 protected:  inline virtual void emit(const T & o);
+protected:	inline virtual void emit(const T && o);
 protected:  inline virtual void error(const Throwable & e);
 protected:  inline virtual void complete();
-public:		Player(type::size limit = Infinite);
-public:		virtual ~Player(void);
+public:		inline Player(type::size limit = Infinite);
+public:		inline virtual ~Player(void);
+
 };
 
 } }
+
+#include <novemberizing/rx/player.inline.hh>
 
 #endif // __NOVEMBERIZING_RX__PLAYER__HH__

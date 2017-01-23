@@ -14,6 +14,7 @@
 namespace novemberizing { namespace rx {
 
 template <class T> class Subscription;
+template <class T> class Player;
 
 using namespace ds;
 using namespace concurrency;
@@ -27,6 +28,7 @@ protected:  virtual void onComplete(void) = 0;
 public:     inline Observer(void);
 public:     inline virtual ~Observer(void);
 public:     friend Subscription<T>;
+public:     friend Player<T>;
 };
 
 } }

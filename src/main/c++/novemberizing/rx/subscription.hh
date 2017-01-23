@@ -21,7 +21,7 @@ using namespace ds;
 using namespace concurrency;
 
 template <class T>
-class Subscription : public Emittable<T>, public Sync
+class Subscription : public Emittable<T>
 {
 public:     friend Observable<T>;
 private:    Observable<T> * __observable;
@@ -29,6 +29,7 @@ private:    Observer<T> * __observer;
 private:    bool __unsubscribed;
 public:     inline bool unsubscribed(void) const;
 protected:  inline virtual void emit(const T & o);
+protected:  inline virtual void emit(const T && o);
 protected:  inline virtual void error(const Throwable & e);
 protected:  inline virtual void complete();
 protected:  inline Subscription(Observable<T> * observable, Observer<T> * observer);
