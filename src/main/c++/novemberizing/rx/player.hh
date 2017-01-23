@@ -1,6 +1,14 @@
 #ifndef   __NOVEMBERIZING_RX__PLAYER__HH__
 #define   __NOVEMBERIZING_RX__PLAYER__HH__
 
+#include <novemberizing.hh>
+
+#include <novemberizing/util/log.hh>
+
+#include <novemberizing/ds/concurrency.list.hh>
+
+#include <novemberizing/rx/play.hh>
+
 namespace novemberizing { namespace rx {
 
 template <class T>

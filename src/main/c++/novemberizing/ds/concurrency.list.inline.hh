@@ -3,72 +3,72 @@
 
 namespace novemberizing { namespace ds {
 
-template <class T>
-typename ConcurrencyList<T, Concurrency>::iterator ConcurrencyList<T>::begin(void)
+template <class T, class Concurrency>
+typename ConcurrencyList<T, Concurrency>::iterator ConcurrencyList<T, Concurrency>::begin(void)
 {
 	FUNCTION_START("");
 	FUNCTION_END("");
 	return __o.begin();
 }
 
-template <class T>
-typename ConcurrencyList<T, Concurrency>::iterator ConcurrencyList<T>::end(void)
+template <class T, class Concurrency>
+typename ConcurrencyList<T, Concurrency>::iterator ConcurrencyList<T, Concurrency>::end(void)
 {
 	FUNCTION_START("");
 	FUNCTION_END("");
 	return __o.end();
 }
 
-template <class T>
-typename ConcurrencyList<T, Concurrency>::iterator ConcurrencyList<T>::erase(typename ConcurrencyList<T, Concurrency>::iterator it)
+template <class T, class Concurrency>
+typename ConcurrencyList<T, Concurrency>::iterator ConcurrencyList<T, Concurrency>::erase(typename ConcurrencyList<T, Concurrency>::iterator it)
 {
 	FUNCTION_START("");
 	FUNCTION_END("");
 	return __o.erase(it);
 }
 
-template <class T>
-type::size ConcurrencyList<T>::size(void) const
+template <class T, class Concurrency>
+type::size ConcurrencyList<T, Concurrency>::size(void) const
 {
 	FUNCTION_START("");
 	FUNCTION_END("");
 	return __o.size();
 }
 
-template <class T>
-void ConcurrencyList<T>::front(const T & o)
+template <class T, class Concurrency>
+void ConcurrencyList<T, Concurrency>::front(const T & o)
 {
 	FUNCTION_START("");
 	__o.push_front(o);
 	FUNCTION_END("");
 }
 
-template <class T>
-void ConcurrencyList<T>::front(const T && o)
+template <class T, class Concurrency>
+void ConcurrencyList<T, Concurrency>::front(const T && o)
 {
 	FUNCTION_START("");
 	__o.push_front(o);
 	FUNCTION_END("");
 }
 
-template <class T>
-void ConcurrencyList<T>::back(const T & o)
+template <class T, class Concurrency>
+void ConcurrencyList<T, Concurrency>::back(const T & o)
 {
 	FUNCTION_START("");
 	__o.push_back(o);
 	FUNCTION_END("");
 }
 
-template <class T>
-void ConcurrencyList<T>::back(const T && o)
+template <class T, class Concurrency>
+void ConcurrencyList<T, Concurrency>::back(const T && o)
 {
 	FUNCTION_START("");
 	__o.push_back(o);
 	FUNCTION_END("");
 }
 
-template <class T>
-T & ConcurrencyList<T>::front(void)
+template <class T, class Concurrency>
+T & ConcurrencyList<T, Concurrency>::front(void)
 {
 	FUNCTION_START("");
 	T ret = __o.front();
@@ -77,8 +77,8 @@ T & ConcurrencyList<T>::front(void)
 	return ret;
 }
 
-template <class T>
-T & ConcurrencyList<T>::back(void)
+template <class T, class Concurrency>
+T & ConcurrencyList<T, Concurrency>::back(void)
 {
 	FUNCTION_START("");
 	T ret = __o.back();
@@ -87,24 +87,24 @@ T & ConcurrencyList<T>::back(void)
 	return ret;
 }
 
-template <class T>
-void ConcurrencyList<T>::push(const T & o)
+template <class T, class Concurrency>
+void ConcurrencyList<T, Concurrency>::push(const T & o)
 {
 	FUNCTION_START("");
 	__o.push_back(o);
 	FUNCTION_END("");
 }
 
-template <class T>
-void ConcurrencyList<T>::push(const T && o)
+template <class T, class Concurrency>
+void ConcurrencyList<T, Concurrency>::push(const T && o)
 {
 	FUNCTION_START("");
 	__o.push_back(o);
 	FUNCTION_END("");
 }
 
-template <class T>
-T & ConcurrencyList<T>::pop(void)
+template <class T, class Concurrency>
+T & ConcurrencyList<T, Concurrency>::pop(void)
 {
 	FUNCTION_START("");
 	T ret = __o.back();
@@ -113,15 +113,15 @@ T & ConcurrencyList<T>::pop(void)
 	return ret;
 }
 
-template <class T>
-ConcurrencyList<T>::ConcurrencyList(void)
+template <class T, class Concurrency>
+ConcurrencyList<T, Concurrency>::ConcurrencyList(void)
 {
 	FUNCTION_START("");
 	FUNCTION_END("");
 }
 
-template <class T>
-ConcurrencyList<T>::~ConcurrencyList(void)
+template <class T, class Concurrency>
+ConcurrencyList<T, Concurrency>::~ConcurrencyList(void)
 {
 	FUNCTION_START("");
 	FUNCTION_END("");

@@ -7,7 +7,7 @@ template <class T>
 inline void Observable<T>::emit(const T & o)
 {
     FUNCTION_START("");
-    for (SubscriptionList<T>::iterator it = __subscriptionList.begin(); it != __subscriptionList.end();)
+    for (typename SubscriptionList<T>::iterator it = __subscriptionList.begin(); it != __subscriptionList.end();)
     {
         Subscription<T> * subscription = *it;
         if (subscription != nullptr)
@@ -36,7 +36,7 @@ template <class T>
 inline void Observable<T>::emit(const T && o)
 {
     FUNCTION_START("");
-    for (SubscriptionList<T>::iterator it = __subscriptionList.begin(); it != __subscriptionList.end();)
+    for (typename SubscriptionList<T>::iterator it = __subscriptionList.begin(); it != __subscriptionList.end();)
     {
         Subscription<T> * subscription = *it;
         if (subscription != nullptr)
@@ -65,7 +65,7 @@ template <class T>
 inline void Observable<T>::error(const Throwable & e)
 {
     FUNCTION_START("");
-    for (SubscriptionList<T>::iterator it = __subscriptionList.begin(); it != __subscriptionList.end();)
+    for (typename SubscriptionList<T>::iterator it = __subscriptionList.begin(); it != __subscriptionList.end();)
     {
         Subscription<T> * subscription = *it;
         if (subscription != nullptr)
@@ -94,7 +94,7 @@ template <class T>
 inline void Observable<T>::complete(void)
 {
     FUNCTION_START("");
-    for (SubscriptionList<T>::iterator it = __subscriptionList.begin(); it != __subscriptionList.end();)
+    for (typename SubscriptionList<T>::iterator it = __subscriptionList.begin(); it != __subscriptionList.end();)
     {
         Subscription<T> * subscription = *it;
         if (subscription != nullptr)
@@ -143,7 +143,7 @@ inline Observable<T>::Observable(void)
 }
 
 template <class T>
-inline Observable<T>::Observable(const Observable<T> observable)
+inline Observable<T>::Observable(const Observable<T> & observable)
 {
     /**
      * must subscription's inherited ...

@@ -15,6 +15,7 @@
 #include <novemberizing/rx/observer.hh>
 #include <novemberizing/rx/subscription.hh>
 #include <novemberizing/rx/subscription.list.hh>
+#include <novemberizing/rx/player.hh>
 
 namespace novemberizing { namespace rx {
 
@@ -32,7 +33,7 @@ public:		inline static Observable<T> just(const T & o);
 public:		inline static Observable<T> just(const T && o);
 public:		inline static Observable<T> just(std::initializer_list<T> items);
 private:    SubscriptionList<T> __subscriptionList;
-private:	Replayer<T> __replayer;
+private:	Player<T> __replayer;
 private:	type::size __emits;
 protected:  inline virtual void emit(const T & o);
 protected:  inline virtual void emit(const T && o);
@@ -41,7 +42,7 @@ protected:  inline virtual void complete(void);
 public:     inline virtual Subscription<T> * subscribe(Observer<T> * observer);
 public:		inline Observable<T> & operator=(const Observable & observable);
 public:     inline Observable(void);
-public:		inline Observable(const Observable<T> observable);
+public:		inline Observable(const Observable<T> & observable);
 public:     inline virtual ~Observable(void);
 public:     friend Subscription<T>;
 };

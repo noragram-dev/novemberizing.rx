@@ -17,7 +17,7 @@ public:		virtual int on(void);
 public:		virtual int off(void);
 public:		virtual int lock(void);
 public:		virtual int unlock(void);
-public:		Sync(bool on = true);
+public:		Sync(bool create = true);
 public:		virtual ~Sync(void);
 };
 

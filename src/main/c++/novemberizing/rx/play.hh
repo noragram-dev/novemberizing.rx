@@ -4,7 +4,7 @@
 namespace novemberizing { namespace rx {
 
 template <class T>
-class Play<T>
+class Play
 {
 public:		virtual void on(Observer<T> * observer) = 0;
 public:		Play(void);
