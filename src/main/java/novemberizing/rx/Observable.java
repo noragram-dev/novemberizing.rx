@@ -198,6 +198,7 @@ public class Observable<T> {
     protected T set(T v){
         if(__completed) {
             if(__replayer!=null) {
+                Log.e(Tag, "= clear =");
                 __replayer.clear();
             }
             __completed = false;
