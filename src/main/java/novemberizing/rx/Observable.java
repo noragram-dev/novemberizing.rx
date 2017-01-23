@@ -497,6 +497,47 @@ public class Observable<T> {
     public <Z> Operator<T, Z> next(Operator<T, Z> op){ return subscribe(op); }
     public <Z> Operator<T, Z> next(novemberizing.ds.on.Pair<Operator.Task<T, Z>,T> f){ return subscribe(f); }
 
+    public Observable<T> on(novemberizing.ds.on.Single<T> f){
+        return subscribe(new Subscribers.Just<T>() {
+            @Override
+            public void onNext(T o) { f.on(o); }
+        });
+    }
+
+    public Observable<T> exception(novemberizing.ds.on.Single<Throwable> f){
+        return subscribe(new Subscribers.Just<T>() {
+            @Override
+            public void onError(Throwable e) { f.on(e); }
+        });
+    }
+
+    public Observable<T> completion(novemberizing.ds.on.Empty f){
+        return subscribe(new Subscribers.Just<T>() {
+            @Override
+            public void onComplete() { f.on(); }
+        });
+    }
+
+    public Observable<T> on(novemberizing.ds.on.Single<T> f, boolean once){
+        return subscribe(new Subscribers.Just<T>() {
+            @Override
+            public void onNext(T o) {
+                f.on(o);
+                if(once){ unsubscribe(); }
+            }
+        });
+    }
+
+    public Observable<T> exception(novemberizing.ds.on.Single<Throwable> f, boolean once){
+        return subscribe(new Subscribers.Just<T>() {
+            @Override
+            public void onError(Throwable e) {
+                f.on(e);
+                if(once){ unsubscribe(); }
+            }
+        });
+    }
+
     public <Z> Sync<T, Z> sync(Single<T, Z> f){ return (Sync<T, Z>) subscribe(Operator.Sync(f)); }
     public <Z> Sync<T, Z> sync(novemberizing.ds.on.Pair<Operator.Task<T, Z>,T> f){ return (Sync<T, Z>) subscribe(Operator.Sync(f)); }
 

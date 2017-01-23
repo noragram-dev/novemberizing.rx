@@ -135,6 +135,26 @@ public abstract class Task<T, Z> implements Executable {
         });
     }
 
+    public Observable<Z> on(novemberizing.ds.on.Single<Z> f, boolean once){
+        return subscribe(new Subscribers.Just<Z>() {
+            @Override
+            public void onNext(Z o) {
+                f.on(o);
+                if(once){ unsubscribe(); }
+            }
+        });
+    }
+
+    public Observable<Z> exception(novemberizing.ds.on.Single<Throwable> f, boolean once){
+        return subscribe(new Subscribers.Just<Z>() {
+            @Override
+            public void onError(Throwable e) {
+                f.on(e);
+                if(once){ unsubscribe(); }
+            }
+        });
+    }
+
     public <U> Sync<Z, U> sync(Single<Z, U> f){
         if(__completionPort==null){
             __completionPort = new Observable<>(__replayer);
