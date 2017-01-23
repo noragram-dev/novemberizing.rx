@@ -59,6 +59,16 @@ public class Completion<T, U, Z> extends Operator<T, Z> {
     }
 
     @Override
+    public void onNext(T o) {
+        super.onNext(o);
+    }
+
+    @Override
+    public void onError(Throwable e) {
+        super.onError(e);
+    }
+
+    @Override
     public void onComplete(){
         try {
             if(__condition==null || __condition.call(__first, __second)) {
@@ -67,5 +77,6 @@ public class Completion<T, U, Z> extends Operator<T, Z> {
         } catch (Exception e) {
             error(e);
         }
+        super.onComplete();
     }
 }
