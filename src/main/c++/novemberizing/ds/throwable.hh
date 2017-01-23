@@ -9,6 +9,8 @@ namespace novemberizing { namespace ds {
 
 class Throwable
 {
+private:    std::string __msg;
+public:     const std::string & msg(void) const { return __msg; }
 public:		Throwable(void);
 public:		virtual ~Throwable(void);
 };

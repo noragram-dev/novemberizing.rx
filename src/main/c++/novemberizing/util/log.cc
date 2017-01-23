@@ -93,6 +93,18 @@ void Log::write(Log::Type type, const char * file, type::uint32 line, const char
 	}
 }
 
+Log & Log::disable(type::uint32 type)
+{
+	__types &= (~type);
+	return *this;
+}
+
+Log & Log::enable(type::uint32 type)
+{
+	__types |= (type);
+	return *this;
+}
+
 Log & Log::add(Logger * logger)
 {
 	if(logger!=nullptr)

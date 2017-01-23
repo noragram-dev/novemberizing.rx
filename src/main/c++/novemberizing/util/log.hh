@@ -52,6 +52,8 @@ public:		typedef enum __Type
 public:		static Log o;
 private:	type::uint32 __types;
 private:	std::list<Logger *> __loggers;
+public:		Log & disable(type::uint32 type);
+public:		Log & enable(type::uint32 type);
 public:		Log & add(Logger * logger);
 public:		Log & del(Logger * logger);
 public:		void write(Log::Type type, const char * file, type::uint32 line, const char * function, const char * format, ...);
