@@ -21,17 +21,17 @@ public class Subscribers {
 
         @Override
         public void onNext(T o) {
-            Log.i(__tag, o);
+            Log.d(__tag, o);
         }
 
         @Override
         public void onError(Throwable e) {
-            Log.i(__tag, "error", e.getMessage());
+            Log.e(__tag, "error", e.getMessage());
         }
 
         @Override
         public void onComplete() {
-            Log.i(__tag, "complete");
+            Log.d(__tag, "complete");
         }
     }
 
@@ -39,48 +39,51 @@ public class Subscribers {
 
     public static <T> Just<T> Just(String tag){ return new Just<>(tag); }
 
-//    public static class Block<T, Z> extends Subscriber<Z> {
-//        protected LinkedList<Z> __items = new LinkedList<>();
-//        protected String __tag = "block";
-//        protected final Operator.Task<T, Z> __task;
-//        protected final Operator<?, Z> __operator;
-//
-//        public String tag(){ return __tag; }
-//
-//        public <U> Block(Operator<U, Z> op,Operator.Task<T, Z> task){
-//            __task = task;
-//            __operator = op;
-//        }
-//
-//        public <U> Block(Operator<U, Z> op,Operator.Task<T, Z> task, String tag){
-//            __task = task;
-//            __operator = op;
-//            __tag = tag;
-//        }
-//
-//        @Override
-//        public void onNext(Z o) {
-//            __task.next(o);
-//            __items.addLast(o);
-//        }
-//
-//        @Override
-//        public void onError(Throwable e) {
-//            __task.error(e);
-//        }
-//
-//        @Override
-//        public void onComplete() {
-//            Operator.Bulk(__operator, __items);
-//            __task.complete();
-//        }
-//    }
-//
-//    public static <T, Z> Subscribers.Block<T, Z> Block(Operator<?, Z> op,Operator.Task<T, Z> task){
-//        return new Subscribers.Block<>(op, task);
-//    }
-//
-//    public static <T, Z> Subscribers.Block<T, Z> Block(Operator<?, Z> op,Operator.Task<T, Z> task, String tag){
-//        return new Subscribers.Block<>(op, task, tag);
-//    }
+
+    public static class Completion<T> extends Subscriber<T> {
+
+        private String __tag = "completion";
+
+        private T __o;
+        private Throwable __exception;
+        private novemberizing.ds.on.Pair<T, Throwable> __func;
+
+        public String tag(){ return __tag; }
+
+        public Completion(novemberizing.ds.on.Pair<T, Throwable> f){
+            __func = f;
+            __exception = null;
+            __o = null;
+        }
+
+        public Completion(String tag, novemberizing.ds.on.Pair<T, Throwable> f){
+            __tag = tag;
+            __func = f;
+            __exception = null;
+            __o = null;
+        }
+
+        @Override
+        public void onNext(T o) {
+            Log.d(__tag, o);
+            __o = o;
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            Log.e(__tag, "error", e.getMessage());
+        }
+
+        @Override
+        public void onComplete() {
+            Log.d(__tag, "complete");
+            if(__func!=null){
+                __func.on(__o, __exception);
+            }
+        }
+    }
+
+    public static <T> Completion<T> Completion(novemberizing.ds.on.Pair<T, Throwable> f){ return new Completion<>(f); }
+
+    public static <T> Completion<T> Completion(String tag, novemberizing.ds.on.Pair<T, Throwable> f){ return new Completion<>(tag, f); }
 }

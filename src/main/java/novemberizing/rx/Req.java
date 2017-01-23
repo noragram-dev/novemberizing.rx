@@ -285,4 +285,10 @@ public class Req<Z> implements Executable {
         }
         return __completionPort;
     }
+
+    public static void main(String[] args){
+        String x = "0.1.1";
+        String y = "0.2.2";
+        System.out.println(x.compareTo(y));
+    }
 }
