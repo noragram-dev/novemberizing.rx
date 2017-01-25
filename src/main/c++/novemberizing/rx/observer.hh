@@ -27,6 +27,8 @@ protected:  virtual void onError(const Throwable & e) = 0;
 protected:  virtual void onComplete(void) = 0;
 public:     inline Observer(void);
 public:     inline virtual ~Observer(void);
+public:     inline static void operator delete(void * p);
+// public:     inline void operator delete[](void * p);     /** how to get size */
 public:     friend Subscription<T>;
 public:     friend Player<T>;
 };
