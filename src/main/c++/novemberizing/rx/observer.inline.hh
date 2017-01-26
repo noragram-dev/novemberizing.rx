@@ -1,36 +1,49 @@
 #ifndef   __NOVEMBERIZING_RX__OBSERVER__INLINE__HH__
 #define   __NOVEMBERIZING_RX__OBSERVER__INLINE__HH__
 
+#include <novemberizing/rx/observer.hh>
+
 namespace novemberizing { namespace rx {
 
 template <class T>
-inline Observer<T>::Observer(void)
+Observer<T>::Observer(void)
 {
     FUNCTION_START("");
     FUNCTION_END("");
 }
 
 template <class T>
-inline Observer<T>::~Observer(void)
+Observer<T>::~Observer(void)
 {
     FUNCTION_START("");
     FUNCTION_END("");
 }
 
 template <class T>
-inline void Observer<T>::operator delete(void * p)
+bool Observer<T>::isSubscribed(Observable<T> * observable)
 {
     FUNCTION_START("");
-    INFORMATION_LOG("");
-    Observer<T> * observer = static_cast<Observer<T> *>(p);
-    if(observer!=nullptr)
-    {
-        ::operator delete(observer);
-    }
-    else
-    {
-        CAUTION_LOG("static_cast<Observer<T> *>(p)==nullptr");
-    }
+    FUNCTION_END("");
+    return observable!=nullptr && __subscriptions.exist(observable);
+}
+
+template <class T>
+void Observer<T>::onSubscribe(Observable<T> * observable,Subscription<T> * subscription)
+{
+    FUNCTION_START("");
+    synchronized(&__subscriptions,__subscriptions.put(observable, subscription));
+    FUNCTION_END("");
+}
+
+template <class T>
+void Observer<T>::onUnsubscribe(Observable<T> * observable,Subscription<T> * subscription)
+{
+    FUNCTION_START("");
+    synchronized(&__subscriptions,if(__subscriptions.del(observable)==subscription){
+        /**
+         * @todo: delete subscription logic ... 
+         */
+    });
     FUNCTION_END("");
 }
 

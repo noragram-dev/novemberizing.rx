@@ -1,26 +1,21 @@
 #ifndef   __NOVEMBERIZING_RX__SCHEDULER__HH__
 #define   __NOVEMBERIZING_RX__SCHEDULER__HH__
 
-#include <novemberizing.hh>
-
-#include <novemberizing/util/log.hh>
-
-#include <novemberizing/rx/task.hh>
+#include <novemberizing/ds/executor.hh>
+#include <novemberizing/ds/executable.hh>
+#include <novemberizing/ds/runnable.hh>
 
 namespace novemberizing { namespace rx {
 
-class Scheduler
+using namespace ds;
+
+class Scheduler : public Executor, public Runnable
 {
-public:		virtual void dispatch(Task * task) = 0;
-public:		virtual void execute(Task * task) = 0;
-public:		virtual void executed(Task * task) = 0;
-public:		virtual void completed(Task * task) = 0;
-public:		Scheduler(void);
-public:		virtual ~Scheduler(void);
+public:     static Scheduler * Main(void);
+public:     Scheduler(void);
+public:     virtual ~Scheduler(void);
 };
 
 } }
-
-#include <novemberizing/rx/scheduler.inline.hh>
 
 #endif // __NOVEMBERIZING_RX__SCHEDULER__HH__

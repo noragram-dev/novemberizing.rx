@@ -1,22 +1,23 @@
 #ifndef   __NOVEMBERIZING_DS__THROWABLE__HH__
 #define   __NOVEMBERIZING_DS__THROWABLE__HH__
 
-#include <novemberizing.hh>
-
-#include <novemberizing/util/log.hh>
+#include <string>
+#include <ostream>
 
 namespace novemberizing { namespace ds {
 
 class Throwable
 {
-private:    std::string __msg;
-public:     const std::string & msg(void) const { return __msg; }
-public:		Throwable(void);
-public:		virtual ~Throwable(void);
+protected:  std::string __msg;
+public:     const std::string & msg(void) const;
+public:     Throwable(void);
+public:     Throwable(const std::string & v);
+public:     Throwable(const std::string && v);
+public:     virtual ~Throwable(void);
 };
 
-} }
+std::ostream & operator<<(std::ostream & o, const Throwable & e);
 
-#include <novemberizing/ds/throwable.cc>
+} }
 
 #endif // __NOVEMBERIZING_DS__THROWABLE__HH__

@@ -1,30 +1,33 @@
 #ifndef   __NOVEMBERIZING_RX_SCHEDULERS__MAIN__HH__
 #define   __NOVEMBERIZING_RX_SCHEDULERS__MAIN__HH__
 
-#include <novemberizing.hh>
-
-#include <novemberizing/util/log.hh>
-#include <novemberizing/util/concurrency.list.hh>
-
 #include <novemberizing/ds/cyclable.hh>
+#include <novemberizing/ds/concurrent.list.hh>
+#include <novemberizing/ds/concurrent.set.hh>
+
+#include <novemberizing/concurrency/sync.hh>
 
 #include <novemberizing/rx/scheduler.hh>
-#include <novemberizing/rx/task.hh>
 
 namespace novemberizing { namespace rx { namespace schedulers {
 
-class Main : public Scheduler, public Cyclable
+using namespace ds;
+using namespace concurrency;
+
+class Main : public Scheduler, public Sync
 {
-private:	ConcurrencySet<Task *> __tasks;
-private:	ConcurrencyList<Task *, Condition> __q;
-private:	ConcurrencyList<Cyclable *> __cyclables;
-public:		virtual void dispatch(Task * task);		/** check visibility */
-public:		virtual void execute(Task * task);		/** check visibility */
-public:		virtual void executed(Task * task);		/** check visibility */
-public:		virtual void completed(Task * task);	/** check visibility */
-public:		virtual void onecycle(void);			/** check visibility */
-public:		Main(void);
-public:		virtual ~Main(void);
+private:    static Main * __singleton;
+public:     static Main * Get(void);
+private:    ConcurrentList<Executable *> __q;
+private:    ConcurrentSet<Executable *> __executables;
+private:    ConcurrentList<Cyclable *> __cyclables;
+public:     virtual void dispatch(Executable * executable);
+public:     virtual void dispatch(std::initializer_list<Executable *> executables);
+public:     virtual void completed(Executable * executable);
+public:     virtual void executed(Executable * executable);
+public:     virtual int run(void);
+private:    Main(void);
+public:     virtual ~Main(void);
 };
 
 } } }

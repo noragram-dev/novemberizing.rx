@@ -5,9 +5,9 @@ namespace novemberizing { namespace ds {
 
 class Cyclable
 {
-public:		virtual void onecycle(void) = 0;
-public:		Cyclable(void);
-public:		virtual ~Cyclable(void);
+public:     virtual void onecycle(void) = 0;
+public:     Cyclable(void);
+public:     virtual ~Cyclable(void);
 };
 
 } }

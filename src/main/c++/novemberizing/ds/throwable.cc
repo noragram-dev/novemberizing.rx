@@ -1,22 +1,17 @@
-#ifndef   __NOVEMBERIZING_DS__THROWABLE__INLINE__HH__
-#define   __NOVEMBERIZING_DS__THROWABLE__INLINE__HH__
-
-#include <novemberizing/ds/throwable.hh>
+#include "throwable.hh"
 
 namespace novemberizing { namespace ds {
 
-Throwable::Throwable(void)
-{
-	FUNCTION_START("");
-	FUNCTION_END("");
-}
+Throwable::Throwable(void) : __msg("") {}
 
-Throwable::~Throwable(void)
-{
-	FUNCTION_START("");
-	FUNCTION_END("");
-}
+Throwable::Throwable(const std::string & v) : __msg(v) {}
+
+Throwable::Throwable(const std::string && v) : __msg(v) {}
+
+Throwable::~Throwable(void){}
+
+const std::string & Throwable::msg(void) const { return __msg; }
+
+std::ostream & operator<<(std::ostream & o, const Throwable & e) { return o<<e.msg(); }
 
 } }
-
-#endif // __NOVEMBERIZING_DS__THROWABLE__INLINE__HH__

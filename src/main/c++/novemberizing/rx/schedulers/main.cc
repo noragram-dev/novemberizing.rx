@@ -1,157 +1,131 @@
-#ifndef   __NOVEMBERIZING_RX_SCHEDULERS__MAIN__CC__
-#define   __NOVEMBERIZING_RX_SCHEDULERS__MAIN__CC__
+#include "main.hh"
 
 namespace novemberizing { namespace rx { namespace schedulers {
 
-Main::Main(void)
-{
-	FUNCTION_START("");
-	FUNCTION_END("");
-}
+Main * Main::__singleton = nullptr;
 
-Main::~Main(void)
+/**
+ * @todo        thread safety
+ */
+Main * Main::Get(void)
 {
-	FUNCTION_START("");
-	FUNCTION_END("");
-}
-
-void Main::dispatch(Task * task)
-{
-	FUNCTION_START("");
-	if(task!=nullptr)
-	{
-		__q.lock();
-		__q.push(task);
-		__q.resume(false);
-		__q.unlock();
-	}
-	else
-	{
-		DEBUG_LOG("task==nullptr");
-	}
-	FUNCTION_END("");
-}
-
-void Main::execute(Task * task)
-{
-	FUNCTION_START("");
-	if(task!=nullptr)
-	{
-		if(__tasks.add(task))
-		{
-			__tasks->run();
-		}
-		else
-		{
-			ERROR_LOG("__tasks.add(task)==false");
-		}
-	}
-	else
-	{
-		DEBUG_LOG("task==nullptr");
-	}
-	FUNCTION_END("");
-}
-
-void Main::executed(Task * task)
-{
-	FUNCTION_START("");
-	if(task!=nullptr)
-	{
-		if(!__tasks.del(task))
-		{
-			DEBUG_LOG("__tasks.del(task)==false")
-		}
-		__q.lock();
-		__q.push(task);
-		__q.resume(false);
-		__q.unlock();
-	}
-	else
-	{
-		DEBUG_LOG("task==nullptr");
-	}
-	FUNCTION_END("");
-}
-
-void Main::completed(Task * task)
-{
-	FUNCTION_START("");
-	if(task!=nullptr)
-	{
-		if(!__tasks.del(task))
-		{
-			DEBUG_LOG("__tasks.del(task)==false")
-		}
-	}
-	else
-	{
-		DEBUG_LOG("task==nullptr");
-	}
-	FUNCTION_END("");
-}
-
-void Main::onecycle(void)
-{
-	FUNCTION_START("");
-	__cyclables.lock();
-	for(ConcurrencyList<Cyclable *>::iterator it = __cyclables.begin();it!=__cyclables.end();it++)
-	{
-		Cyclable * cyclable = *it;
-		cyclable->onecycle();
-	}
-	__cyclables.unlock();
-	__q.lock();
-	type::size limit = __q.size();
-	for(type::size = i;i<limit && __q.size()>0;i++)
-	{
-		Task * task = __q.pop();
-		__q.unlock();
-		execute(task);
-		__q.lock();
-	}
-	__q.unlock();
-	FUNCTION_END("");
+    if(__singleton==nullptr){
+        __singleton = new Main();
+    }
+    return __singleton;
 }
 
 Main::Main(void)
 {
-	FUNCTION_START("");
-	FUNCTION_END("");
+    FUNCTION_START("");
+
+    on();
+
+    FUNCTION_END("");
 }
 
 Main::~Main(void)
 {
-	FUNCTION_START("");
-	int remain = 0;
-	do {
-		__q.lock();
-		while(__q.size()>0)
-		{
-			Task * task = __q.pop();
-			__q.unlock();
-			execute(task);
-			__q.lock();
-		}
-		synchronized(&__tasks,{ remain = __tasks.size(); });
-		__q.unlock();
-	} while(remain>0);
-	FUNCTION_END("");
+    FUNCTION_START("");
+    type::size remain = 0;
+    do {
+        __q.lock();
+        while(__q.size()>0){
+            Executable * executable = __q.pop();
+            if(executable!=nullptr)
+            {
+                __q.unlock();
+                synchronized(&__executables, __executables.add(executable));
+                executable->execute(this);
+                __q.lock();
+            }
+            else
+            {
+                NOTICE_LOG("executable==nullptr");
+            }
+        }
+        synchronized(&__executables, remain = __executables.size());
+        __q.unlock();
+    } while(remain>0);
+    FUNCTION_END("");
 }
 
-	// class Main : public Scheduler, public Cyclable
-	// {
-	// private:	ConcurrencyList<Task *, Condition> __tasks;
-	// private:	ConcurrencyList<Cyclable *> __cyclables;
-	// public:		virtual ;
-	// public:		virtual ;
-	// public:		virtual ;
-	// public:		virtual ;
-	// public:		virtual ;
-	// public:		Main(void);
-	// public:		virtual ~Main(void);
-	// };
+int Main::run(void)
+{
+    lock();
+    while(!cancel()){
+        unlock();
+        __q.lock();
+        type::size current = __q.size();
+        for(type::size i = 0;i<current && __q.size()>0;i++)
+        {
+            Executable * executable = __q.pop();
+            if(executable!=nullptr)
+            {
+                __q.unlock();
+                synchronized(&__executables, __executables.add(executable));
+                executable->execute(this);
+                __q.lock();
+            }
+            else
+            {
+                NOTICE_LOG("executable==nullptr");
+            }
+        }
+        __q.unlock();
+        for(ConcurrentList<Cyclable *>::iterator it = __cyclables.begin();it!=__cyclables.end();it++)
+        {
+            Cyclable * cyclable = *it;
+            cyclable->onecycle();
+        }
+        lock();
+    }
+    unlock();
+    return Success;
+}
+
+void Main::dispatch(Executable * executable)
+{
+    FUNCTION_START("");
+    synchronized(&__q,{
+        if(executable!=nullptr){ __q.push(executable); }
+        __q.resume();
+    });
+    FUNCTION_END("");
+}
+
+void Main::dispatch(std::initializer_list<Executable *> executables)
+{
+    FUNCTION_START("");
+    synchronized(&__q,{
+        for(std::initializer_list<Executable *>::iterator it = executables.begin();executables.end();it++)
+        {
+            if(*it!=nullptr){ __q.push(*it); }
+        }
+        __q.resume(true);
+    });
+    FUNCTION_END("");
+}
+
+void Main::completed(Executable * executable)
+{
+    FUNCTION_START("");
+    if(executable!=nullptr)
+    {
+        synchronized(&__executables, __executables.del(executable));
+    }
+    FUNCTION_END("");
+}
+
+void Main::executed(Executable * executable)
+{
+    FUNCTION_START("");
+    if(executable!=nullptr)
+    {
+        synchronized(&__executables, __executables.del(executable));
+        dispatch(executable);
+    }
+    FUNCTION_END("");
+}
 
 } } }
-
-#endif // __NOVEMBERIZING_RX_SCHEDULERS__MAIN__CC__

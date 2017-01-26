@@ -6,15 +6,15 @@ namespace novemberizing { namespace rx {
 template <class T>
 Play<T>::Play(void)
 {
-	FUNCTION_START("");
-	FUNCTION_END("");
+    FUNCTION_START("");
+    FUNCTION_END("");
 }
 
 template <class T>
 Play<T>::~Play(void)
 {
-	FUNCTION_START("");
-	FUNCTION_END("");
+    FUNCTION_START("");
+    FUNCTION_END("");
 }
 
 } }

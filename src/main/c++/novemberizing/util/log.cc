@@ -1,6 +1,3 @@
-#ifndef   __NOVEMBERIZING_UTIL__LOG__CC__
-#define   __NOVEMBERIZING_UTIL__LOG__CC__
-
 #include <list>
 #include <algorithm>
 
@@ -46,7 +43,7 @@ void Log::write(Log::Type type, const char * file, type::uint32 line, const char
 	{
 		const type::uint32 size = 4096;
 		char str[size];
-#ifndef __RELEASE__
+
 		Log::Time current;
 		int n = snprintf(	str,
 							size,
@@ -63,15 +60,7 @@ void Log::write(Log::Type type, const char * file, type::uint32 line, const char
 							function,
 							::pthread_self(),
 							toString(type));
-#else
-		Log::Time current;
-		int n = snprintf(	str,
-							size,
-							"%s %lu %s > ",
-							function,
-							::pthread_self(),
-							toString(type));
-#endif //
+
 		va_list ap;
 		va_start(ap, format);
 		n+=vsnprintf(&str[n],size-n-1,format,ap);
@@ -128,16 +117,6 @@ Log & Log::del(Logger * logger)
 
 Log::Time::Time(void)
 {
-#ifdef WIN32
-    __year = 0;
-    __month = 0;
-    __day = 0;
-    __hour = 0;
-    __minute = 0;
-    __second = 0;
-    __nano = 0;
-    __timestamp = 0;
-#else
 	struct timespec spec;
 	if(::clock_gettime(CLOCK_REALTIME, &spec)==Success)
 	{
@@ -156,7 +135,6 @@ Log::Time::Time(void)
 	{
 		printf("fail to ::clock_gettime(...) caused by %d\n",errno);
 	}
-#endif
 }
 
 Log::Time::~Time(void) {}
@@ -164,5 +142,3 @@ Log::Time::~Time(void) {}
 Log Log::o;
 
 } }
-
-#endif // __NOVEMBERIZING_UTIL__LOG__CC__

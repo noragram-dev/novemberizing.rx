@@ -144,7 +144,4 @@ public:		virtual ~Log(void);
 										##__VA_ARGS__)
 
 
-#include <novemberizing/util/log.cc>
-
-
 #endif // __NOVEMBERIZING_UTIL__LOG__HH__
