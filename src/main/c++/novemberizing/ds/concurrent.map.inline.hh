@@ -43,60 +43,109 @@ typename ConcurrentMap<K, V, Concurrent>::iterator ConcurrentMap<K, V, Concurren
 }
 
 template <class K, class V, class Concurrent>
-V & ConcurrentMap<K, V, Concurrent>::put(const K & key, const V & value)
+void ConcurrentMap<K, V, Concurrent>::put(const K & key, const V & value, std::function<void(V&)> f)
 {
     std::pair<typename std::map<K, V>::iterator, bool> inserted = __map.insert(std::pair<K,V>(key, value));
     if(!inserted.second)
     {
+        if(f!=nullptr)
+        {
+            f(inserted.first->second);
+        }
         inserted.first->second = value;
     }
-    return value;
 }
 
 template <class K, class V, class Concurrent>
-V & ConcurrentMap<K, V, Concurrent>::put(const K && key, const V & value)
+void ConcurrentMap<K, V, Concurrent>::put(const K && key, const V & value, std::function<void(V&)> f)
 {
     std::pair<typename std::map<K, V>::iterator, bool> inserted = __map.insert(std::pair<K,V>(key, value));
     if(!inserted.second)
     {
+        if(f!=nullptr)
+        {
+            f(inserted.first->second);
+        }
         inserted.first->second = value;
     }
-    return value;
 }
 
 template <class K, class V, class Concurrent>
-V & ConcurrentMap<K, V, Concurrent>::put(const K & key, const V && value)
+void ConcurrentMap<K, V, Concurrent>::put(const K & key, const V && value, std::function<void(V&)> f)
 {
     std::pair<typename std::map<K, V>::iterator, bool> inserted = __map.insert(std::pair<K,V>(key, value));
     if(!inserted.second)
     {
+        if(f!=nullptr)
+        {
+            f(inserted.first->second);
+        }
         inserted.first->second = value;
     }
-    return value;
 }
 
 template <class K, class V, class Concurrent>
-V & ConcurrentMap<K, V, Concurrent>::put(const K && key, const V && value)
+void ConcurrentMap<K, V, Concurrent>::put(const K && key, const V && value, std::function<void(V&)> f)
 {
     std::pair<typename std::map<K, V>::iterator, bool> inserted = __map.insert(std::pair<K,V>(key, value));
     if(!inserted.second)
     {
+        if(f!=nullptr)
+        {
+            f(inserted.first->second);
+        }
         inserted.first->second = value;
     }
-    return value;
 }
 
 template <class K, class V, class Concurrent>
-V & ConcurrentMap<K, V, Concurrent>::get(const K & key)
+void ConcurrentMap<K, V, Concurrent>::get(const K & key, std::function<void(V&)> f)
 {
     typename std::map<K, V>::iterator it = __map.find(key);
-    return it!=__map.end() ? it->second : V();
+    if(it!=__map.end())
+    {
+        if(f!=nullptr)
+        {
+            f(it.first->second);
+        }
+    }
 }
 
 template <class K, class V, class Concurrent>
-V & ConcurrentMap<K, V, Concurrent>::get(const K && key)
+void ConcurrentMap<K, V, Concurrent>::get(const K && key, std::function<void(V&)> f)
 {
     typename std::map<K, V>::iterator it = __map.find(key);
+    if(it!=__map.end())
+    {
+        __map.erase(it);
+        if(f!=nullptr)
+        {
+            f(it.first->second);
+        }
+    }
+}
+
+
+
+template <class K, class V, class Concurrent>
+void ConcurrentMap<K, V, Concurrent>::del(const K & key, std::function<void(V&)> f)
+{
+    typename std::map<K, V>::iterator it = __map.find(key);
+    if(it!=__map.end())
+    {
+        __map.erase(it);
+        if(f!=nullptr)
+        {
+            f(it.first->second);
+        }
+    }
+}
+
+template <class K, class V, class Concurrent>
+void ConcurrentMap<K, V, Concurrent>::del(const K && key, std::function<void(V&)> f)
+{
+    typename std::map<K, V>::iterator it = __map.find(key);
+    __map.erase(it);
     return it!=__map.end() ? it->second : V();
 }
 
@@ -112,22 +161,6 @@ bool ConcurrentMap<K, V, Concurrent>::exist(const K && key) const
 {
     typename std::map<K, V>::iterator it = __map.find(key);
     return it!=__map.end();
-}
-
-template <class K, class V, class Concurrent>
-V & ConcurrentMap<K, V, Concurrent>::del(const K & key)
-{
-    typename std::map<K, V>::iterator it = __map.find(key);
-    __map.erase(it);
-    return it!=__map.end() ? it->second : V();
-}
-
-template <class K, class V, class Concurrent>
-V & ConcurrentMap<K, V, Concurrent>::del(const K && key)
-{
-    typename std::map<K, V>::iterator it = __map.find(key);
-    __map.erase(it);
-    return it!=__map.end() ? it->second : V();
 }
 
 template <class K, class V, class Concurrent>

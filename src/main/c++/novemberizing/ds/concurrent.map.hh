@@ -2,6 +2,7 @@
 #define   __NOVEMBERIZING_DS__CONCURRENT_MAP__HH__
 
 #include <map>
+#include <functional>
 
 #include <novemberizing/concurrency/sync.hh>
 
@@ -15,16 +16,16 @@ private:    std::map<K, V> __map;
 public:     inline iterator begin(void);
 public:     inline iterator end(void);
 public:     inline iterator erase(iterator it);
-public:     inline V & put(const K & key, const V & value);
-public:     inline V & put(const K && key, const V & value);
-public:     inline V & put(const K & key, const V && value);
-public:     inline V & put(const K && key, const V && value);
-public:     inline V & get(const K & key);
-public:     inline V & get(const K && key);
+public:     inline void put(const K & key, const V & value, std::function<void(V&)> f = nullptr);
+public:     inline void put(const K && key, const V & value, std::function<void(V&)> f = nullptr);
+public:     inline void put(const K & key, const V && value, std::function<void(V&)> f = nullptr);
+public:     inline void put(const K && key, const V && value, std::function<void(V&)> f = nullptr);
+public:     inline void get(const K & key, std::function<void(V&)> f = nullptr);
+public:     inline void get(const K && key, std::function<void(V&)> f = nullptr);
+public:     inline void del(const K & key, std::function<void(V&)> f = nullptr);
+public:     inline void del(const K && key, std::function<void(V&)> f = nullptr);
 public:     inline bool exist(const K & key) const;
 public:     inline bool exist(const K && key) const;
-public:     inline V & del(const K & key);
-public:     inline V & del(const K && key);
 public:     inline bool empty(void) const;
 public:     inline type::size size(void) const;
 public:     inline void clear(void);

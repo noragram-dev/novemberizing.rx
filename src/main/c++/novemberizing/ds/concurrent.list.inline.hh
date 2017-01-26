@@ -79,26 +79,6 @@ inline void ConcurrentList<T, Concurrent>::back(const T && v)
 }
 
 template <class T, class Concurrent>
-inline T ConcurrentList<T, Concurrent>::front(void)
-{
-    FUNCTION_START("");
-    T ret = __list.front();
-    __list.pop_front();
-    FUNCTION_END("");
-    return ret;
-}
-
-template <class T, class Concurrent>
-inline T ConcurrentList<T, Concurrent>::back(void)
-{
-    FUNCTION_START("");
-    T ret = __list.back();
-    __list.pop_back();
-    FUNCTION_END("");
-    return ret;
-}
-
-template <class T, class Concurrent>
 inline void ConcurrentList<T, Concurrent>::push(const T & v)
 {
     FUNCTION_START("");
@@ -115,13 +95,54 @@ inline void ConcurrentList<T, Concurrent>::push(const T && v)
 }
 
 template <class T, class Concurrent>
-inline T ConcurrentList<T, Concurrent>::pop(void)
+inline void ConcurrentList<T, Concurrent>::front(std::function<void(T)> on)
 {
     FUNCTION_START("");
-    T ret = __list.front();
-    __list.pop_front();
+    if(on!=nullptr)
+    {
+        T ret = __list.front();
+        __list.pop_front();
+        on(ret);
+    }
+    else
+    {
+        __list.pop_front();
+    }
     FUNCTION_END("");
-    return ret;
+}
+
+template <class T, class Concurrent>
+inline void ConcurrentList<T, Concurrent>::back(std::function<void(T)> on)
+{
+    FUNCTION_START("");
+    if(on!=nullptr)
+    {
+        T ret = __list.back();
+        __list.pop_back();
+        on(ret);
+    }
+    else
+    {
+        __list.pop_back();
+    }
+    FUNCTION_END("");
+}
+
+template <class T, class Concurrent>
+inline void ConcurrentList<T, Concurrent>::pop(std::function<void(T)> on)
+{
+    FUNCTION_START("");
+    if(on!=nullptr)
+    {
+        T ret = __list.front();
+        __list.pop_front();
+        on(ret);
+    }
+    else
+    {
+        __list.pop_front();
+    }
+    FUNCTION_END("");
 }
 
 template <class T, class Concurrent>

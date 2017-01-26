@@ -1,7 +1,7 @@
 .SUFFIXES: .cc .hh
 
 CXX=g++
-CXXFLAGS=-Wall -std=c++0x -D_REENTRANT $(INCS) -g -ggdb
+CXXFLAGS=-Wall -std=c++17 -D_REENTRANT $(INCS) -g -ggdb
 AR=ar
 ARFLAGS=rcv
 RANLIB=ranlib

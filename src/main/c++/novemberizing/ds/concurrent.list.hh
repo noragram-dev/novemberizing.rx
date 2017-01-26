@@ -2,8 +2,11 @@
 #define   __NOVEMBERIZING_DS__CONCURRENT__LIST__HH__
 
 #include <list>
+#include <functional>
 
 #include <novemberizing/concurrency/condition.hh>
+
+#include <novemberizing/ds/on.hh>
 
 namespace novemberizing { namespace ds {
 
@@ -19,11 +22,11 @@ public:     inline void front(const T & v);
 public:     inline void front(const T && v);
 public:     inline void back(const T & v);
 public:     inline void back(const T && v);
-public:     inline T front(void);
-public:     inline T back(void);
 public:     inline void push(const T & v);
 public:     inline void push(const T && v);
-public:     inline T pop(void);
+public:     inline void front(std::function<void(T)> f = nullptr);
+public:     inline void back(std::function<void(T)> f = nullptr);
+public:     inline void pop(std::function<void(T)> f = nullptr);
 public:     inline bool empty(void) const;
 public:     inline type::size size(void) const;
 public:     inline void clear(void);

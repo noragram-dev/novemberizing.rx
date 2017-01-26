@@ -27,18 +27,19 @@ Local::~Local(void)
     do {
         __q.lock();
         while(__q.size()>0){
-            Executable * executable = __q.pop();
-            if(executable!=nullptr)
-            {
-                __q.unlock();
-                synchronized(&__executables, __executables.add(executable));
-                executable->execute(this);
-                __q.lock();
-            }
-            else
-            {
-                NOTICE_LOG("executable==nullptr");
-            }
+            __q.pop([this](Executable * executable){
+                if(executable!=nullptr)
+                {
+                    __q.unlock();
+                    synchronized(&__executables, __executables.add(executable));
+                    executable->execute(this);
+                    __q.lock();
+                }
+                else
+                {
+                    NOTICE_LOG("executable==nullptr");
+                }
+            });
         }
         synchronized(&__executables, remain = __executables.size());
         __q.unlock();
@@ -53,18 +54,19 @@ int Local::run(void)
         type::size current = __q.size();
         for(type::size i = 0;i<current && __q.size()>0;i++)
         {
-            Executable * executable = __q.pop();
-            if(executable!=nullptr)
-            {
-                __q.unlock();
-                synchronized(&__executables, __executables.add(executable));
-                executable->execute(this);
-                __q.lock();
-            }
-            else
-            {
-                NOTICE_LOG("executable==nullptr");
-            }
+            __q.pop([this](Executable * executable){
+                if(executable!=nullptr)
+                {
+                    __q.unlock();
+                    synchronized(&__executables, __executables.add(executable));
+                    executable->execute(this);
+                    __q.lock();
+                }
+                else
+                {
+                    NOTICE_LOG("executable==nullptr");
+                }
+            });
         }
         __q.unlock();
     }
