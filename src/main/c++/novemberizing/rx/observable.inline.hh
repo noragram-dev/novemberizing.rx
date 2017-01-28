@@ -23,14 +23,14 @@ template <class T>
 void Observable<T>::__emit(const T & item)
 {
     FUNCTION_START("");
-    synchronized(&__subscriptions,{
-        foreach(__subscriptions.begin(),__subscriptions.end(), {
-            Subscription<T> * subscription = *it;
-            if(subscription!=nullptr){
-                subscription->onNext(item);
-            }
-        });
-    });
+    // synchronized(&__subscriptions,{
+    //     foreach(__subscriptions.begin(),__subscriptions.end(), {
+    //         Subscription<T> * subscription = *it;
+    //         if(subscription!=nullptr){
+    //             subscription->onNext(item);
+    //         }
+    //     });
+    // });
     FUNCTION_END("");
 }
 
@@ -38,14 +38,14 @@ template <class T>
 void Observable<T>::__error(const Throwable & e)
 {
     FUNCTION_START("");
-    synchronized(&__subscriptions,{
-        foreach(__subscriptions.begin(),__subscriptions.end(), {
-            Subscription<T> * subscription = *it;
-            if(subscription!=nullptr){
-                subscription->onError(e);
-            }
-        });
-    });
+    // synchronized(&__subscriptions,{
+    //     foreach(__subscriptions.begin(),__subscriptions.end(), {
+    //         Subscription<T> * subscription = *it;
+    //         if(subscription!=nullptr){
+    //             subscription->onError(e);
+    //         }
+    //     });
+    // });
     FUNCTION_END("");
 }
 
@@ -53,14 +53,14 @@ template <class T>
 void Observable<T>::__complete(void)
 {
     FUNCTION_START("");
-    synchronized(&__subscriptions,{
-        foreach(__subscriptions.begin(),__subscriptions.end(), {
-            Subscription<T> * subscription = *it;
-            if(subscription!=nullptr){
-                subscription->onComplete();
-            }
-        });
-    });
+    // synchronized(&__subscriptions,{
+    //     foreach(__subscriptions.begin(),__subscriptions.end(), {
+    //         Subscription<T> * subscription = *it;
+    //         if(subscription!=nullptr){
+    //             subscription->onComplete();
+    //         }
+    //     });
+    // });
     FUNCTION_END("");
 }
 
@@ -68,34 +68,34 @@ template <class T>
 Subscription<T> * Observable<T>::subscribe(Observer<T> * observer)
 {
     FUNCTION_START("");
-    Subscription<T> * subscription = nullptr;
-    if(observer!=nullptr)
-    {
-        if(!observer->subscribed(this))
-        {
-            subscription = new Subscription<T>(this, observer);
-            /**
-             * @todo: check deadlock
-             */
-            synchronized(&__subscriptions,{
-                synchronized(observer,{
-                    observer->onSubscribe(this, subscription);
-                    __replayer.on(observer);
-                    __subscriptions.push(subscription);
-                });
-            });
-        }
-        else
-        {
-            CAUTION_LOG("!observer->subscribed(this)");
-        }
-    }
-    else
-    {
-        CAUTION_LOG("observer==nullptr");
-    }
+    // Subscription<T> * subscription = nullptr;
+    // if(observer!=nullptr)
+    // {
+    //     if(!observer->subscribed(this))
+    //     {
+    //         subscription = new Subscription<T>(this, observer);
+    //         /**
+    //          * @todo: check deadlock
+    //          */
+    //         synchronized(&__subscriptions,{
+    //             synchronized(observer,{
+    //                 observer->onSubscribe(this, subscription);
+    //                 __replayer.on(observer);
+    //                 __subscriptions.push(subscription);
+    //             });
+    //         });
+    //     }
+    //     else
+    //     {
+    //         CAUTION_LOG("!observer->subscribed(this)");
+    //     }
+    // }
+    // else
+    // {
+    //     CAUTION_LOG("observer==nullptr");
+    // }
     FUNCTION_END("");
-    return subscription;
+    return nullptr;
 }
 
 template <class T>

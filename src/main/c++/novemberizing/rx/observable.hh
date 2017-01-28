@@ -3,7 +3,7 @@
 
 #include <novemberizing/ds.hh>
 
-#include <novemberizing/ds/concurrent.list.hh>
+#include <novemberizing/ds/concurrent.linked.set.hh>
 
 #include <novemberizing/rx/emittable.hh>
 #include <novemberizing/rx/subscribable.hh>
@@ -16,7 +16,7 @@ using namespace ds;
 template <class T>
 class Observable : public Emittable<T>, public Subscribable<T>
 {
-private:    ConcurrentList<Subscription<T> * > __subscriptions;
+private:    ConcurrentLinkedSet<Observer<T> *> __observers;
 private:    Replayer<T> __replayer;
 private:    void __emit(const T & item);
 private:    void __error(const Throwable & e);

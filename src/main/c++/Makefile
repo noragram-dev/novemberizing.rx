@@ -24,6 +24,7 @@ OBJS=   ./novemberizing.o                                                       
 		./novemberizing/ds/concurrent.list.o									\
 		./novemberizing/ds/concurrent.set.o										\
 		./novemberizing/ds/concurrent.map.o										\
+		./novemberizing/ds/concurrent.linked.set.o								\
 		./novemberizing/ds/executor.o											\
 		./novemberizing/ds/executable.o											\
 		./novemberizing/rx/scheduler.o											\
