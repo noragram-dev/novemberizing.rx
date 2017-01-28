@@ -196,6 +196,42 @@ bool ConcurrentLinkedSet<T, Concurrent>::del(const T && v)
     return found!=__map.end();
 }
 
+template <class T, class Concurrent>
+inline typename ConcurrentLinkedSet<T, Concurrent>::iterator ConcurrentLinkedSet<T, Concurrent>::begin(void)
+{
+    FUNCTION_START("");
+    FUNCTION_END("");
+    return iterator(__front);
+}
+
+template <class T, class Concurrent>
+inline typename ConcurrentLinkedSet<T, Concurrent>::iterator ConcurrentLinkedSet<T, Concurrent>::end(void)
+{
+    FUNCTION_START("");
+    FUNCTION_END("");
+    return iterator(nullptr);
+}
+
+template <class T, class Concurrent>
+inline typename ConcurrentLinkedSet<T, Concurrent>::iterator ConcurrentLinkedSet<T, Concurrent>::erase(iterator it)
+{
+    Node * next = nullptr;
+    if(it.__node!=nullptr)
+    {
+        next = it.__node->__next;
+        if(!del(it.__node->__value))
+        {
+            next = nullptr;
+            ERROR_LOG("del(...)==false");
+        }
+    }
+    else
+    {
+        CAUTION_LOG("it.__node==nullptr");
+    }
+    return iterator(next);
+}
+
 } }
 
 #endif // __NOVEMBERIZING_DS__CONCURRENT_LINKED_SET__INLINE__HH__

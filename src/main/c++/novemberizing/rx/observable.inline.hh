@@ -23,14 +23,14 @@ template <class T>
 void Observable<T>::__emit(const T & item)
 {
     FUNCTION_START("");
-    // synchronized(&__subscriptions,{
-    //     foreach(__subscriptions.begin(),__subscriptions.end(), {
-    //         Subscription<T> * subscription = *it;
-    //         if(subscription!=nullptr){
-    //             subscription->onNext(item);
-    //         }
-    //     });
-    // });
+    synchronized(&__observers,{
+        foreach(__observers.begin(),__observers.end(), {
+            Observer<T> * observer = *it;
+            if(observer!=nullptr){
+                observer->onNext(item);
+            }
+        });
+    });
     FUNCTION_END("");
 }
 
@@ -38,14 +38,14 @@ template <class T>
 void Observable<T>::__error(const Throwable & e)
 {
     FUNCTION_START("");
-    // synchronized(&__subscriptions,{
-    //     foreach(__subscriptions.begin(),__subscriptions.end(), {
-    //         Subscription<T> * subscription = *it;
-    //         if(subscription!=nullptr){
-    //             subscription->onError(e);
-    //         }
-    //     });
-    // });
+    synchronized(&__observers,{
+        foreach(__observers.begin(),__observers.end(), {
+            Observer<T> * observer = *it;
+            if(observer!=nullptr){
+                observer->onError(e);
+            }
+        });
+    });
     FUNCTION_END("");
 }
 
@@ -53,14 +53,14 @@ template <class T>
 void Observable<T>::__complete(void)
 {
     FUNCTION_START("");
-    // synchronized(&__subscriptions,{
-    //     foreach(__subscriptions.begin(),__subscriptions.end(), {
-    //         Subscription<T> * subscription = *it;
-    //         if(subscription!=nullptr){
-    //             subscription->onComplete();
-    //         }
-    //     });
-    // });
+    synchronized(&__observers,{
+        foreach(__observers.begin(),__observers.end(), {
+            Observer<T> * observer = *it;
+            if(observer!=nullptr){
+                observer->onComplete();
+            }
+        });
+    });
     FUNCTION_END("");
 }
 

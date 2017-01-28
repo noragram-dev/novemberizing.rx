@@ -19,8 +19,7 @@ private:    class Node
             public:     Node(ConcurrentLinkedSet<T, Concurrent> * container, const T & v);
             public:     virtual ~Node(void);
             };
-// public:     typedef typename std::set<T>::iterator iterator;
-private:    class iterator
+public:     class iterator
             {
             private:    Node * __node;
             public:     inline T & operator*(void);
@@ -38,9 +37,9 @@ private:    class iterator
 private:    std::map<T, typename ConcurrentLinkedSet<T, Concurrent>::Node *> __map;
 private:    ConcurrentLinkedSet<T, Concurrent>::Node * __front;
 private:    ConcurrentLinkedSet<T, Concurrent>::Node * __back;
-// public:     inline iterator begin(void);
-// public:     inline iterator end(void);
-// public:     inline iterator erase(iterator it);
+public:     inline iterator begin(void);
+public:     inline iterator end(void);
+public:     inline iterator erase(iterator it);
 public:     inline bool add(const T & v);
 public:     inline bool add(const T && v);
 public:     inline bool del(const T & v);
