@@ -4,10 +4,12 @@
 #include <novemberizing/util/log.hh>
 
 #include <novemberizing/ds/throwable.hh>
+#include <novemberizing/concurrency/sync.hh>
 
 namespace novemberizing { namespace rx {
 
 using namespace ds;
+using namespace concurrency;
 
 template <class T>
 class Emittable

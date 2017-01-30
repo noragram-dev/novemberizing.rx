@@ -20,30 +20,18 @@ Observer<T>::~Observer(void)
 }
 
 template <class T>
-bool Observer<T>::isSubscribed(Observable<T> * observable)
+void Observer<T>::onSubscribe(Observable<T> * observable)
 {
     FUNCTION_START("");
-    FUNCTION_END("");
-    return observable!=nullptr && __subscriptions.exist(observable);
-}
-
-template <class T>
-void Observer<T>::onSubscribe(Observable<T> * observable,Subscription<T> * subscription)
-{
-    FUNCTION_START("");
-    synchronized(&__subscriptions,__subscriptions.put(observable, subscription));
+    synchronized(&__observables,__observables.add(observable));
     FUNCTION_END("");
 }
 
 template <class T>
-void Observer<T>::onUnsubscribe(Observable<T> * observable,Subscription<T> * subscription)
+void Observer<T>::onUnsubscribe(Observable<T> * observable)
 {
     FUNCTION_START("");
-    synchronized(&__subscriptions,if(__subscriptions.del(observable)==subscription){
-        /**
-         * @todo: delete subscription logic ... 
-         */
-    });
+    synchronized(&__observables,__observables.del(observable));
     FUNCTION_END("");
 }
 

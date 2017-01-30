@@ -7,7 +7,7 @@ ARFLAGS=rcv
 RANLIB=ranlib
 
 INCS=-I.
-LIBS=-L. -lnovemberzing.rx
+LIBS=-L. -lnovemberizing.rx -lpthread
 
 TARGET=libnovemberizing.rx.a
 
@@ -36,11 +36,19 @@ OBJS=   ./novemberizing.o                                                       
 		./novemberizing/rx/observer.o											\
 		./novemberizing/rx/play.o												\
 		./novemberizing/rx/replayer.o											\
+		./novemberizing/rx/task.o												\
 
 $(TARGET): $(OBJS)
 	$(AR) $(ARFLAGS) $@ $(OBJS)
 
-all: clean $(TARGET)
+examples=	./example/rx/observables/just.o										\
+
+example: $(examples)
+	for p in $(examples); do                                                    \
+		$(CXX) $(CXXFLAGS) -o $${p%.o} $$p $(LIBS);                             \
+	done
+
+all: clean $(TARGET) example
 
 clean:
 	rm -f $(TARGET)

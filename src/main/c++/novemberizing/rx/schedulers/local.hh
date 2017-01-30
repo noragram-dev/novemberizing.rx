@@ -18,6 +18,7 @@ class Local : public Scheduler
 {
 private:    static Thread::Local<Scheduler *> __schedulers;
 public:     static Scheduler * Get(void);
+private:    ConcurrentList<Executable *, Sync> __deletes;
 private:    ConcurrentList<Executable *> __q;
 private:    ConcurrentSet<Executable *> __executables;
 public:     virtual void dispatch(Executable * executable);

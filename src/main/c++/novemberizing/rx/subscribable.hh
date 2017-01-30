@@ -5,15 +5,15 @@
 
 namespace novemberizing { namespace rx {
 
-template <class T> class Subscription;
 template <class T> class Observer;
+template <class T> class Observable;
 
 template <class T>
 class Subscribable
 {
-public:     virtual Subscription<T> * subscribe(Observer<T> * observer) = 0;
-public:     virtual bool unsubscribe(Subscription<T> * subscription) = 0;
-public:     virtual void unsubscribe(void) = 0;
+public:     virtual Observable<T> * subscribe(Observer<T> * observer) = 0;
+public:     virtual Observable<T> * unsubscribe(Observer<T> * observer) = 0;
+public:     virtual Observable<T> * unsubscribe(void) = 0;
 public:     Subscribable(void);
 public:     virtual ~Subscribable(void);
 };

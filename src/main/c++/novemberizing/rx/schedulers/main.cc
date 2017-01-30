@@ -48,6 +48,16 @@ Main::~Main(void)
         synchronized(&__executables, remain = __executables.size());
         __q.unlock();
     } while(remain>0);
+    synchronized(&__deletes,{
+        while(__deletes.size()>0)
+        {
+            __deletes.pop([](Executable * executable){
+                if(executable!=nullptr) {
+                    delete executable;
+                }
+            });
+        }
+    });
     FUNCTION_END("");
 }
 
@@ -75,6 +85,16 @@ int Main::run(void)
             });
         }
         __q.unlock();
+        synchronized(&__deletes,{
+            while(__deletes.size()>0)
+            {
+                __deletes.pop([](Executable * executable){
+                    if(executable!=nullptr) {
+                        delete executable;
+                    }
+                });
+            }
+        });
         for(ConcurrentList<Cyclable *>::iterator it = __cyclables.begin();it!=__cyclables.end();it++)
         {
             Cyclable * cyclable = *it;
@@ -115,6 +135,7 @@ void Main::completed(Executable * executable)
     if(executable!=nullptr)
     {
         synchronized(&__executables, __executables.del(executable));
+        synchronized(&__deletes, __deletes.push(executable));
     }
     FUNCTION_END("");
 }

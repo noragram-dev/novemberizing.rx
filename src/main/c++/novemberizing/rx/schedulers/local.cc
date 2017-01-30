@@ -44,6 +44,16 @@ Local::~Local(void)
         synchronized(&__executables, remain = __executables.size());
         __q.unlock();
     } while(remain>0);
+    synchronized(&__deletes,{
+        while(__deletes.size()>0)
+        {
+            __deletes.pop([](Executable * executable){
+                if(executable!=nullptr) {
+                    delete executable;
+                }
+            });
+        }
+    });
     FUNCTION_END("");
 }
 
@@ -69,6 +79,16 @@ int Local::run(void)
             });
         }
         __q.unlock();
+        synchronized(&__deletes,{
+            while(__deletes.size()>0)
+            {
+                __deletes.pop([](Executable * executable){
+                    if(executable!=nullptr) {
+                        delete executable;
+                    }
+                });
+            }
+        });
     }
     return Success;
 }

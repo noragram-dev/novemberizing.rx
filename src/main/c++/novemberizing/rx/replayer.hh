@@ -11,6 +11,8 @@ namespace novemberizing { namespace rx {
 using namespace ds;
 using namespace concurrency;
 
+template <class T> class Observer;
+
 template <class T>
 class Replayer : public Emittable<T>
 {
@@ -40,8 +42,10 @@ public:     virtual void emit(const T & item);
 public:     virtual void error(const Throwable & exception);
 public:     virtual void complete(void);
 public:     void on(Observer<T> * observer);
-public:     Replayer(type::size limit = Infinite);
+public:     void limit(type::size v);
+public:     Replayer(type::size limit = 0);
 public:     virtual ~Replayer(void);
+public:     friend class Observer<T>;
 };
 
 } }

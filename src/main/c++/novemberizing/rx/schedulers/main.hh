@@ -18,9 +18,10 @@ class Main : public Scheduler, public Sync
 {
 private:    static Main * __singleton;
 public:     static Main * Get(void);
+private:    ConcurrentList<Executable *, Sync> __deletes;
 private:    ConcurrentList<Executable *> __q;
 private:    ConcurrentSet<Executable *> __executables;
-private:    ConcurrentList<Cyclable *> __cyclables;
+private:    ConcurrentList<Cyclable *, Sync> __cyclables;
 public:     virtual void dispatch(Executable * executable);
 public:     virtual void dispatch(std::initializer_list<Executable *> executables);
 public:     virtual void completed(Executable * executable);

@@ -12,6 +12,9 @@ using namespace ds;
 class Scheduler : public Executor, public Runnable
 {
 public:     static Scheduler * Main(void);
+public:     static Scheduler * Self(void);
+public:     static Scheduler * Local(void);
+public:     static Scheduler * Get(void);
 public:     Scheduler(void);
 public:     virtual ~Scheduler(void);
 };

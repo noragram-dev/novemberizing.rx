@@ -95,7 +95,7 @@ inline void ConcurrentList<T, Concurrent>::push(const T && v)
 }
 
 template <class T, class Concurrent>
-inline void ConcurrentList<T, Concurrent>::front(std::function<void(T)> on)
+inline void ConcurrentList<T, Concurrent>::front(std::function<void(T&)> on)
 {
     FUNCTION_START("");
     if(on!=nullptr)
@@ -112,7 +112,7 @@ inline void ConcurrentList<T, Concurrent>::front(std::function<void(T)> on)
 }
 
 template <class T, class Concurrent>
-inline void ConcurrentList<T, Concurrent>::back(std::function<void(T)> on)
+inline void ConcurrentList<T, Concurrent>::back(std::function<void(T&)> on)
 {
     FUNCTION_START("");
     if(on!=nullptr)
@@ -129,7 +129,7 @@ inline void ConcurrentList<T, Concurrent>::back(std::function<void(T)> on)
 }
 
 template <class T, class Concurrent>
-inline void ConcurrentList<T, Concurrent>::pop(std::function<void(T)> on)
+inline void ConcurrentList<T, Concurrent>::pop(std::function<void(T&)> on)
 {
     FUNCTION_START("");
     if(on!=nullptr)

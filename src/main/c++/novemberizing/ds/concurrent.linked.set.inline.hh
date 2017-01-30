@@ -25,10 +25,10 @@ bool ConcurrentLinkedSet<T, Concurrent>::add(const T & v)
 {
     FUNCTION_START("");
 
-    std::pair<typename std::map<T, typename ConcurrentLinkedSet<T, Concurrent>::Node *>::iterator, bool> inserted = __map.insert(v, nullptr);
+    std::pair<typename std::map<T, typename ConcurrentLinkedSet<T, Concurrent>::Node *>::iterator, bool> inserted = __map.insert(std::pair<T, typename ConcurrentLinkedSet<T, Concurrent>::Node *>(v, nullptr));
     if(inserted.second)
     {
-        inserted.first->second = new typename ConcurrentLinkedSet<T, Concurrent>::Node(v, this);
+        inserted.first->second = new typename ConcurrentLinkedSet<T, Concurrent>::Node(this, v);
     }
     else
     {
@@ -44,10 +44,10 @@ bool ConcurrentLinkedSet<T, Concurrent>::add(const T && v)
 {
     FUNCTION_START("");
 
-    std::pair<typename std::map<T, typename ConcurrentLinkedSet<T, Concurrent>::Node *>::iterator, bool> inserted = __map.insert(v, nullptr);
+    std::pair<typename std::map<T, typename ConcurrentLinkedSet<T, Concurrent>::Node *>::iterator, bool> inserted = __map.insert(std::pair<T, typename ConcurrentLinkedSet<T, Concurrent>::Node *>(v, nullptr));
     if(inserted.second)
     {
-        inserted.first->second = new typename ConcurrentLinkedSet<T, Concurrent>::Node(v, this);
+        inserted.first->second = new typename ConcurrentLinkedSet<T, Concurrent>::Node(this, v);
     }
     else
     {
@@ -123,7 +123,7 @@ bool ConcurrentLinkedSet<T, Concurrent>::del(const T & v)
     typename std::map<T, typename ConcurrentLinkedSet<T, Concurrent>::Node *>::iterator found = __map.find(v);
     if(found!=__map.end())
     {
-        ConcurrentLinkedSet<T, Concurrent>::Node * node = found.second;
+        ConcurrentLinkedSet<T, Concurrent>::Node * node = found->second;
         if(node->__previous==nullptr)
         {
             if(node->__next==nullptr)

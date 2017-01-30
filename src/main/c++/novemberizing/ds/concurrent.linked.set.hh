@@ -18,6 +18,7 @@ private:    class Node
             private:    Node * __next;
             public:     Node(ConcurrentLinkedSet<T, Concurrent> * container, const T & v);
             public:     virtual ~Node(void);
+            public:     friend class ConcurrentLinkedSet<T, Concurrent>;
             };
 public:     class iterator
             {
@@ -51,6 +52,7 @@ public:     inline type::size size(void) const;
 public:     inline void clear(void);
 public:     ConcurrentLinkedSet(void);
 public:     virtual ~ConcurrentLinkedSet(void);
+public:     friend class Node;
 };
 
 } }

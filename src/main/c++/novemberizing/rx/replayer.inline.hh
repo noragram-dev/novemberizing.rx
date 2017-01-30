@@ -49,9 +49,17 @@ template <class T>
 void Replayer<T>::emit(const T & item)
 {
     FUNCTION_START("");
-    __replays.lock();
-    __replays.push(new Replayer<T>::Replay(item));
-    __replays.unlock();
+    synchronized(&__replays,{
+        __replays.push(new typename Replayer<T>::Replay(item));
+        while(__limit<__replays.size())
+        {
+            __replays.pop([](Play<T> * play){
+                if(play!=nullptr){
+                    delete play;
+                }
+            });
+        }
+    });
     FUNCTION_END("");
 }
 
@@ -59,9 +67,17 @@ template <class T>
 void Replayer<T>::error(const Throwable & e)
 {
     FUNCTION_START("");
-    __replays.lock();
-    __replays.push(new typename Replayer<T>::Replay::Error(e));
-    __replays.unlock();
+    synchronized(&__replays,{
+        __replays.push(new typename Replayer<T>::Replay::Error(e));
+        while(__limit<__replays.size())
+        {
+            __replays.pop([](Play<T> * play){
+                if(play!=nullptr){
+                    delete play;
+                }
+            });
+        }
+    });
     FUNCTION_END("");
 }
 
@@ -69,9 +85,35 @@ template <class T>
 void Replayer<T>::complete(void)
 {
     FUNCTION_START("");
-    __replays.lock();
-    __replays.push(new typename Replayer<T>::Replay::Complete());
-    __replays.unlock();
+    synchronized(&__replays,{
+        __replays.push(new typename Replayer<T>::Replay::Complete());
+        while(__limit<__replays.size())
+        {
+            __replays.pop([](Play<T> * play){
+                if(play!=nullptr){
+                    delete play;
+                }
+            });
+        }
+    });
+    FUNCTION_END("");
+}
+
+template <class T>
+void Replayer<T>::limit(type::size v)
+{
+    FUNCTION_START("");
+    synchronized(&__replays,{
+        __limit = v;
+        while(__limit<__replays.size())
+        {
+            __replays.pop([](Play<T> * play){
+                if(play!=nullptr){
+                    delete play;
+                }
+            });
+        }
+    });
     FUNCTION_END("");
 }
 

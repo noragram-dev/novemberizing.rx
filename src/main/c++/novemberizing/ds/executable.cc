@@ -27,9 +27,6 @@ void Executable::execute(Executor * executor)
     FUNCTION_START("");
     if(__executor!=nullptr)
     {
-        Executor * executor = __executor;
-        executor->completed(this);
-        __executor = nullptr;
         WARNING_LOG("");
     }
     __executor = executor;
