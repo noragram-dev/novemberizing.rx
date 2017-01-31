@@ -55,7 +55,7 @@ inline void ConcurrentList<T, Concurrent>::front(const T & v)
 }
 
 template <class T, class Concurrent>
-inline void ConcurrentList<T, Concurrent>::front(const T && v)
+inline void ConcurrentList<T, Concurrent>::front(T && v)
 {
     FUNCTION_START("");
     __list.push_front(v);
@@ -71,7 +71,7 @@ inline void ConcurrentList<T, Concurrent>::back(const T & v)
 }
 
 template <class T, class Concurrent>
-inline void ConcurrentList<T, Concurrent>::back(const T && v)
+inline void ConcurrentList<T, Concurrent>::back(T && v)
 {
     FUNCTION_START("");
     __list.push_back(v);
@@ -87,7 +87,7 @@ inline void ConcurrentList<T, Concurrent>::push(const T & v)
 }
 
 template <class T, class Concurrent>
-inline void ConcurrentList<T, Concurrent>::push(const T && v)
+inline void ConcurrentList<T, Concurrent>::push(T && v)
 {
     FUNCTION_START("");
     __list.push_back(v);

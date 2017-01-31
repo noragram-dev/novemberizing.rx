@@ -40,7 +40,7 @@ bool ConcurrentLinkedSet<T, Concurrent>::add(const T & v)
 }
 
 template <class T, class Concurrent>
-bool ConcurrentLinkedSet<T, Concurrent>::add(const T && v)
+bool ConcurrentLinkedSet<T, Concurrent>::add(T && v)
 {
     FUNCTION_START("");
 
@@ -68,7 +68,7 @@ bool ConcurrentLinkedSet<T, Concurrent>::exist(const T & v)
 }
 
 template <class T, class Concurrent>
-bool ConcurrentLinkedSet<T, Concurrent>::exist(const T && v)
+bool ConcurrentLinkedSet<T, Concurrent>::exist(T && v)
 {
     FUNCTION_START("");
     typename std::map<T, typename ConcurrentLinkedSet<T, Concurrent>::Node *>::iterator found = __map.find(v);
@@ -157,7 +157,7 @@ bool ConcurrentLinkedSet<T, Concurrent>::del(const T & v)
 }
 
 template <class T, class Concurrent>
-bool ConcurrentLinkedSet<T, Concurrent>::del(const T && v)
+bool ConcurrentLinkedSet<T, Concurrent>::del(T && v)
 {
     FUNCTION_START("");
     typename std::map<T, typename ConcurrentLinkedSet<T, Concurrent>::Node *>::iterator found = __map.find(v);
