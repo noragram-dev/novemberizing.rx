@@ -42,6 +42,8 @@ OBJS=   ./novemberizing.o                                                       
 		./novemberizing/rx/subscribers/just.o									\
 		./novemberizing/io/reactor.o											\
 		./novemberizing/io/descriptor.o											\
+		./novemberizing/io/descriptors.o										\
+		./novemberizing/io/buffer.o												\
 
 $(TARGET): $(OBJS)
 	$(AR) $(ARFLAGS) $@ $(OBJS)

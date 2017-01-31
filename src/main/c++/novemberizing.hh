@@ -29,7 +29,8 @@ typedef uint32_t        uint32;
 typedef int64_t         int64;
 typedef uint64_t        uint64;
 
-typedef size_t size;
+typedef size_t          size;
+typedef unsigned char   byte;
 
 }
 

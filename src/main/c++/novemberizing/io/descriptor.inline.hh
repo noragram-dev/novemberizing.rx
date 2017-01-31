@@ -3,11 +3,7 @@
 
 namespace novemberizing { namespace io {
 
-Descriptor::Descriptor(void) : __v(Invalid)
-{
-    FUNCTION_START("");
-    FUNCTION_END("");
-}
+inline int Descriptor::v(void) const { return __v; }
 
     // public:     inline int v(void) const;
     // public:     Descriptor(void);

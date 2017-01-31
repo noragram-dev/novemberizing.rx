@@ -1,6 +1,8 @@
 #ifndef   __NOVEMBERIZING_IO__DESCRIPTOR__HH__
 #define   __NOVEMBERIZING_IO__DESCRIPTOR__HH__
 
+#include <novemberizing/io/descriptors.hh>
+
 namespace novemberizing { namespace io {
 
 class Descriptor
@@ -12,5 +14,8 @@ public:     virtual ~Descriptor(void);
 };
 
 } }
+
+
+#include <novemberizing/io/descriptor.inline.hh>
 
 #endif // __NOVEMBERIZING_IO__DESCRIPTOR__HH__
