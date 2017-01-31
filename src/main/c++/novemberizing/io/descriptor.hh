@@ -3,6 +3,8 @@
 
 #include <vector>
 #include <functional>
+#include <unistd.h>
+#include <fcntl.h>
 
 #include <novemberizing.hh>
 
@@ -29,7 +31,9 @@ public:     class Map : public Sync
 public:     static Descriptor::Map alives;
 protected:  int __descriptor;
 protected:  type::uint32 __registered;
+public:     virtual bool nonblock(bool v);
 public:     inline void registered(type::uint32 v);
+public:     inline type::uint32 registered(void) const;
 public:     inline bool alive(void) const;
 public:     inline int v(void) const;
 public:     virtual bool should(EventType type) const = 0;

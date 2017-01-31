@@ -62,7 +62,17 @@ void Reactor::onecycle(void)
                 }
                 else
                 {
-
+                    type::uint32 need = 0;
+                    if(descriptor->should(Read)){ need |= Read; }
+                    if(descriptor->should(Write)){ need |= Write; }
+                    if(need!=descriptor->registered())
+                    {
+                        if(mod(descriptor)!=Success)
+                        {
+                            del(descriptor);
+                            descriptor->close();
+                        }
+                    }
                 }
             }
             else
@@ -109,13 +119,16 @@ void Reactor::initialize(void)
                     struct epoll_event ev;
                     ev.data.fd = descriptor->v();
                     ev.events = (EPOLLPRI | EPOLLERR | EPOLLHUP | EPOLLRDHUP);
+                    type::uint32 registered = 0;
                     if(descriptor->should(Read))
                     {
                         ev.events |= EPOLLIN;
+                        registered = Read;
                     }
                     if(descriptor->should(Write))
                     {
                         ev.events |= EPOLLOUT;
+                        registered |= Write;
                     }
                     if(epoll_ctl(__descriptor, EPOLL_CTL_ADD, descriptor->v(), &ev)!=Success)
                     {
@@ -123,6 +136,14 @@ void Reactor::initialize(void)
                         {
                             removes.push_back(descriptor);
                         }
+                        else
+                        {
+                            descriptor->registered(registered);
+                        }
+                    }
+                    else
+                    {
+                        descriptor->registered(registered);
                     }
                 }
                 else
@@ -140,9 +161,134 @@ void Reactor::initialize(void)
             }
             synchronized(&__descriptors, __descriptors.del(descriptor));
         });
+        removes.clear();
     }
 
     FUNCTION_END("");
+}
+
+int Reactor::add(Descriptor * descriptor)
+{
+    int ret = Fail;
+    if(__descriptor==Invalid)
+    {
+        if(descriptor!=nullptr)
+        {
+            synchronized(&__descriptors, __descriptors.add(descriptor));
+        }
+        ret = Success;
+    }
+    else
+    {
+        if(descriptor!=nullptr)
+        {
+            struct epoll_event ev;
+            ev.data.fd = descriptor->v();
+            ev.events = (EPOLLPRI | EPOLLERR | EPOLLHUP | EPOLLRDHUP);
+            type::uint32 registered = 0;
+            if(descriptor->should(Read))
+            {
+                ev.events |= EPOLLIN;
+                registered = Read;
+            }
+            if(descriptor->should(Write))
+            {
+                ev.events |= EPOLLOUT;
+                registered |= Write;
+            }
+            if((ret = ::epoll_ctl(__descriptor, EPOLL_CTL_ADD, descriptor->v(), &ev))!=Success)
+            {
+                WARNING_LOG("fail to ::epoll_ctl(...) caused by %d",errno);
+                if((ret = ::epoll_ctl(__descriptor, EPOLL_CTL_MOD, descriptor->v(), &ev))!=Success)
+                {
+                    WARNING_LOG("fail to ::epoll_ctl(...) caused by %d",errno);
+                }
+                else
+                {
+                    descriptor->registered(registered);
+                }
+            }
+            else
+            {
+                descriptor->registered(registered);
+            }
+        }
+    }
+    return ret;
+}
+
+int Reactor::del(Descriptor * descriptor)
+{
+    int ret = Fail;
+    if(__descriptor==Invalid)
+    {
+        ret = Success;
+    }
+    else
+    {
+        if(descriptor!=nullptr)
+        {
+            struct epoll_event ev;
+            ev.data.fd = descriptor->v();
+            ev.events = (EPOLLPRI | EPOLLERR | EPOLLHUP | EPOLLRDHUP | EPOLLIN | EPOLLOUT);
+            if((ret = ::epoll_ctl(__descriptor, EPOLL_CTL_DEL, descriptor->v(), &ev))!=Success)
+            {
+                WARNING_LOG("fail to ::epoll_ctl(...) caused by %d",errno);
+            }
+            descriptor->registered(0x00000000);
+        }
+    }
+    return ret;
+}
+
+int Reactor::mod(Descriptor * descriptor)
+{
+    int ret = Fail;
+    if(__descriptor==Invalid)
+    {
+        if(descriptor!=nullptr)
+        {
+            synchronized(&__descriptors, __descriptors.add(descriptor));
+        }
+        ret = Success;
+    }
+    else
+    {
+        if(descriptor!=nullptr)
+        {
+            struct epoll_event ev;
+            ev.data.fd = descriptor->v();
+            ev.events = (EPOLLPRI | EPOLLERR | EPOLLHUP | EPOLLRDHUP);
+            type::uint32 registered = 0;
+            if(descriptor->should(Read))
+            {
+                ev.events |= EPOLLIN;
+                registered = Read;
+            }
+            if(descriptor->should(Write))
+            {
+                ev.events |= EPOLLOUT;
+                registered |= Write;
+            }
+            if((ret = ::epoll_ctl(__descriptor, EPOLL_CTL_MOD, descriptor->v(), &ev))!=Success)
+            {
+                WARNING_LOG("fail to ::epoll_ctl(...) caused by %d",errno);
+                if((ret = ::epoll_ctl(__descriptor, EPOLL_CTL_ADD, descriptor->v(), &ev))!=Success)
+                {
+                    WARNING_LOG("fail to ::epoll_ctl(...) caused by %d",errno);
+                }
+                else
+                {
+                    descriptor->registered(registered);
+                }
+            }
+            else
+            {
+                descriptor->registered(registered);
+            }
+        }
+    }
+    return ret;
 }
 
 // private:    ConcurrentSet<Descriptor *> __descriptors;
