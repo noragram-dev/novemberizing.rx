@@ -3,11 +3,10 @@
 
 namespace novemberizing { namespace io {
 
-inline int Descriptor::v(void) const { return __v; }
+inline int Descriptor::v(void) const { return __descriptor; }
+inline bool Descriptor::alive(void) const { return __descriptor>=0; }
 
-    // public:     inline int v(void) const;
-    // public:     Descriptor(void);
-    // public:     virtual ~Descriptor(void);
+inline void Descriptor::registered(type::uint32 v){ __registered = v; }
 
 } }
 

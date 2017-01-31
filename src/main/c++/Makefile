@@ -42,10 +42,11 @@ OBJS=   ./novemberizing.o                                                       
 		./novemberizing/rx/subscribers/just.o									\
 		./novemberizing/io/reactor.o											\
 		./novemberizing/io/descriptor.o											\
-		./novemberizing/io/descriptors.o										\
+		./novemberizing/io/descriptor.map.o										\
 		./novemberizing/io/buffer.o												\
 		./novemberizing/io/buffers/continuous.o									\
 		./novemberizing/io/buffers/list.o										\
+		./novemberizing/io/console.o											\
 
 $(TARGET): $(OBJS)
 	$(AR) $(ARFLAGS) $@ $(OBJS)

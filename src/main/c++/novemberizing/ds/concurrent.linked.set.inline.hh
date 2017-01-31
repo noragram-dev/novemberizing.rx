@@ -7,6 +7,9 @@ template <class T, class Concurrent>
 ConcurrentLinkedSet<T, Concurrent>::ConcurrentLinkedSet(void) : __front(nullptr), __back(nullptr)
 {
     FUNCTION_START("");
+
+    Concurrent::on();
+
     FUNCTION_END("");
 }
 

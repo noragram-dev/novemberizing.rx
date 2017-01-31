@@ -1,22 +1,21 @@
-#include "descriptors.hh"
 #include "descriptor.hh"
 
 namespace novemberizing { namespace io {
 
-Descriptors::Descriptors(type::size reserved)
+Descriptor::Map::Map(type::size reserved)
 {
     FUNCTION_START("");
     __map.resize(reserved);
     FUNCTION_END("");
 }
 
-Descriptors::~Descriptors(void)
+Descriptor::Map::~Map(void)
 {
     FUNCTION_START("");
     FUNCTION_END("");
 }
 
-Descriptor * Descriptors::get(int v)
+Descriptor * Descriptor::Map::get(int v)
 {
     FUNCTION_START("");
     Descriptor * descriptor = nullptr;
@@ -28,7 +27,7 @@ Descriptor * Descriptors::get(int v)
     return descriptor;
 }
 
-void Descriptors::set(Descriptor * descriptor,std::function<void(Descriptor *)> f)
+void Descriptor::Map::set(Descriptor * descriptor,std::function<void(Descriptor *)> f)
 {
     FUNCTION_START("");
     if(descriptor!=nullptr)
@@ -64,7 +63,7 @@ void Descriptors::set(Descriptor * descriptor,std::function<void(Descriptor *)> 
     FUNCTION_END("");
 }
 
-void Descriptors::del(int v,std::function<void(Descriptor *)> f)
+void Descriptor::Map::del(int v,std::function<void(Descriptor *)> f)
 {
     FUNCTION_START("");
     if(0<=v && (unsigned int) v < __map.size())
@@ -85,7 +84,7 @@ void Descriptors::del(int v,std::function<void(Descriptor *)> f)
     FUNCTION_END("");
 }
 
-void Descriptors::del(Descriptor * descriptor)
+void Descriptor::Map::del(Descriptor * descriptor)
 {
     FUNCTION_START("");
     if(descriptor!=nullptr)

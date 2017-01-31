@@ -2,9 +2,15 @@
 
 namespace novemberizing { namespace io {
 
-Descriptor::Descriptor(void) : __v(Invalid)
+Descriptor::Map Descriptor::alives;
+
+Descriptor::Descriptor(void)
 {
     FUNCTION_START("");
+
+    __descriptor = Invalid;
+    __registered = 0x00000000;
+
     FUNCTION_END("");
 }
 
