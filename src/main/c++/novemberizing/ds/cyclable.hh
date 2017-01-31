@@ -1,7 +1,11 @@
 #ifndef   __NOVEMBERIZING_DS__CYCLABLE__HH__
 #define   __NOVEMBERIZING_DS__CYCLABLE__HH__
 
+#include <novemberizing/util/log.hh>
+
 namespace novemberizing { namespace ds {
+
+using namespace util;
 
 class Cyclable
 {

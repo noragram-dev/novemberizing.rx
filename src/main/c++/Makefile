@@ -16,6 +16,7 @@ OBJS=   ./novemberizing.o                                                       
 		./novemberizing/util/log.o												\
 		./novemberizing/util/logger.o											\
 		./novemberizing/ds/cancellable.o										\
+		./novemberizing/ds/cyclable.o											\
 		./novemberizing/ds/runnable.o											\
 		./novemberizing/ds/throwable.o											\
 		./novemberizing/concurrency/sync.o										\
@@ -44,15 +45,26 @@ OBJS=   ./novemberizing.o                                                       
 $(TARGET): $(OBJS)
 	$(AR) $(ARFLAGS) $@ $(OBJS)
 
+noragrams=	./noragram/cli.o													\
+
 examples=	./example/rx/observables/just.o										\
+
+noragram-cli: $(noragrams)
+	$(CXX) $(CXXFLAGS) -o $@ $(noragrams) $(LIBS)
 
 example: $(examples)
 	for p in $(examples); do                                                    \
 		$(CXX) $(CXXFLAGS) -o $${p%.o} $$p $(LIBS);                             \
 	done
 
-all: clean $(TARGET) example
+all: clean $(TARGET) example noragram-cli
 
 clean:
 	rm -f $(TARGET)
 	rm -f $(OBJS)
+	rm -f $(examples)
+	rm -f $(noragrams)
+	rm -f noragram-cli
+	for p in $(examples); do 													\
+		rm -f $${p%.o};															\
+	done

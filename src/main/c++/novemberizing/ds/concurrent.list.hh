@@ -6,6 +6,7 @@
 
 #include <novemberizing/concurrency/condition.hh>
 
+#include <novemberizing/ds.hh>
 #include <novemberizing/ds/on.hh>
 
 namespace novemberizing { namespace ds {

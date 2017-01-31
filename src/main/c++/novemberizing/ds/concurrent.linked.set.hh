@@ -4,6 +4,7 @@
 #include <map>
 
 #include <novemberizing/concurrency/sync.hh>
+#include <novemberizing/ds.hh>
 #include <novemberizing/ds/throwable.hh>
 
 namespace novemberizing { namespace ds {

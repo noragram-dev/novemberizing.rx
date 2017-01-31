@@ -4,6 +4,7 @@
 #include <novemberizing/ds/cyclable.hh>
 #include <novemberizing/ds/concurrent.list.hh>
 #include <novemberizing/ds/concurrent.set.hh>
+#include <novemberizing/ds/concurrent.linked.set.hh>
 
 #include <novemberizing/concurrency/sync.hh>
 
@@ -21,7 +22,8 @@ public:     static Main * Get(void);
 private:    ConcurrentList<Executable *, Sync> __deletes;
 private:    ConcurrentList<Executable *> __q;
 private:    ConcurrentSet<Executable *> __executables;
-private:    ConcurrentList<Cyclable *, Sync> __cyclables;
+private:    ConcurrentLinkedSet<Cyclable *> __cyclables;
+public:     virtual void add(Cyclable * cyclable);
 public:     virtual void dispatch(Executable * executable);
 public:     virtual void dispatch(std::initializer_list<Executable *> executables);
 public:     virtual void completed(Executable * executable);

@@ -4,6 +4,7 @@
 #include <map>
 #include <functional>
 
+#include <novemberizing/ds.hh>
 #include <novemberizing/concurrency/sync.hh>
 
 namespace novemberizing { namespace ds {

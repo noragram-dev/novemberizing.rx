@@ -95,11 +95,10 @@ int Main::run(void)
                 });
             }
         });
-        for(ConcurrentList<Cyclable *>::iterator it = __cyclables.begin();it!=__cyclables.end();it++)
-        {
+        synchronized(&__cyclables, foreach(__cyclables.begin(), __cyclables.end(),{
             Cyclable * cyclable = *it;
             cyclable->onecycle();
-        }
+        }));
         lock();
     }
     unlock();
@@ -147,6 +146,18 @@ void Main::executed(Executable * executable)
     {
         synchronized(&__executables, __executables.del(executable));
         dispatch(executable);
+    }
+    FUNCTION_END("");
+}
+
+void Main::add(Cyclable * cyclable)
+{
+    FUNCTION_START("");
+    if(cyclable!=nullptr)
+    {
+        synchronized(&__cyclables, if(!__cyclables.add(cyclable)){
+            WARNING_LOG("fail to __cyclables.add(cyclable)");
+        });
     }
     FUNCTION_END("");
 }
