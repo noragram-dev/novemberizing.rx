@@ -6,7 +6,7 @@
 
 namespace novemberizing { namespace util {
 
-static const char * toString(Log::Type type)
+const char * Log::toString(Log::Type type)
 {
 	switch(type)
 	{
@@ -25,7 +25,7 @@ static const char * toString(Log::Type type)
 
 Log::Log(void)
 {
-    __types = 0xFFFFFFFF;
+    __types = (Log::Error | Log::Warning | Log::Caution | Log::Notice | Log::Information);
 }
 
 Log::~Log(void)
@@ -98,7 +98,7 @@ Log & Log::add(Logger * logger)
 {
 	if(logger!=nullptr)
 	{
-		if(std::find(__loggers.begin(),__loggers.end(),logger)!=__loggers.end())
+		if(std::find(__loggers.begin(),__loggers.end(),logger)==__loggers.end())
 		{
 			__loggers.push_back(logger);
 		}

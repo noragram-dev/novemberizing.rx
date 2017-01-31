@@ -8,6 +8,7 @@ namespace novemberizing { namespace io {
 inline console::output::output(void) : __buffer(4096)
 {
     __descriptor = STDOUT_FILENO;
+    on();
     open();
 }
 

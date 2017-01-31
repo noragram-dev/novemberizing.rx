@@ -15,13 +15,16 @@ SRCS=$(OBJS:.o=.cc)
 OBJS=   ./novemberizing.o                                                       \
 		./novemberizing/util/log.o												\
 		./novemberizing/util/logger.o											\
+		./novemberizing/util/loggers/file.o										\
+		./novemberizing/util/command.line.o										\
+		./novemberizing/concurrency/sync.o										\
+		./novemberizing/concurrency/condition.o									\
+		./novemberizing/concurrency/thread.o									\
 		./novemberizing/ds/cancellable.o										\
 		./novemberizing/ds/cyclable.o											\
 		./novemberizing/ds/runnable.o											\
 		./novemberizing/ds/throwable.o											\
-		./novemberizing/concurrency/sync.o										\
-		./novemberizing/concurrency/condition.o									\
-		./novemberizing/concurrency/thread.o									\
+		./novemberizing/ds.o													\
 		./novemberizing/ds/concurrent.list.o									\
 		./novemberizing/ds/concurrent.set.o										\
 		./novemberizing/ds/concurrent.map.o										\
@@ -40,6 +43,7 @@ OBJS=   ./novemberizing.o                                                       
 		./novemberizing/rx/task.o												\
 		./novemberizing/rx/subscribers.o										\
 		./novemberizing/rx/subscribers/just.o									\
+		./novemberizing/io.o													\
 		./novemberizing/io/reactor.o											\
 		./novemberizing/io/descriptor.o											\
 		./novemberizing/io/descriptor.map.o										\

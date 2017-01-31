@@ -8,6 +8,7 @@ namespace novemberizing { namespace io {
 inline console::input::input(void) : __buffer(4096)
 {
     __descriptor = STDIN_FILENO;
+    on();
     open();
 }
 
@@ -37,6 +38,7 @@ inline type::int64 console::input::read(void)
         }
         n = Success;
     }
+    if(onRead!=nullptr){ onRead(*this, __buffer); }
     return n;
 }
 

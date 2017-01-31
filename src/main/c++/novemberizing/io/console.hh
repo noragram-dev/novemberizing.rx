@@ -12,6 +12,7 @@ class console
 public:     class input : public Descriptor {
             public:     friend class console;
             private:    buffers::Continuous __buffer;
+            public:     std::function<void(console::input & in,Buffer & buffer)> onRead;
             public:     inline virtual bool should(EventType type) const;
             public:     inline virtual buffers::Continuous & buffer(void);
             public:     inline virtual type::int64 read(void);

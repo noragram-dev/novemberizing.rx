@@ -49,6 +49,7 @@ public:		typedef enum __Type
 				Flow = 0x00000001 <<  6,
 				Verbose = 0x00000001 <<  7,
 			} Type;
+public:		static const char * toString(Log::Type type);
 public:		static Log o;
 private:	type::uint32 __types;
 private:	std::list<Logger *> __loggers;
