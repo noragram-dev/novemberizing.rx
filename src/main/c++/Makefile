@@ -37,6 +37,8 @@ OBJS=   ./novemberizing.o                                                       
 		./novemberizing/rx/play.o												\
 		./novemberizing/rx/replayer.o											\
 		./novemberizing/rx/task.o												\
+		./novemberizing/rx/subscribers.o										\
+		./novemberizing/rx/subscribers/just.o									\
 
 $(TARGET): $(OBJS)
 	$(AR) $(ARFLAGS) $@ $(OBJS)

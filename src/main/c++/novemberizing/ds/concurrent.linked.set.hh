@@ -4,8 +4,11 @@
 #include <map>
 
 #include <novemberizing/concurrency/sync.hh>
+#include <novemberizing/ds/throwable.hh>
 
 namespace novemberizing { namespace ds {
+
+using namespace ds;
 
 template <class T, class Concurrent = concurrency::Sync>
 class ConcurrentLinkedSet : public Concurrent
@@ -23,6 +26,7 @@ private:    class Node
 public:     class iterator
             {
             private:    Node * __node;
+            // private:    Node * node(void) const;
             public:     inline T & operator*(void);
             public:     inline const T & operator*(void) const;
             public:     inline T * operator->(void);
@@ -30,10 +34,13 @@ public:     class iterator
             public:     inline iterator& operator++(void);
             public:     inline iterator operator++(int);
             public:     inline iterator & operator=(const iterator & it);
+            public:     inline bool operator==(const iterator & it) const;
+            public:     inline bool operator!=(const iterator & it) const;
             public:     iterator(void);
             private:    iterator(Node * node);
             public:     iterator(const iterator & iterator);
             public:     virtual ~iterator(void);
+            public:     friend class ConcurrentLinkedSet<T, Concurrent>;
             };
 private:    std::map<T, typename ConcurrentLinkedSet<T, Concurrent>::Node *> __map;
 private:    ConcurrentLinkedSet<T, Concurrent>::Node * __front;

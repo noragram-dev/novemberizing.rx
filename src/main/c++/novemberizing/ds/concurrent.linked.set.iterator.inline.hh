@@ -31,20 +31,28 @@ ConcurrentLinkedSet<T, Concurrent>::iterator::~iterator(void)
     FUNCTION_END("");
 }
 
+// template <class T, class Concurrent>
+// typename ConcurrentLinkedSet<T, Concurrent>::Node * ConcurrentLinkedSet<T, Concurrent>::iterator::node(void) const
+// {
+//     return __node;
+// }
+
 template <class T, class Concurrent>
 inline T & ConcurrentLinkedSet<T, Concurrent>::iterator::operator*(void)
 {
     FUNCTION_START("");
+    if(__node==nullptr){ throw Throwable("__node==nullptr"); }
     FUNCTION_END("");
-    return __node!=nullptr ? __node->__value : T();
+    return __node->__value;
 }
 
 template <class T, class Concurrent>
 inline const T & ConcurrentLinkedSet<T, Concurrent>::iterator::operator*(void) const
 {
     FUNCTION_START("");
+    if(__node==nullptr){ throw Throwable("__node==nullptr"); }
     FUNCTION_END("");
-    return __node!=nullptr ? __node->__value : T();
+    return __node->__value;
 }
 
 template <class T, class Concurrent>
@@ -61,6 +69,18 @@ inline const T * ConcurrentLinkedSet<T, Concurrent>::iterator::operator->(void) 
     FUNCTION_START("");
     FUNCTION_END("");
     return __node!=nullptr ? &(__node->__value) : nullptr;
+}
+
+template <class T, class Concurrent>
+inline bool ConcurrentLinkedSet<T, Concurrent>::iterator::operator==(const iterator & it) const
+{
+    return it.__node==__node;
+}
+
+template <class T, class Concurrent>
+inline bool ConcurrentLinkedSet<T, Concurrent>::iterator::operator!=(const iterator & it) const
+{
+    return it.__node!=__node;
 }
 
 template <class T, class Concurrent>
