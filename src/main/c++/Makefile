@@ -39,6 +39,7 @@ OBJS=   ./novemberizing.o                                                       
 		./novemberizing/rx/task.o												\
 		./novemberizing/rx/subscribers.o										\
 		./novemberizing/rx/subscribers/just.o									\
+		./novemberizing/io/reactor.o											\
 
 $(TARGET): $(OBJS)
 	$(AR) $(ARFLAGS) $@ $(OBJS)

@@ -12,6 +12,7 @@ enum {
     Success = 0L,
     Fail = -1L,
     Infinite = -1L,
+    Invalid = -1L,
 };
 
 namespace type {
