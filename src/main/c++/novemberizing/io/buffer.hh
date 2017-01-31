@@ -22,9 +22,7 @@ public:     typedef enum __direction {
                 forward = 0,
                 backward = 1,
             } Direction;
-public:     enum {
-                eop = -1L,
-            };
+public:     static const type::size eop = -1L;
 public:     virtual void position(type::size position) = 0;
 public:     inline virtual type::size page(void) const;
 public:     virtual type::size capacity(void) const = 0;
