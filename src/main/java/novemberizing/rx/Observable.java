@@ -37,7 +37,7 @@ public class Observable<T> {
         public void execute() {
             Scheduler current = Scheduler.Self();
             synchronized (__observable.__observers) {
-                next(__observable.set(in));
+                next(__observable.__set(in));
                 for (Observer<T> observer : __observable.__observers) {
                     Scheduler observeOn = observer.observeOn();
                     if (current == observeOn) {
@@ -76,7 +76,7 @@ public class Observable<T> {
             Scheduler current = Scheduler.Self();
             synchronized (__observable.__observers) {
                 for(T item : in) {
-                    next(__observable.set(item));
+                    next(__observable.__set(item));
                     for (Observer<T> observer : __observable.__observers) {
                         Scheduler observeOn = observer.observeOn();
                         if (current == observeOn) {
@@ -194,20 +194,20 @@ public class Observable<T> {
     protected T snapshot(T o){ return o; }
 
     protected T get(){ return snapshot(__current); }
-//    protected T set(T v){
-//        if(__completed) {
-//            if(__replayer!=null) {
-//                Log.e(Tag, "= clear =");
-//                __replayer.clear();
-//            }
-//            __completed = false;
-//        }
-//        __current = snapshot(v);
-//        if(__replayer!=null) {
-//            __replayer.add(snapshot(__current));
-//        }
-//        return snapshot(__current);
-//    }
+    protected T __set(T v){
+        if(__completed) {
+            if(__replayer!=null) {
+                Log.e(Tag, "= clear =");
+                __replayer.clear();
+            }
+            __completed = false;
+        }
+        __current = snapshot(v);
+        if(__replayer!=null) {
+            __replayer.add(snapshot(__current));
+        }
+        return snapshot(__current);
+    }
 
     protected Throwable exception(Throwable e){
         if(__replayer!=null){

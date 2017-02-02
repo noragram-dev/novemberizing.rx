@@ -232,7 +232,7 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
     }
 
     @Override
-    protected U set(U v){
+    protected U __set(U v){
         __current = snapshot(v);
         if(__replayer!=null) {
             Log.d(Tag, "check this logic");
