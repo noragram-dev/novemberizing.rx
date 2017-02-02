@@ -194,20 +194,20 @@ public class Observable<T> {
     protected T snapshot(T o){ return o; }
 
     protected T get(){ return snapshot(__current); }
-    protected T set(T v){
-        if(__completed) {
-            if(__replayer!=null) {
-                Log.e(Tag, "= clear =");
-                __replayer.clear();
-            }
-            __completed = false;
-        }
-        __current = snapshot(v);
-        if(__replayer!=null) {
-            __replayer.add(snapshot(__current));
-        }
-        return snapshot(__current);
-    }
+//    protected T set(T v){
+//        if(__completed) {
+//            if(__replayer!=null) {
+//                Log.e(Tag, "= clear =");
+//                __replayer.clear();
+//            }
+//            __completed = false;
+//        }
+//        __current = snapshot(v);
+//        if(__replayer!=null) {
+//            __replayer.add(snapshot(__current));
+//        }
+//        return snapshot(__current);
+//    }
 
     protected Throwable exception(Throwable e){
         if(__replayer!=null){
