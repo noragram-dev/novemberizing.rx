@@ -265,6 +265,21 @@ public class Req<Z> implements Executable {
         });
     }
 
+    public Observable<Z> fail(novemberizing.ds.on.Single<Throwable> f){
+        return subscribe(new Subscribers.Just<Z>() {
+            @Override public void onError(Throwable e) { f.on(e); }
+        });
+    }
+
+    public Observable<Z> success(novemberizing.ds.on.Single<Z> f){
+        return subscribe(new Subscribers.Just<Z>(){
+            private Z item = null;
+            @Override public void onNext(Z o) {item = o; }
+            @Override public void onError(Throwable e){ unsubscribe(this); }
+            @Override public void onComplete(){ f.on(item); }
+        });
+    }
+
     public Observable<Z> completion(novemberizing.ds.on.Empty f){
         return subscribe(new Subscribers.Just<Z>() {
             @Override

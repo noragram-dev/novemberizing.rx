@@ -521,6 +521,21 @@ public class Observable<T> {
         });
     }
 
+    public Observable<T> fail(novemberizing.ds.on.Single<Throwable> f){
+        return subscribe(new Subscribers.Just<T>() {
+            @Override public void onError(Throwable e) { f.on(e); }
+        });
+    }
+
+    public Observable<T> success(novemberizing.ds.on.Single<T> f){
+        return subscribe(new Subscribers.Just<T>(){
+            private T item = null;
+            @Override public void onNext(T o) {item = o; }
+            @Override public void onError(Throwable e){ unsubscribe(this); }
+            @Override public void onComplete(){ f.on(item); }
+        });
+    }
+
     public Observable<T> completion(novemberizing.ds.on.Empty f){
         return subscribe(new Subscribers.Just<T>() {
             @Override
