@@ -12,7 +12,7 @@ import novemberizing.util.Log;
 import static novemberizing.ds.Constant.Infinite;
 
 /**
- *
+ * rebuild
  * @author novemberizing, me@novemberizing.net
  * @since 2017. 1. 17.
  */
