@@ -242,7 +242,7 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
     }
 
     protected Throwable exception(Throwable e){
-        Log.d(Tag, "check this logic");
+//        Log.d(Tag, "check this logic");
         if(__replayer!=null){
             Log.d(Tag, "check this logic");
             __replayer.error(e);
@@ -251,7 +251,7 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
     }
 
     protected U done(){
-        Log.d(Tag, "check this logic");
+//        Log.d(Tag, "check this logic");
         if(__replayer!=null){
             Log.d(Tag, "check this logic");
             __replayer.complete(__current);

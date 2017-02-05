@@ -58,7 +58,7 @@ class Scheduler extends novemberizing.rx.Scheduler implements Cyclable {
             __q.unlock();
             running(false);
         } else {
-            Log.d(Tag, this, "__running==false");
+            // Log.d(Tag, this, "__running==false");
         }
     }
 
