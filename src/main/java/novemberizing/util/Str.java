@@ -10,7 +10,7 @@ import java.io.IOException;
  */
 @SuppressWarnings("unused")
 public class Str {
-    private static String From(BufferedReader reader){
+    public static String From(BufferedReader reader){
         StringBuilder builder = new StringBuilder();
         String line;
         try {
