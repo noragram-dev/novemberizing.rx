@@ -142,9 +142,17 @@ public abstract class Task<T, Z> implements Executable {
         }
         return __completionPort.subscribe(new Subscribers.Just<Z>(){
             private Z item = null;
+            private Throwable exception = null;
             @Override public void onNext(Z o) {item = o; }
-            @Override public void onError(Throwable e){ unsubscribe(this); }
-            @Override public void onComplete(){ f.on(item); }
+            @Override public void onError(Throwable e){
+                exception = e;
+                unsubscribe(this);
+            }
+            @Override public void onComplete() {
+                if (exception == null) {
+                    f.on(item);
+                }
+            }
         });
     }
 

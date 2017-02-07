@@ -530,9 +530,17 @@ public class Observable<T> {
     public Observable<T> success(novemberizing.ds.on.Single<T> f){
         return subscribe(new Subscribers.Just<T>(){
             private T item = null;
+            private Throwable exception = null;
             @Override public void onNext(T o) {item = o; }
-            @Override public void onError(Throwable e){ unsubscribe(this); }
-            @Override public void onComplete(){ f.on(item); }
+            @Override public void onError(Throwable e){
+                exception = e;
+                unsubscribe(this);
+            }
+            @Override public void onComplete() {
+                if (exception == null) {
+                    f.on(item);
+                }
+            }
         });
     }
 
