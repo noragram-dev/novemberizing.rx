@@ -2,6 +2,8 @@ package novemberizing.util;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 /**
  *
@@ -21,5 +23,9 @@ public class Str {
             e.printStackTrace();
         }
         return builder.toString();
+    }
+
+    public static String From(InputStream stream){
+        return From(new BufferedReader(new InputStreamReader(stream)));
     }
 }
