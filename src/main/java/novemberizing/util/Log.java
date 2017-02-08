@@ -99,49 +99,49 @@ public class Log {
     public static final int HEADER      = 0x00000001 <<  30;
 
 
-    public static Object e(String tag, Object o){
+    public static <T> T e(String tag, T o){
         if((__o.__types & ERROR)==ERROR) {
             __o.___write(ERROR, tag, toJson(o));
         }
         return o;
     }
-    public static Object w(String tag, Object o) {
+    public static <T> T w(String tag, T o) {
         if ((__o.__types & WARNING) == WARNING) {
             __o.___write(WARNING, tag, toJson(o));
         }
         return o;
     }
-    public static Object c(String tag, Object o) {
+    public static <T> T c(String tag, T o) {
         if ((__o.__types & CAUTION) == CAUTION) {
             __o.___write(CAUTION, tag, toJson(o));
         }
         return o;
     }
-    public static Object n(String tag, Object o){
+    public static <T> T n(String tag, T o){
         if((__o.__types & NOTICE)==NOTICE) {
             __o.___write(NOTICE, tag, toJson(o));
         }
         return o;
     }
-    public static Object i(String tag, Object o) {
+    public static <T> T i(String tag, T o) {
         if ((__o.__types & INFORMATION) == INFORMATION) {
             __o.___write(INFORMATION, tag, toJson(o));
         }
         return o;
     }
-    public static Object d(String tag, Object o) {
+    public static <T> T d(String tag, T o) {
         if ((__o.__types & DEBUG) == DEBUG) {
             __o.___write(DEBUG, tag, toJson(o));
         }
         return o;
     }
-    public static Object f(String tag, Object o){
+    public static <T> T f(String tag, T o){
         if ((__o.__types & FLOW) == FLOW) {
             __o.___write(FLOW,tag,toJson(o));
         }
         return o;
     }
-    public static Object v(String tag, Object o){
+    public static <T> T v(String tag, T o){
         if ((__o.__types & VERBOSE) == VERBOSE) {
             __o.___write(VERBOSE, tag, toJson(o));
         }
