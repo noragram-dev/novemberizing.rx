@@ -29,7 +29,7 @@ public class Key {
             byte[] ret = new byte[key.length()/2];
             for (int i = 0; i < key.length() / 2; i++) {
                 int first = __strings[i % 2].indexOf(key.charAt(i * 2));
-                int second = __strings[i % 2].indexOf(key.charAt(i * 2 + 1));
+                int second = __strings[i % 2 + 1].indexOf(key.charAt(i * 2 + 1));
                 if (first < 0 || second < 0) {
                     return null;
                 }
