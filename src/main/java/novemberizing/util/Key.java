@@ -13,6 +13,7 @@ public class Key {
             "Nn6OoPp7QqRr8SsT",
             "t9UuVv+WwXx-YyZz"
     };
+
     public static String Encode(byte[] bytes){
         String gen = "";
         int it = 0;
