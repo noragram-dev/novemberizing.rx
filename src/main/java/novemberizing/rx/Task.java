@@ -156,6 +156,27 @@ public abstract class Task<T, Z> implements Executable {
         });
     }
 
+
+
+    public Observable<Z> success(novemberizing.ds.on.Empty f){
+        if(__completionPort==null){
+            __completionPort = new Observable<>(__replayer);
+        }
+        return __completionPort.subscribe(new Subscribers.Just<Z>(){
+            private Throwable exception = null;
+            @Override public void onNext(Z o) {}
+            @Override public void onError(Throwable e){
+                exception = e;
+                unsubscribe(this);
+            }
+            @Override public void onComplete() {
+                if (exception == null) {
+                    f.on();
+                }
+            }
+        });
+    }
+
     public Observable<Z> on(novemberizing.ds.on.Single<Z> f){
         if(__completionPort==null){
             __completionPort = new Observable<>(__replayer);
