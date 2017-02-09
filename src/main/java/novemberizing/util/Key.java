@@ -16,11 +16,12 @@ public class Key {
 
     public static String Encode(byte[] bytes){
         String gen = "";
-        int it = 0;
-        for(int i=0;i<bytes.length;i++){
-            byte b = bytes[i];
-            gen += __strings[i%2].charAt((((b & 0xF0) >> 4) & 0x0F));
-            gen += __strings[i%2 + 1].charAt((b & 0x0F));
+        if(bytes!=null) {
+            for (int i = 0; i < bytes.length; i++) {
+                byte b = bytes[i];
+                gen += __strings[i % 2].charAt((((b & 0xF0) >> 4) & 0x0F));
+                gen += __strings[i % 2 + 1].charAt((b & 0x0F));
+            }
         }
         return gen;
     }
