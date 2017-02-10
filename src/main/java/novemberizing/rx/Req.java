@@ -41,8 +41,10 @@ public class Req<Z> implements Executable {
 
         public Chain fail(novemberizing.ds.on.Single<Throwable> onFail){
             this.onFail = onFail;
-            if(__exception!=null){
-                this.onFail.on(__exception);
+            synchronized (this) {
+                if (__exception != null) {
+                    this.onFail.on(__exception);
+                }
             }
             return this;
         }
@@ -70,8 +72,12 @@ public class Req<Z> implements Executable {
                         }
                     }
                 }).fail(e->{
-                    __exception = e;
-                    if(onFail!=null){ onFail.on(__exception); }
+                    synchronized (this) {
+                        __exception = e;
+                        if (onFail != null) {
+                            onFail.on(__exception);
+                        }
+                    }
             });
         }
 
