@@ -258,7 +258,9 @@ public class Req<Z> implements Executable {
 
     protected void error(Throwable e){
         if(!__completed) {
-            __observable.error(e);
+            if(__observable!=null) {
+                __observable.error(e);
+            }
             if (__completionPort != null) {
                 __completionPort.error(e);
             } else {
@@ -270,7 +272,9 @@ public class Req<Z> implements Executable {
     protected void next(Z o){
         if(!__completed) {
             __out = o;
-            __observable.emit(o);
+            if(__observable!=null) {
+                __observable.emit(o);
+            }
             if (__completionPort != null) {
                 __completionPort.emit(o);
             } else {
@@ -286,7 +290,9 @@ public class Req<Z> implements Executable {
             __completed = true;
             __executor = null;
 
-            __observable.requests.decrease();
+            if(__observable!=null) {
+                __observable.requests.decrease();
+            }
 
             if (__completionPort != null) {
                 __completionPort.complete();
