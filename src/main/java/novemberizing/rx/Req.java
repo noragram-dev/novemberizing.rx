@@ -18,6 +18,74 @@ import static novemberizing.ds.Constant.Infinite;
 public class Req<Z> implements Executable {
     private static final String Tag = "Req";
 
+    public interface Factory<Z> extends novemberizing.ds.func.Empty<novemberizing.rx.Req<Z>> {}
+
+    public static class Chain {
+        private novemberizing.rx.Req.Factory<?> __current = null;
+        private novemberizing.ds.on.Empty onSuccess = null;
+        private novemberizing.ds.on.Single<Throwable> onFail = null;
+        private novemberizing.rx.Observable<?> __requested = null;
+
+        private boolean __completed = false;
+        private Throwable __exception = null;
+
+        public Chain success(novemberizing.ds.on.Empty onSuccess){
+            this.onSuccess = onSuccess;
+            synchronized (this) {
+                if (__completed && __exception != null) {
+                    this.onSuccess.on();
+                }
+            }
+            return this;
+        }
+
+        public Chain fail(novemberizing.ds.on.Single<Throwable> onFail){
+            this.onFail = onFail;
+            if(__exception!=null){
+                this.onFail.on(__exception);
+            }
+            return this;
+        }
+
+        public Chain exec(novemberizing.rx.Req.Factory<?> request, novemberizing.rx.Req.Factory<?>... requests) {
+            __internal(request, 0, requests);
+            return this;
+        }
+
+        public Chain exec(novemberizing.rx.Req.Factory<?>[] requests) {
+            __internal(requests[0], 1, requests);
+            return this;
+        }
+
+        private void __internal(novemberizing.rx.Req.Factory<?> current, int n, novemberizing.rx.Req.Factory<?>[] next){
+            __requested = current.call().success(()-> {
+                    if (n < next.length) {
+                        __internal(next[n],n+1,next);
+                    } else {
+                        synchronized (this) {
+                            __completed = true;
+                            if (onSuccess != null) {
+                                onSuccess.on();
+                            }
+                        }
+                    }
+                }).fail(e->{
+                    __exception = e;
+                    if(onFail!=null){ onFail.on(__exception); }
+            });
+        }
+
+        public Chain(){}
+    }
+
+    public static Chain Chain(novemberizing.rx.Req.Factory<?> request, novemberizing.rx.Req.Factory<?>... requests){
+        return new Chain().exec(request, requests);
+    }
+
+    public static Chain Chain(novemberizing.rx.Req.Factory<?>[] requests){
+        return new Chain().exec(requests);
+    }
+
     public static class Callback<Z> implements novemberizing.ds.on.Single<Z> {
         private Req<Z> __req;
         public void next(Z o, boolean completed){
