@@ -42,7 +42,7 @@ public class Str {
         String ret = "";
         for(int i = start;i<end && i<strings.length;i++){
             ret += strings[i];
-            ret += (i+1<strings.length && i+1<strings.length) ? with : "";
+            ret += (i+1<end && i+1<strings.length) ? with : "";
         }
         return ret;
     }
