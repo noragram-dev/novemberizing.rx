@@ -173,6 +173,17 @@ public class Req<Z> implements Executable {
         __executed = false;
     }
 
+    public <A, B, C, D> Req(A first, B second, C third, D fourth, novemberizing.ds.on.Quintuple<A, B, C, D, Req.Callback<Z>> on){
+        __req = new On.Exec.Quadruple<>(new novemberizing.ds.tuple.Quadruple<>(first, second, third, fourth), on);
+        __observable = null;
+        __completionPort = null;
+        __replayer = new Replayer<>(Infinite);
+        __completed = false;
+
+        __executor = null;
+        __executed = false;
+    }
+
     public Req(novemberizing.ds.func.Empty<Z> func){
 
         __req = new Func.Exec.Empty<>(func);
@@ -212,6 +223,18 @@ public class Req<Z> implements Executable {
     public <A, B, C> Req(A first, B second, C third ,novemberizing.ds.func.Triple<A, B, C, Z> func){
 
         __req = new Func.Exec.Triple<>(new novemberizing.ds.tuple.Triple<>(first, second, third), func);
+        __observable = null;
+        __completionPort = null;
+        __replayer = new Replayer<>(Infinite);
+        __completed = false;
+
+        __executor = null;
+        __executed = false;
+    }
+
+    public <A, B, C, D> Req(A first, B second, C third, D fourth ,novemberizing.ds.func.Quadruple<A, B, C, D, Z> func){
+
+        __req = new Func.Exec.Quadruple<>(new novemberizing.ds.tuple.Quadruple<>(first, second, third, fourth), func);
         __observable = null;
         __completionPort = null;
         __replayer = new Replayer<>(Infinite);

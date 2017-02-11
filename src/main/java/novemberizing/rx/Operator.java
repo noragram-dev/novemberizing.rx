@@ -319,6 +319,11 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
     }
 
 
+    public static <A, B, C, D, Z> Req<Z> Req(A first, B second, C third , D fourth,novemberizing.ds.func.Quadruple<A, B, C, D, Z> func){
+        return new Req<>(first, second, third, fourth, func);
+    }
+
+
     public static <Z> Req<Z> Req(novemberizing.ds.on.Single<Req.Callback<Z>> on){
         return new Req<>(on);
     }
@@ -333,6 +338,10 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
 
     public static <A, B, C, Z> Req<Z> Req(A first, B second, C third ,novemberizing.ds.on.Quadruple<A, B, C, Req.Callback<Z>> on){
         return new Req<>(first, second, third, on);
+    }
+
+    public static <A, B, C, D, Z> Req<Z> Req(A first, B second, C third, D fourth,novemberizing.ds.on.Quintuple<A, B, C, D, Req.Callback<Z>> on){
+        return new Req<>(first, second, third, fourth, on);
     }
 
     public static <T, Z> Operator<T, Z> Op(Single<T, Z> f){

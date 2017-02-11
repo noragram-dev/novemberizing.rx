@@ -65,5 +65,20 @@ public interface On {
             }
         }
 
+        public static class Quadruple<A, B, C, D, CALLBACK> implements novemberizing.ds.Exec<CALLBACK>  {
+            private novemberizing.ds.tuple.Quadruple<A, B, C, D> __tuple;
+            private novemberizing.ds.on.Quintuple<A, B, C, D, CALLBACK> __on;
+
+            @Override
+            public void exec(CALLBACK callback){
+                __on.on(__tuple.first, __tuple.second, __tuple.third, __tuple.fourth, callback);
+            }
+
+            public Quadruple(novemberizing.ds.tuple.Quadruple<A, B, C, D> tuple, novemberizing.ds.on.Quintuple<A, B, C, D, CALLBACK> on){
+                __tuple = tuple;
+                __on = on;
+            }
+        }
+
     }
 }

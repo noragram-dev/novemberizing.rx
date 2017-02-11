@@ -68,5 +68,20 @@ public interface Func {
                 __func = func;
             }
         }
+
+        public static class Quadruple<A, B, C, D, Z, CALLBACK extends novemberizing.ds.on.Single<Z>> implements novemberizing.ds.Exec<CALLBACK> {
+            private novemberizing.ds.tuple.Quadruple<A, B, C, D> __tuple;
+            private novemberizing.ds.func.Quadruple<A, B, C, D, Z> __func;
+
+            @Override
+            public void exec(CALLBACK callback){
+                callback.on(__func.call(__tuple.first, __tuple.second, __tuple.third, __tuple.fourth));
+            }
+
+            public Quadruple(novemberizing.ds.tuple.Quadruple<A, B, C, D> tuple, novemberizing.ds.func.Quadruple<A, B, C, D, Z> func){
+                __tuple = tuple;
+                __func = func;
+            }
+        }
     }
 }
