@@ -40,9 +40,9 @@ public class Str {
 
     public static String Merge(String[] strings, String with ,int start, int end){
         String ret = "";
-        for(int i = start;i<end;i++){
+        for(int i = start;i<end && i<strings.length;i++){
             ret += strings[i];
-            ret += i+1<strings.length ? with : "";
+            ret += (i+1<strings.length && i+1<strings.length) ? with : "";
         }
         return ret;
     }
