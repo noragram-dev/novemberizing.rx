@@ -9,7 +9,7 @@ repositories {
     mavenCentral()
     maven { url 'https://jitpack.io' }
 }
-
+/** current tag is 0.1.66 */
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
     compile 'com.google.code.gson:gson:2.8.0'
