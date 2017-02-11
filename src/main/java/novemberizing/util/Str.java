@@ -28,4 +28,22 @@ public class Str {
     public static String From(InputStream stream){
         return From(new BufferedReader(new InputStreamReader(stream)));
     }
+
+    public static String Merge(String[] strings, String with ,int start){
+        String ret = "";
+        for(int i = start;i<strings.length;i++){
+            ret += strings[i];
+            ret += i+1<strings.length ? with : "";
+        }
+        return ret;
+    }
+
+    public static String Merge(String[] strings, String with ,int start, int end){
+        String ret = "";
+        for(int i = start;i<end;i++){
+            ret += strings[i];
+            ret += i+1<strings.length ? with : "";
+        }
+        return ret;
+    }
 }
