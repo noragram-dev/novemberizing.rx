@@ -59,6 +59,12 @@ public class Req<Z> implements Executable {
             return this;
         }
 
+
+//        public Chain exec(novemberizing.rx.Req.Factory<?>[] requests) {
+//            __internal(requests[0], 1, requests);
+//            return this;
+//        }
+
         private void __internal(novemberizing.rx.Req.Factory<?> current, int n, novemberizing.rx.Req.Factory<?>[] next){
             __requested = current.call().success(()-> {
                     if (n < next.length) {
@@ -119,15 +125,26 @@ public class Req<Z> implements Executable {
         }
     }
 
-    private Observable<Z> __completionPort;
-    private Replayer<Z> __replayer;
-    private Z __out;
-    private Observable<Z> __observable;
-    private final Req.Callback<Z> __callback = new Callback<>(this);
-    private final novemberizing.ds.Exec<Callback<Z>> __req;
-    private boolean __completed;
-    private Executor __executor;
-    private boolean __executed;
+    protected Observable<Z> __completionPort;
+    protected Replayer<Z> __replayer;
+    protected Z __out;
+    protected Observable<Z> __observable;
+    protected final Req.Callback<Z> __callback = new Callback<>(this);
+    protected novemberizing.ds.Exec<Callback<Z>> __req;
+    protected boolean __completed;
+    protected Executor __executor;
+    protected boolean __executed;
+
+    public Req(){
+        __req = null;
+        __observable = null;
+        __completionPort = null;
+        __replayer = new Replayer<>(Infinite);
+        __completed = false;
+
+        __executor = null;
+        __executed = false;
+    }
 
     public Req(novemberizing.ds.on.Single<Req.Callback<Z>> on){
         __req = new On.Exec.Empty<>(on);
