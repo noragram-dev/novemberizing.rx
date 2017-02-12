@@ -80,5 +80,20 @@ public interface On {
             }
         }
 
+        public static class Quintuple<A, B, C, D, E, CALLBACK> implements novemberizing.ds.Exec<CALLBACK>  {
+            private novemberizing.ds.tuple.Quintuple<A, B, C, D, E> __tuple;
+            private novemberizing.ds.on.Sextuple<A, B, C, D, E, CALLBACK> __on;
+
+            @Override
+            public void exec(CALLBACK callback){
+                __on.on(__tuple.first, __tuple.second, __tuple.third, __tuple.fourth, __tuple.fifth, callback);
+            }
+
+            public Quintuple(novemberizing.ds.tuple.Quintuple<A, B, C, D, E> tuple, novemberizing.ds.on.Sextuple<A, B, C, D, E, CALLBACK> on){
+                __tuple = tuple;
+                __on = on;
+            }
+        }
+
     }
 }

@@ -184,6 +184,17 @@ public class Req<Z> implements Executable {
         __executed = false;
     }
 
+    public <A, B, C, D, E> Req(A first, B second, C third, D fourth, E fifth, novemberizing.ds.on.Sextuple<A, B, C, D, E, Req.Callback<Z>> on){
+        __req = new On.Exec.Quintuple<>(new novemberizing.ds.tuple.Quintuple<>(first, second, third, fourth, fifth), on);
+        __observable = null;
+        __completionPort = null;
+        __replayer = new Replayer<>(Infinite);
+        __completed = false;
+
+        __executor = null;
+        __executed = false;
+    }
+
     public Req(novemberizing.ds.func.Empty<Z> func){
 
         __req = new Func.Exec.Empty<>(func);
@@ -235,6 +246,18 @@ public class Req<Z> implements Executable {
     public <A, B, C, D> Req(A first, B second, C third, D fourth ,novemberizing.ds.func.Quadruple<A, B, C, D, Z> func){
 
         __req = new Func.Exec.Quadruple<>(new novemberizing.ds.tuple.Quadruple<>(first, second, third, fourth), func);
+        __observable = null;
+        __completionPort = null;
+        __replayer = new Replayer<>(Infinite);
+        __completed = false;
+
+        __executor = null;
+        __executed = false;
+    }
+
+    public <A, B, C, D, E> Req(A first, B second, C third, D fourth, E fifth ,novemberizing.ds.func.Quintuple<A, B, C, D, E, Z> func){
+
+        __req = new Func.Exec.Quintuple<>(new novemberizing.ds.tuple.Quintuple<>(first, second, third, fourth,fifth), func);
         __observable = null;
         __completionPort = null;
         __replayer = new Replayer<>(Infinite);

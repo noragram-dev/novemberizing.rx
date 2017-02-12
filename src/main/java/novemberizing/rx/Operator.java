@@ -18,7 +18,7 @@ import java.util.LinkedList;
  * @author novemberizing, me@novemberizing.net
  * @since 2017. 1. 17.
  */
-@SuppressWarnings({"unused", "WeakerAccess"})
+@SuppressWarnings({"unused", "WeakerAccess", "Convert2Lambda"})
 public abstract class Operator<T, U> extends Observable<U> implements Observer<T> {
     private static final String Tag = "Operator";
 
@@ -323,6 +323,10 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
         return new Req<>(first, second, third, fourth, func);
     }
 
+    public static <A, B, C, D, E, Z> Req<Z> Req(A first, B second, C third , D fourth, E fifth, novemberizing.ds.func.Quintuple<A, B, C, D, E, Z> func){
+        return new Req<>(first, second, third, fourth, fifth, func);
+    }
+
 
     public static <Z> Req<Z> Req(novemberizing.ds.on.Single<Req.Callback<Z>> on){
         return new Req<>(on);
@@ -342,6 +346,10 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
 
     public static <A, B, C, D, Z> Req<Z> Req(A first, B second, C third, D fourth,novemberizing.ds.on.Quintuple<A, B, C, D, Req.Callback<Z>> on){
         return new Req<>(first, second, third, fourth, on);
+    }
+
+    public static <A, B, C, D, E, Z> Req<Z> Req(A first, B second, C third, D fourth, E fifth,novemberizing.ds.on.Sextuple<A, B, C, D, E, Req.Callback<Z>> on){
+        return new Req<>(first, second, third, fourth, fifth, on);
     }
 
     public static <T, Z> Operator<T, Z> Op(Single<T, Z> f){
