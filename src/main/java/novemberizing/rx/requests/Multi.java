@@ -22,7 +22,7 @@ public class Multi extends novemberizing.rx.Req<Object> {
         return multi.add(requests);
     }
 
-    public static Multi Gen(Collection<novemberizing.rx.Req.Factory<?>> requests){
+    public static <T> Multi Gen(Collection<novemberizing.rx.Req.Factory<T>> requests){
         Multi multi = new Multi();
         return multi.add(requests);
     }
@@ -45,7 +45,7 @@ public class Multi extends novemberizing.rx.Req<Object> {
         };
     }
 
-    public static novemberizing.rx.Req.Factory<Object> Req(Collection<novemberizing.rx.Req.Factory<?>> requests) {
+    public static <T> novemberizing.rx.Req.Factory<Object> Req(Collection<novemberizing.rx.Req.Factory<T>> requests) {
         return new novemberizing.rx.Req.Factory<Object>(){
             @Override
             public Req<Object> call() {
@@ -72,7 +72,7 @@ public class Multi extends novemberizing.rx.Req<Object> {
         return this;
     }
 
-    public Multi add(Collection<novemberizing.rx.Req.Factory<?>> requests){
+    public <T> Multi add(Collection<novemberizing.rx.Req.Factory<T>> requests){
         for(novemberizing.rx.Req.Factory<?> request : requests){
             __requests.add(request);
         }
