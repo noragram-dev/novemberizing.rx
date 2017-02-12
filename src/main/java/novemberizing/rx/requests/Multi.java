@@ -3,6 +3,7 @@ package novemberizing.rx.requests;
 import novemberizing.rx.Req;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  *
@@ -17,6 +18,11 @@ public class Multi extends novemberizing.rx.Req<Object> {
     }
 
     public static Multi Gen(novemberizing.rx.Req.Factory<?>[] requests){
+        Multi multi = new Multi();
+        return multi.add(requests);
+    }
+
+    public static Multi Gen(Collection<novemberizing.rx.Req.Factory<?>> requests){
         Multi multi = new Multi();
         return multi.add(requests);
     }
@@ -39,6 +45,15 @@ public class Multi extends novemberizing.rx.Req<Object> {
         };
     }
 
+    public static novemberizing.rx.Req.Factory<Object> Req(Collection<novemberizing.rx.Req.Factory<?>> requests) {
+        return new novemberizing.rx.Req.Factory<Object>(){
+            @Override
+            public Req<Object> call() {
+                return Gen(requests);
+            }
+        };
+    }
+
     private ArrayList<novemberizing.rx.Req.Factory<?>> __requests = new ArrayList<>();
     public Multi add(novemberizing.rx.Req.Factory<?> req, novemberizing.rx.Req.Factory<?>... requests){
         if(req!=null){
@@ -51,6 +66,13 @@ public class Multi extends novemberizing.rx.Req<Object> {
     }
 
     public Multi add(novemberizing.rx.Req.Factory<?>[] requests){
+        for(novemberizing.rx.Req.Factory<?> request : requests){
+            __requests.add(request);
+        }
+        return this;
+    }
+
+    public Multi add(Collection<novemberizing.rx.Req.Factory<?>> requests){
         for(novemberizing.rx.Req.Factory<?> request : requests){
             __requests.add(request);
         }
