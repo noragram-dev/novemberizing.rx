@@ -46,6 +46,21 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
             __task.next(o);
         }
 
+        public final void next(Z o, boolean complete){
+            __task.out = o;
+            __task.next(o);
+            if(complete){
+                complete();
+            }
+        }
+
+        public final void error(Throwable e, boolean complete){
+            __task.error(e);
+            if(complete){
+                complete();
+            }
+        }
+
         public final void error(Throwable e){
             __task.error(e);
         }
