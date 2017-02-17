@@ -12,12 +12,20 @@ import java.util.LinkedList;
 public class Subscribers {
     public static class Just<T> extends Subscriber<T> {
         private String __tag = "just";
+        private boolean __stacktrace = false;
 
         public String tag(){ return __tag; }
 
         public Just(){}
 
-        public Just(String tag){ __tag = tag; }
+        public Just(String tag){
+            __tag = tag;
+        }
+
+        public Just(String tag, boolean stacktrace){
+            __tag = tag;
+            __stacktrace = stacktrace;
+        }
 
         @Override
         public void onNext(T o) {
@@ -27,6 +35,9 @@ public class Subscribers {
         @Override
         public void onError(Throwable e) {
             Log.e(__tag, "error", e.getMessage());
+            if(__stacktrace){
+                e.printStackTrace();
+            }
         }
 
         @Override
@@ -39,6 +50,9 @@ public class Subscribers {
 
     public static <T> Just<T> Just(String tag){ return new Just<>(tag); }
 
+    public static <T> Just<T> Just(String tag, boolean stacktrace){
+        return new Just<>(tag, stacktrace);
+    }
 
     public static class Completion<T> extends Subscriber<T> {
 
