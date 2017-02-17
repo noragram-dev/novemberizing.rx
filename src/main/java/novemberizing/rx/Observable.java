@@ -214,7 +214,10 @@ public class Observable<T> {
             __replayer.error(e);
         }
         __completed = true;
-        unsubscribe();
+        /**
+         * remove this
+         * unsubscribe();
+         */
         return e;
     }
 
