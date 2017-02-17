@@ -556,7 +556,10 @@ public class Observable<T> {
 
     public Observable<T> fail(novemberizing.ds.on.Single<Throwable> f){
         return subscribe(new Subscribers.Just<T>() {
-            @Override public void onError(Throwable e) { f.on(e); }
+            @Override public void onError(Throwable e) {
+                f.on(e);
+                subscribe(false);
+            }
         });
     }
 
@@ -566,11 +569,12 @@ public class Observable<T> {
             @Override public void onNext(T o) {}
             @Override public void onError(Throwable e){
                 exception = e;
-                subscribe(false);
+
             }
             @Override public void onComplete() {
                 if (exception == null) {
                     f.on();
+                    subscribe(false);
                 }
             }
         });
@@ -583,11 +587,11 @@ public class Observable<T> {
             @Override public void onNext(T o) {item = o; }
             @Override public void onError(Throwable e){
                 exception = e;
-                subscribe(false);
             }
             @Override public void onComplete() {
                 if (exception == null) {
                     f.on(item);
+                    subscribe(false);
                 }
             }
         });

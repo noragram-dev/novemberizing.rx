@@ -410,7 +410,10 @@ public class Req<Z> implements Executable {
 
     public Observable<Z> fail(novemberizing.ds.on.Single<Throwable> f){
         return subscribe(new Subscribers.Just<Z>() {
-            @Override public void onError(Throwable e) { f.on(e); }
+            @Override public void onError(Throwable e) {
+                f.on(e);
+                subscribe(false);
+            }
         });
     }
 
@@ -421,11 +424,11 @@ public class Req<Z> implements Executable {
             @Override public void onNext(Z o) {item = o; }
             @Override public void onError(Throwable e){
                 exception = e;
-                subscribe(false);
             }
             @Override public void onComplete() {
                 if (exception == null) {
                     f.on(item);
+                    subscribe(false);
                 }
             }
         });
@@ -437,11 +440,12 @@ public class Req<Z> implements Executable {
             @Override public void onNext(Z o) {}
             @Override public void onError(Throwable e){
                 exception = e;
-                subscribe(false);
+
             }
             @Override public void onComplete() {
                 if (exception == null) {
                     f.on();
+                    subscribe(false);
                 }
             }
         });
