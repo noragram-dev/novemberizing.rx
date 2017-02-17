@@ -18,6 +18,7 @@ public abstract class Sync<T, U> extends Operator<T, U> {
 
     public Sync(){
         __observer = new Subscriber<Task<T, U>>() {
+            protected boolean __subscribe = true;
             @Override
             public void onNext(Task<T, U> o) {
                 __next(o);
@@ -32,6 +33,10 @@ public abstract class Sync<T, U> extends Operator<T, U> {
             public void onComplete() {
 
             }
+
+            @Override public void subscribe(boolean v){ __subscribe = v; }
+
+            @Override public boolean subscribed(){ return __subscribe; }
         };
     }
 

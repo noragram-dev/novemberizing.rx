@@ -88,6 +88,7 @@ public class If<T, Z> extends Operator<T, Z> {
 
     public void execute(Block.Op<T, Z> block, Task<T, Z> task, T in){
         block.exec(in).subscribe(new Subscriber<Z>() {
+            protected boolean __subscribe = true;
             private LinkedList<Z> __items = new LinkedList<>();
             @Override
             public void onNext(Z o) {
@@ -104,6 +105,10 @@ public class If<T, Z> extends Operator<T, Z> {
                 Operator.Bulk(__self, __items);
                 task.complete();
             }
+
+            @Override public void subscribe(boolean v){ __subscribe = v; }
+
+            @Override public boolean subscribed(){ return __subscribe; }
         });
     }
 

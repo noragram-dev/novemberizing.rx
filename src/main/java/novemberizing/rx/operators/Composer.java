@@ -37,6 +37,8 @@ public class Composer<T, U, Z> extends Operator<T, Z> {
         __secondary = secondary;
         __func = f;
         __secondary.subscribe(new Subscriber<U>() {
+            protected boolean __subscribe = true;
+
             @Override
             public void onNext(U o) {
                 synchronized (__self) {
@@ -53,6 +55,10 @@ public class Composer<T, U, Z> extends Operator<T, Z> {
             public void onComplete() {
                 Log.d(Tag, "");
             }
+
+            @Override public void subscribe(boolean v){ __subscribe = v; }
+
+            @Override public boolean subscribed(){ return __subscribe; }
         });
     }
 }

@@ -174,7 +174,7 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
     private final HashSet<Observable<T>> __observables = new HashSet<>();
     private Scheduler __observeOn = Scheduler.New();
     protected Observer<Operator.Task<T, U>> __observer = null;
-
+    protected boolean __subscribe = true;
 
     @Override
     public Scheduler observeOn() { return __observeOn; }
@@ -315,6 +315,10 @@ public abstract class Operator<T, U> extends Observable<U> implements Observer<T
             Log.d(Tag, this, null, "observable==null");
         }
     }
+
+    @Override public void subscribe(boolean v){ __subscribe = v; }
+
+    @Override public boolean subscribed(){ return __subscribe; }
 
 
     public static <Z> Req<Z> Req(novemberizing.ds.func.Empty<Z> func){

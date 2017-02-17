@@ -85,6 +85,7 @@ public class Switch<T, Z> extends Operator<T, Z> {
 
     protected void execute(Block.Op<T, Z> block, Task<T, Z> task, T in){
         block.exec(in).subscribe(new Subscriber<Z>() {
+            protected boolean __subscribe = true;
             @Override
             public void onNext(Z o) {
                 Log.f(Tag, task, o);
@@ -101,6 +102,10 @@ public class Switch<T, Z> extends Operator<T, Z> {
                 Log.f(Tag, task);
                 task.complete();
             }
+
+            @Override public void subscribe(boolean v){ __subscribe = v; }
+
+            @Override public boolean subscribed(){ return __subscribe; }
         });
     }
 

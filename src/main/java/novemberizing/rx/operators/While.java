@@ -34,6 +34,7 @@ public class While<T> extends Operator<T, T> {
         Log.f(Tag, "");
         Exec<T, T> exec = (Exec<T, T>) block.exec(in);
         exec.subscribe(new Subscriber<T>() {
+            protected boolean __subscribe = true;
             private boolean __executed = false;
             private boolean __completed = false;
             synchronized void executed(boolean v){ __executed = v; }
@@ -74,6 +75,10 @@ public class While<T> extends Operator<T, T> {
                     task.complete();
                 }
             }
+
+            @Override public void subscribe(boolean v){ __subscribe = v; }
+
+            @Override public boolean subscribed(){ return __subscribe; }
         });
     }
 

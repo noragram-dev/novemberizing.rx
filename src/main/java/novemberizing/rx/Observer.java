@@ -10,4 +10,6 @@ public interface Observer<T> {
     void onNext(T o);
     void onError(Throwable e);
     void onComplete();
+    void subscribe(boolean v);
+    boolean subscribed();
 }

@@ -66,6 +66,7 @@ public class Block {
         protected final LinkedList<V> __items = new LinkedList<>();
         protected novemberizing.ds.func.Pair<T, V, Boolean> __condition;
         protected novemberizing.ds.func.Pair<T, V, V> __composer;
+        protected boolean __subscribe = true;
 
         public Next(Operator.Task<T, Z> task, Block.Line<T, V, ?, Z> next, novemberizing.ds.func.Pair<T, V, Boolean> condition, novemberizing.ds.func.Pair<T, V, V> composer){
             __task = task;
@@ -102,10 +103,15 @@ public class Block {
                 __task.complete();
             }
         }
+
+        @Override public void subscribe(boolean v){ __subscribe = v; }
+
+        @Override public boolean subscribed(){ return __subscribe; }
     }
 
     public static class Complete<T, Z> extends Subscriber<Z> {
         protected Operator.Task<T, Z> __task;
+        protected boolean __subscribe = true;
 
         public Complete(Operator.Task<T, Z> task){
             __task = task;
@@ -125,6 +131,10 @@ public class Block {
         public void onComplete() {
             __task.complete();
         }
+
+        @Override public void subscribe(boolean v){ __subscribe = v; }
+
+        @Override public boolean subscribed(){ return __subscribe; }
     }
 
     public static class Line<T, U, V, Z> {

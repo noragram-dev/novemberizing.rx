@@ -38,16 +38,22 @@ public class Observable<T> {
             Scheduler current = Scheduler.Self();
             synchronized (__observable.__observers) {
                 next(__observable.__set(in));
-                for (Observer<T> observer : __observable.__observers) {
-                    Scheduler observeOn = observer.observeOn();
-                    if (current == observeOn) {
-                        try {
-                            observer.onNext(__observable.get());
-                        } catch(Exception e){
-                            observer.onError(e);
+                Iterator<Observer<T>> it = __observable.__observers.iterator();
+                while(it.hasNext()){
+                    Observer<T> observer = it.next();
+                    if(observer.subscribed()) {
+                        Scheduler observeOn = observer.observeOn();
+                        if (current == observeOn) {
+                            try {
+                                observer.onNext(__observable.get());
+                            } catch(Exception e){
+                                observer.onError(e);
+                            }
+                        } else {
+                            observeOn.dispatch(new Subscriber.Observe<>(__observable.get(), observer));
                         }
                     } else {
-                        observeOn.dispatch(new Subscriber.Observe<>(__observable.get(), observer));
+                        it.remove();
                     }
                 }
             }
@@ -75,18 +81,25 @@ public class Observable<T> {
         public void execute() {
             Scheduler current = Scheduler.Self();
             synchronized (__observable.__observers) {
+
                 for(T item : in) {
                     next(__observable.__set(item));
-                    for (Observer<T> observer : __observable.__observers) {
-                        Scheduler observeOn = observer.observeOn();
-                        if (current == observeOn) {
-                            try {
-                                observer.onNext(__observable.get());
-                            } catch (Exception e) {
-                                observer.onError(e);
+                    Iterator<Observer<T>> it = __observable.__observers.iterator();
+                    while(it.hasNext()){
+                        Observer<T> observer = it.next();
+                        if(observer.subscribed()) {
+                            Scheduler observeOn = observer.observeOn();
+                            if (current == observeOn) {
+                                try {
+                                    observer.onNext(__observable.get());
+                                } catch (Exception e) {
+                                    observer.onError(e);
+                                }
+                            } else {
+                                observeOn.dispatch(new Subscriber.Observe<>(__observable.get(), observer));
                             }
                         } else {
-                            observeOn.dispatch(new Subscriber.Observe<>(__observable.get(), observer));
+                            it.remove();
                         }
                     }
                 }
@@ -103,6 +116,7 @@ public class Observable<T> {
         }
     }
 
+    @SuppressWarnings("ThrowableNotThrown")
     protected static class Error<T> extends Task<T, T> {
         protected Observable<T> __observable;
         protected Throwable __exception;
@@ -118,12 +132,18 @@ public class Observable<T> {
         public void execute() {
             Scheduler current = Scheduler.Self();
             synchronized (__observable.__observers) {
-                for (Observer<T> observer : __observable.__observers) {
-                    Scheduler observeOn = observer.observeOn();
-                    if (current == observeOn) {
-                        observer.onError(__exception);
+                Iterator<Observer<T>> it = __observable.__observers.iterator();
+                while(it.hasNext()){
+                    Observer<T> observer = it.next();
+                    if(observer.subscribed()) {
+                        Scheduler observeOn = observer.observeOn();
+                        if (current == observeOn) {
+                            observer.onError(__exception);
+                        } else {
+                            observeOn.dispatch(new Subscriber.Error<>(__exception, observer));
+                        }
                     } else {
-                        observeOn.dispatch(new Subscriber.Error<>(__exception, observer));
+                        it.remove();
                     }
                 }
             }
@@ -144,12 +164,18 @@ public class Observable<T> {
         public void execute() {
             Scheduler current = Scheduler.Self();
             synchronized (__observable.__observers) {
-                for (Observer<T> observer : __observable.__observers) {
-                    Scheduler observeOn = observer.observeOn();
-                    if (current == observeOn) {
-                        observer.onComplete();
+                Iterator<Observer<T>> it = __observable.__observers.iterator();
+                while(it.hasNext()){
+                    Observer<T> observer = it.next();
+                    if(observer.subscribed()) {
+                        Scheduler observeOn = observer.observeOn();
+                        if (current == observeOn) {
+                            observer.onComplete();
+                        } else {
+                            observeOn.dispatch(new Subscriber.Complete<>(__observable.get(), observer));
+                        }
                     } else {
-                        observeOn.dispatch(new Subscriber.Complete<>(__observable.get(),observer));
+                        it.remove();
                     }
                 }
             }
@@ -473,6 +499,7 @@ public class Observable<T> {
 
     public <S> Operator<S, T> previous(Operator<S, T> op){
         return (Operator<S, T>) op.subscribe(new Subscriber<T>() {
+            private boolean __subscribe = true;
             @Override
             public void onNext(T o) {
                 emit(o);
@@ -487,6 +514,9 @@ public class Observable<T> {
             public void onComplete() {
                 complete();
             }
+
+            @Override public void subscribe(boolean v){ __subscribe = v; }
+            @Override public boolean subscribed(){ return __subscribe; }
         });
     }
 
@@ -505,7 +535,7 @@ public class Observable<T> {
             @Override
             public void onNext(T o) {
                 f.on(o);
-                unsubscribe(this);
+                subscribe(false);
             }
         });
     }
@@ -536,7 +566,7 @@ public class Observable<T> {
             @Override public void onNext(T o) {}
             @Override public void onError(Throwable e){
                 exception = e;
-                unsubscribe(this);
+                subscribe(false);
             }
             @Override public void onComplete() {
                 if (exception == null) {
@@ -553,7 +583,7 @@ public class Observable<T> {
             @Override public void onNext(T o) {item = o; }
             @Override public void onError(Throwable e){
                 exception = e;
-                unsubscribe(this);
+                subscribe(false);
             }
             @Override public void onComplete() {
                 if (exception == null) {
@@ -575,7 +605,7 @@ public class Observable<T> {
             @Override
             public void onNext(T o) {
                 f.on(o);
-                if(once){ unsubscribe(this); }
+                if(once){ subscribe(false); }
             }
         });
     }
@@ -585,7 +615,11 @@ public class Observable<T> {
             @Override
             public void onError(Throwable e) {
                 f.on(e);
-                if(once){ unsubscribe(this); }
+                /**
+                 * un
+                 *
+                 */
+                if(once){ subscribe(false); }
             }
         });
     }

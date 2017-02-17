@@ -43,6 +43,7 @@ public class For<T, U> extends Operator<T, T> {
     protected void execute(Task<T, T> task, novemberizing.ds.tuple.Pair<T, U> in){
         Exec<T, T> exec = (Exec<T, T>) __block.exec(in.first);
         exec.subscribe(new Subscriber<T>() {
+            protected boolean __subscribe = true;
             private boolean __executed = false;
             private boolean __completed = false;
             synchronized void executed(boolean v){ __executed = v; }
@@ -84,6 +85,10 @@ public class For<T, U> extends Operator<T, T> {
                     task.complete();
                 }
             }
+
+            @Override public void subscribe(boolean v){ __subscribe = v; }
+
+            @Override public boolean subscribed(){ return __subscribe; }
         });
     }
 

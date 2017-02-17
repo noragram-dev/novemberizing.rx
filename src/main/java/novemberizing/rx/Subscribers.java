@@ -13,6 +13,7 @@ public class Subscribers {
     public static class Just<T> extends Subscriber<T> {
         private String __tag = "just";
         private boolean __stacktrace = false;
+        private boolean __subscribe = true;
 
         public String tag(){ return __tag; }
 
@@ -44,6 +45,10 @@ public class Subscribers {
         public void onComplete() {
             Log.d(__tag, "complete");
         }
+
+        @Override public void subscribe(boolean v){ __subscribe = v; }
+
+        @Override public boolean subscribed(){ return __subscribe; }
     }
 
     public static <T> Just<T> Just(){ return new Just<>(); }
@@ -61,6 +66,7 @@ public class Subscribers {
         private T __o;
         private Throwable __exception;
         private novemberizing.ds.on.Pair<T, Throwable> __func;
+        private boolean __subscribe = true;
 
         public String tag(){ return __tag; }
 
@@ -95,6 +101,10 @@ public class Subscribers {
                 __func.on(__o, __exception);
             }
         }
+
+        @Override public void subscribe(boolean v){ __subscribe = v; }
+
+        @Override public boolean subscribed(){ return __subscribe; }
     }
 
     public static <T> Completion<T> Completion(novemberizing.ds.on.Pair<T, Throwable> f){ return new Completion<>(f); }

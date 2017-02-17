@@ -389,7 +389,7 @@ public class Req<Z> implements Executable {
             @Override
             public void onNext(Z o) {
                 f.on(o);
-                unsubscribe(this);
+                subscribe(false);
             }
         });
     }
@@ -421,7 +421,7 @@ public class Req<Z> implements Executable {
             @Override public void onNext(Z o) {item = o; }
             @Override public void onError(Throwable e){
                 exception = e;
-                unsubscribe(this);
+                subscribe(false);
             }
             @Override public void onComplete() {
                 if (exception == null) {
@@ -437,7 +437,7 @@ public class Req<Z> implements Executable {
             @Override public void onNext(Z o) {}
             @Override public void onError(Throwable e){
                 exception = e;
-                unsubscribe(this);
+                subscribe(false);
             }
             @Override public void onComplete() {
                 if (exception == null) {
@@ -459,7 +459,7 @@ public class Req<Z> implements Executable {
             @Override
             public void onNext(Z o) {
                 f.on(o);
-                if(once){ unsubscribe(this); }
+                if(once){ subscribe(false); }
             }
         });
     }
@@ -469,7 +469,7 @@ public class Req<Z> implements Executable {
             @Override
             public void onError(Throwable e) {
                 f.on(e);
-                if(once){ unsubscribe(this); }
+                if(once){ subscribe(false); }
             }
         });
     }
