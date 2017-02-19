@@ -7,6 +7,8 @@ import novemberizing.rx.operators.Condition;
 import novemberizing.rx.operators.Sync;
 import novemberizing.util.Log;
 
+import java.util.List;
+
 import static novemberizing.ds.Constant.Infinite;
 
 /**
@@ -59,11 +61,24 @@ public class Req<Z> implements Executable {
             return this;
         }
 
+        public Chain exec(List<novemberizing.rx.Req.Factory<?>> requests){
+            __internal(requests, 0);
+            return this;
+        }
 
-//        public Chain exec(novemberizing.rx.Req.Factory<?>[] requests) {
-//            __internal(requests[0], 1, requests);
-//            return this;
-//        }
+        private void __internal(List<novemberizing.rx.Req.Factory<?>> requests, int n){
+            if(n>=0 && n<requests.size()){
+                novemberizing.rx.Req.Factory<?> factory = requests.get(n);
+                __requested = factory!=null ? factory.call().success(()->__internal(requests, n+1)).fail(e->{
+                    synchronized (this) {
+                        __exception = e;
+                        if (onFail != null) {
+                            onFail.on(__exception);
+                        }
+                    }
+                }) : null;
+            }
+        }
 
         private void __internal(novemberizing.rx.Req.Factory<?> current, int n, novemberizing.rx.Req.Factory<?>[] next){
             __requested = current.call().success(()-> {
@@ -95,6 +110,10 @@ public class Req<Z> implements Executable {
     }
 
     public static Chain Chain(novemberizing.rx.Req.Factory<?>[] requests){
+        return new Chain().exec(requests);
+    }
+
+    public static Chain Chain(List<novemberizing.rx.Req.Factory<?>> requests){
         return new Chain().exec(requests);
     }
 

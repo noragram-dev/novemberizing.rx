@@ -61,6 +61,7 @@ public class Multi extends novemberizing.rx.Req<Object> {
     }
 
     private ArrayList<novemberizing.rx.Req.Factory<?>> __requests = new ArrayList<>();
+
     public Multi add(novemberizing.rx.Req.Factory<?> req, novemberizing.rx.Req.Factory<?>... requests){
         if(req!=null){
             __requests.add(req);
@@ -89,7 +90,7 @@ public class Multi extends novemberizing.rx.Req<Object> {
         __req = new novemberizing.ds.On.Exec.Empty<>(new novemberizing.ds.on.Single<novemberizing.rx.Req.Callback<Object>>(){
             @Override
             public void on(Callback<Object> o) {
-                novemberizing.rx.Req.Chain((novemberizing.rx.Req.Factory<?>[])__requests.toArray())
+                novemberizing.rx.Req.Chain(__requests)
                         .success(new novemberizing.ds.on.Empty(){
                             @Override public void on() { __callback.complete(); }
                         })
