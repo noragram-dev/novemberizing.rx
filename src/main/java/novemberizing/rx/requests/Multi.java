@@ -31,7 +31,9 @@ public class Multi extends novemberizing.rx.Req<Object> {
         return new novemberizing.rx.Req.Factory<Object>(){
             @Override
             public Req<Object> call() {
-                return Gen(req,requests);
+                novemberizing.rx.Req<Object> executable = Gen(req,requests);
+                executable.execute(null);
+                return executable;
             }
         };
     }
@@ -40,7 +42,9 @@ public class Multi extends novemberizing.rx.Req<Object> {
         return new novemberizing.rx.Req.Factory<Object>(){
             @Override
             public Req<Object> call() {
-                return Gen(requests);
+                novemberizing.rx.Req<Object> executable = Gen(requests);
+                executable.execute(null);
+                return executable;
             }
         };
     }
@@ -49,7 +53,9 @@ public class Multi extends novemberizing.rx.Req<Object> {
         return new novemberizing.rx.Req.Factory<Object>(){
             @Override
             public Req<Object> call() {
-                return Gen(requests);
+                novemberizing.rx.Req<Object> executable = Gen(requests);
+                executable.execute(null);
+                return executable;
             }
         };
     }
