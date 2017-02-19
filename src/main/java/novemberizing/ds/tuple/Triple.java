@@ -1,11 +1,13 @@
 package novemberizing.ds.tuple;
 
+import com.google.gson.annotations.Expose;
+
 /**
  * @author novemberizing, me@novemberizing.net
  * @since 2017. 1. 20.
  */
 public class Triple<A, B, C> extends Pair<A, B> {
-    public C third;
+    @Expose public C third;
 
     public Triple(){
         super();
