@@ -1,6 +1,7 @@
 package novemberizing.rx.requests;
 
 import novemberizing.rx.Req;
+import novemberizing.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,6 +12,7 @@ import java.util.Collection;
  * @since 2017. 2. 12.
  */
 public class Multi extends novemberizing.rx.Req<Object> {
+    private static final String Tag = "Multi";
 
     public static Multi Gen(novemberizing.rx.Req.Factory<?> req, novemberizing.rx.Req.Factory<?>... requests){
         Multi multi = new Multi();
@@ -92,10 +94,14 @@ public class Multi extends novemberizing.rx.Req<Object> {
             public void on(Callback<Object> o) {
                 novemberizing.rx.Req.Chain(__requests)
                         .success(new novemberizing.ds.on.Empty(){
-                            @Override public void on() { __callback.complete(); }
+                            @Override public void on() {
+                                Log.d(Tag, "success");
+                                __callback.complete();
+                            }
                         })
                         .fail(new novemberizing.ds.on.Single<Throwable>(){
                             @Override public void on(Throwable e) {
+                                Log.d(Tag, "fail");
                                 __callback.error(e);
                                 __callback.complete();
                             }
