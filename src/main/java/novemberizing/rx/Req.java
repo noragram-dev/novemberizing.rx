@@ -77,6 +77,13 @@ public class Req<Z> implements Executable {
                         }
                     }
                 }) : null;
+            } else {
+                synchronized (this) {
+                    __completed = true;
+                    if (onSuccess != null) {
+                        onSuccess.on();
+                    }
+                }
             }
         }
 
