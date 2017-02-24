@@ -1,6 +1,7 @@
 package novemberizing.rx.requests;
 
 import novemberizing.rx.Req;
+import novemberizing.rx.Scheduler;
 import novemberizing.util.Log;
 
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ public class Multi extends novemberizing.rx.Req<Object> {
             @Override
             public Req<Object> call() {
                 novemberizing.rx.Req<Object> executable = Gen(req,requests);
-                executable.execute(null);
+                executable.execute(Scheduler.Local());
                 return executable;
             }
         };
@@ -45,7 +46,7 @@ public class Multi extends novemberizing.rx.Req<Object> {
             @Override
             public Req<Object> call() {
                 novemberizing.rx.Req<Object> executable = Gen(requests);
-                executable.execute(null);
+                executable.execute(Scheduler.Local());
                 return executable;
             }
         };
@@ -56,7 +57,7 @@ public class Multi extends novemberizing.rx.Req<Object> {
             @Override
             public Req<Object> call() {
                 novemberizing.rx.Req<Object> executable = Gen(requests);
-                executable.execute(null);
+                executable.execute(Scheduler.Local());
                 return executable;
             }
         };
