@@ -100,20 +100,20 @@ public class Req<Z> implements Executable {
                     if (n < next.length) {
                         __internal(next[n],n+1,next);
                     } else {
-                        synchronized (this) {
+                        //synchronized (this) {
                             __completed = true;
                             if (onSuccess != null) {
                                 onSuccess.on();
                             }
-                        }
+                        //}
                     }
                 }).fail(e->{
-                    synchronized (this) {
+                    //synchronized (this) {
                         __exception = e;
                         if (onFail != null) {
                             onFail.on(__exception);
                         }
-                    }
+                    //}
             });
         }
 
@@ -469,14 +469,21 @@ public class Req<Z> implements Executable {
     }
 
     public Observable<Z> success(novemberizing.ds.on.Empty f){
-        return subscribe(new Subscribers.Just<Z>(){
+        return subscribe(new Subscribers.Just<Z>() {
             private Throwable exception = null;
-            @Override public void onNext(Z o) {}
-            @Override public void onError(Throwable e){
+
+            @Override
+            public void onNext(Z o) {
+            }
+
+            @Override
+            public void onError(Throwable e) {
                 exception = e;
 
             }
-            @Override public void onComplete() {
+
+            @Override
+            public void onComplete() {
                 if (exception == null) {
                     f.on();
                     subscribe(false);
