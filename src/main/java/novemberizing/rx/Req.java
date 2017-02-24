@@ -78,7 +78,13 @@ public class Req<Z> implements Executable {
                         }
                     }
                 }) : null;
+                if(__requested!=null){
+                    Log.e(Tag, "__requested!=null");
+                } else {
+                    Log.e(Tag, "__requested==null");
+                }
             } else {
+                Log.e(Tag, "__internal");
                 synchronized (this) {
                     __completed = true;
                     if (onSuccess != null) {
