@@ -6,12 +6,14 @@ import novemberizing.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  *
  * @author novemberizing, me@novemberizing.net
  * @since 2017. 2. 12.
  */
+@SuppressWarnings({"WeakerAccess", "Convert2Lambda", "unused"})
 public class Multi extends novemberizing.rx.Req<Object> {
     private static final String Tag = "Multi";
 
@@ -69,16 +71,12 @@ public class Multi extends novemberizing.rx.Req<Object> {
         if(req!=null){
             __requests.add(req);
         }
-        for(novemberizing.rx.Req.Factory<?> request : requests){
-            __requests.add(request);
-        }
+        Collections.addAll(__requests, requests);
         return this;
     }
 
     public Multi add(novemberizing.rx.Req.Factory<?>[] requests){
-        for(novemberizing.rx.Req.Factory<?> request : requests){
-            __requests.add(request);
-        }
+        Collections.addAll(__requests, requests);
         return this;
     }
 
