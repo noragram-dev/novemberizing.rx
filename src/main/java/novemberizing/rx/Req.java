@@ -67,6 +67,7 @@ public class Req<Z> implements Executable {
         }
 
         private void __internal(List<novemberizing.rx.Req.Factory<?>> requests, int n){
+            Log.e(Tag, "request: " + n + ", requests: " + requests.size());
             if(n>=0 && n<requests.size()){
                 novemberizing.rx.Req.Factory<?> factory = requests.get(n);
                 __requested = factory!=null ? factory.call().success(()->__internal(requests, n+1)).fail(e->{
@@ -88,6 +89,7 @@ public class Req<Z> implements Executable {
         }
 
         private void __internal(novemberizing.rx.Req.Factory<?> current, int n, novemberizing.rx.Req.Factory<?>[] next){
+            Log.e(Tag, "request: " + n + ", requests: ");
             __requested = current.call().success(()-> {
                     if (n < next.length) {
                         __internal(next[n],n+1,next);
