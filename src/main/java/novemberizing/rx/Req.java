@@ -71,12 +71,12 @@ public class Req<Z> implements Executable {
             if(n>=0 && n<requests.size()){
                 novemberizing.rx.Req.Factory<?> factory = requests.get(n);
                 __requested = factory!=null ? factory.call().success(()->__internal(requests, n+1)).fail(e->{
-                    synchronized (this) {
+                    // synchronized (this) {
                         __exception = e;
                         if (onFail != null) {
                             onFail.on(__exception);
                         }
-                    }
+                    // }
                 }) : null;
                 if(__requested!=null){
                     Log.e(Tag, "__requested!=null");
@@ -85,12 +85,12 @@ public class Req<Z> implements Executable {
                 }
             } else {
                 Log.e(Tag, "__internal");
-                synchronized (this) {
+                // synchronized (this) {
                     __completed = true;
                     if (onSuccess != null) {
                         onSuccess.on();
                     }
-                }
+                // }
             }
         }
 
