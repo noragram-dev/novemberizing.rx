@@ -33,21 +33,21 @@ public class Req<Z> implements Executable {
 
         public Chain success(novemberizing.ds.on.Empty onSuccess){
             this.onSuccess = onSuccess;
-            synchronized (this) {
+            //synchronized (this) {
                 if (__completed && __exception != null) {
                     this.onSuccess.on();
                 }
-            }
+            //}
             return this;
         }
 
         public Chain fail(novemberizing.ds.on.Single<Throwable> onFail){
             this.onFail = onFail;
-            synchronized (this) {
+            //synchronized (this) {
                 if (__exception != null) {
                     this.onFail.on(__exception);
                 }
-            }
+            //}
             return this;
         }
 
