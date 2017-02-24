@@ -110,6 +110,4 @@ public class Multi extends novemberizing.rx.Req<Object> {
             }
         });
     }
-
-
 }
