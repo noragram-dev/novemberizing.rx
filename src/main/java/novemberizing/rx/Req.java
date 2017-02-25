@@ -34,7 +34,7 @@ public class Req<Z> implements Executable {
         private Throwable __exception = null;
 
         public Chain success(novemberizing.ds.on.Empty onSuccess) {
-            Log.f(Tag, "");
+            Log.d(Tag, "");
             this.onSuccess = onSuccess;
             if (__completed && __exception != null) {
                 this.onSuccess.on();
@@ -43,7 +43,7 @@ public class Req<Z> implements Executable {
         }
 
         public Chain fail(novemberizing.ds.on.Single<Throwable> onFail) {
-            Log.f(Tag, "");
+            Log.d(Tag, "");
             this.onFail = onFail;
             if (__exception != null) {
                 this.onFail.on(__exception);
@@ -52,25 +52,25 @@ public class Req<Z> implements Executable {
         }
 
         public Chain exec(novemberizing.rx.Req.Factory<?> request, novemberizing.rx.Req.Factory<?>... requests) {
-            Log.f(Tag, "");
+            Log.d(Tag, "");
             __internal(request, 0, requests);
             return this;
         }
 
         public Chain exec(novemberizing.rx.Req.Factory<?>[] requests) {
-            Log.f(Tag, "");
+            Log.d(Tag, "");
             __internal(requests[0], 1, requests);
             return this;
         }
 
         public Chain exec(List<novemberizing.rx.Req.Factory<?>> requests){
-            Log.f(Tag, "");
+            Log.d(Tag, "");
             __internal(requests, 0);
             return this;
         }
 
         private void __internal(List<novemberizing.rx.Req.Factory<?>> requests, int n){
-            Log.f(Tag, requests, n);
+            Log.d(Tag, requests, n);
             if(n>=0 && n<requests.size()){
                 novemberizing.rx.Req.Factory<?> factory = requests.get(n);
                 __requested = factory!=null ? factory.call().success(()->__internal(requests, n+1)).fail(e->{
@@ -88,7 +88,7 @@ public class Req<Z> implements Executable {
         }
 
         private void __internal(novemberizing.rx.Req.Factory<?> current, int n, novemberizing.rx.Req.Factory<?>[] next){
-            Log.f(Tag, current, n , next);
+            Log.d(Tag, current, n , next);
             __requested = current.call().success(()-> {
                     if (n < next.length) {
                         __internal(next[n],n+1,next);
@@ -107,7 +107,7 @@ public class Req<Z> implements Executable {
         }
 
         public Chain(){
-            Log.f(Tag, "");
+            Log.d(Tag, "");
         }
     }
 
