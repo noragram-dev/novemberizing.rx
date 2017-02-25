@@ -15,7 +15,7 @@ import java.util.Collections;
  */
 @SuppressWarnings({"WeakerAccess", "Convert2Lambda", "unused"})
 public class Multi extends novemberizing.rx.Req<Object> {
-    private static final String Tag = "Multi";
+    private static final String Tag = "novemberizing.rx.requests.multi";
 
     public static Multi Gen(novemberizing.rx.Req.Factory<?> req, novemberizing.rx.Req.Factory<?>... requests) {
         Log.f(Tag, "");

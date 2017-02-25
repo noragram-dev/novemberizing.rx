@@ -14,7 +14,7 @@ import java.util.HashSet;
  */
 @SuppressWarnings("WeakerAccess")
 class Scheduler extends novemberizing.rx.Scheduler implements Cyclable {
-    private static final String Tag = "Scheduler";
+    private static final String Tag = "novemberizing.rx.schedulers.scheduler";
 
     protected ConditionalList<Executable> __q;
     protected final HashSet<Executable> __executables = new HashSet<>();
@@ -24,13 +24,15 @@ class Scheduler extends novemberizing.rx.Scheduler implements Cyclable {
 
     public synchronized void running(boolean v){ __running = v; }
 
-    protected boolean add(Executable executable){
+    protected boolean add(Executable executable) {
+        Log.f(Tag, "");
         synchronized (__executables){
             return __executables.add(executable);
         }
     }
 
-    protected boolean del(Executable executable){
+    protected boolean del(Executable executable) {
+        Log.f(Tag, "");
         synchronized (__executables){
             return __executables.remove(executable);
         }
@@ -57,13 +59,12 @@ class Scheduler extends novemberizing.rx.Scheduler implements Cyclable {
             }
             __q.unlock();
             running(false);
-        } else {
-            // Log.d(Tag, this, "__running==false");
         }
     }
 
     @Override
     public void executed(Executable executable) {
+        Log.f(Tag, "");
         if(executable!=null){
             if(!del(executable)){
                 Log.d(Tag, this, executable, "del(executable)==false");
@@ -79,6 +80,7 @@ class Scheduler extends novemberizing.rx.Scheduler implements Cyclable {
 
     @Override
     public void completed(Executable executable) {
+        Log.f(Tag, "");
         if(executable!=null){
             if(!del(executable)){
                 Log.d(Tag, this, executable, "del(executable)==false");
@@ -90,6 +92,7 @@ class Scheduler extends novemberizing.rx.Scheduler implements Cyclable {
 
     @Override
     public void execute(Executable executable){
+        Log.f(Tag, "");
         if (executable != null) {
             if (!add(executable)) {
                 Log.d(Tag, this, "add(executable)==false");
@@ -102,6 +105,7 @@ class Scheduler extends novemberizing.rx.Scheduler implements Cyclable {
 
     @Override
     public void clear() {
+        Log.f(Tag, "");
         int remain;
         running(true);
         do {
@@ -130,6 +134,7 @@ class Scheduler extends novemberizing.rx.Scheduler implements Cyclable {
 
     @Override
     public void dispatch(Executable executable) {
+        Log.f(Tag, "");
         __q.lock();
         __q.push(executable);
         __q.resume();
@@ -138,6 +143,7 @@ class Scheduler extends novemberizing.rx.Scheduler implements Cyclable {
 
     @Override
     public void dispatch(Executable executable, Executable... executables) {
+        Log.f(Tag, "");
         __q.lock();
         __q.push(executable);
         for(Executable item : executables){
@@ -149,6 +155,7 @@ class Scheduler extends novemberizing.rx.Scheduler implements Cyclable {
 
     @Override
     public void dispatch(Executable[] executables) {
+        Log.f(Tag, "");
         __q.lock();
         for(Executable item : executables){
             __q.push(item);

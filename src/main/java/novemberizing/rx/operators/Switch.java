@@ -12,17 +12,21 @@ import java.util.HashMap;
  * @author novemberizing, me@novemberizing.net
  * @since 2017. 1. 18.
  */
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class Switch<T, Z> extends Operator<T, Z> {
-    private static final String Tag = "Switch";
+    private static final String Tag = "novemberizing.rx.operators.switch";
+
     protected Single<T, Integer> __hash;
     protected HashMap<Integer, Block.Op<T, Z>> __cases = new HashMap<>();
     protected Block.Op<T, Z> __default;
 
     public Switch(Single<T, Integer> hash){
+        Log.f(Tag, "");
         __hash = hash;
     }
 
     public Switch<T, Z> _case(int i, Block.Op<T, Z> block){
+        Log.f(Tag, "");
         if(__default!=null){
             Log.e(Tag, "__default!=null");
         } else if(__cases.get(i)!=null) {
@@ -33,7 +37,8 @@ public class Switch<T, Z> extends Operator<T, Z> {
         return this;
     }
 
-    public Switch<T, Z> _case(int i, novemberizing.ds.func.Single<T, Z> f){
+    public Switch<T, Z> _case(int i, novemberizing.ds.func.Single<T, Z> f) {
+        Log.f(Tag, "");
         if(__default!=null){
             Log.e(Tag, "__default!=null");
         } else if(__cases.get(i)!=null) {
@@ -44,7 +49,8 @@ public class Switch<T, Z> extends Operator<T, Z> {
         return this;
     }
 
-    public Switch<T, Z> _case(int i, Operator<T, Z> op){
+    public Switch<T, Z> _case(int i, Operator<T, Z> op) {
+        Log.f(Tag, "");
         if(__default!=null){
             Log.e(Tag, "__default!=null");
         } else if(__cases.get(i)!=null) {
@@ -55,7 +61,8 @@ public class Switch<T, Z> extends Operator<T, Z> {
         return this;
     }
 
-    public Switch<T, Z> _default(Block.Op<T, Z> block){
+    public Switch<T, Z> _default(Block.Op<T, Z> block) {
+        Log.f(Tag, "");
         if(__default!=null){
             Log.e(Tag, "__default!=null");
         } else {
@@ -65,7 +72,8 @@ public class Switch<T, Z> extends Operator<T, Z> {
     }
 
 
-    public Switch<T, Z> _default(novemberizing.ds.func.Single<T, Z> f){
+    public Switch<T, Z> _default(novemberizing.ds.func.Single<T, Z> f) {
+        Log.f(Tag, "");
         if(__default!=null){
             Log.e(Tag, "__default!=null");
         } else {
@@ -74,7 +82,8 @@ public class Switch<T, Z> extends Operator<T, Z> {
         return this;
     }
 
-    public Switch<T, Z> _default(Operator<T, Z> op){
+    public Switch<T, Z> _default(Operator<T, Z> op) {
+        Log.f(Tag, "");
         if(__default!=null){
             Log.e(Tag, "__default!=null");
         } else {
@@ -83,7 +92,8 @@ public class Switch<T, Z> extends Operator<T, Z> {
         return this;
     }
 
-    protected void execute(Block.Op<T, Z> block, Task<T, Z> task, T in){
+    protected void execute(Block.Op<T, Z> block, Task<T, Z> task, T in) {
+        Log.f(Tag, "");
         block.exec(in).subscribe(new Subscriber<Z>() {
             protected boolean __subscribe = true;
             @Override
@@ -92,10 +102,7 @@ public class Switch<T, Z> extends Operator<T, Z> {
                 task.next(o);
             }
 
-            @Override
-            public void onError(Throwable e) {
-                Log.e(Tag, e);
-            }
+            @Override public void onError(Throwable e) { Log.e(Tag, e); }
 
             @Override
             public void onComplete() {
@@ -111,6 +118,7 @@ public class Switch<T, Z> extends Operator<T, Z> {
 
     @Override
     protected void on(Task<T, Z> task, T in) {
+        Log.f(Tag, "");
         Integer i = __hash.call(in);
         if(i!=null){
             Block.Op<T, Z> block = __cases.get(i);

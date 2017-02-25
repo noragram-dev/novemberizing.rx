@@ -11,28 +11,25 @@ import java.util.LinkedList;
  * @author novemberizing, me@novemberizing.net
  * @since 2017. 1. 17.
  */
+@SuppressWarnings("WeakerAccess")
 public abstract class Sync<T, U> extends Operator<T, U> {
-    private static final String Tag = "Sync";
+    private static final String Tag = "novemberizing.rx.operators.sync";
     private final LinkedList<Task<T, U>> __tasks = new LinkedList<>();
     private Operator.Task<T, U> __now;
 
     public Sync(){
+        Log.f(Tag, "");
         __observer = new Subscriber<Task<T, U>>() {
             protected boolean __subscribe = true;
             @Override
             public void onNext(Task<T, U> o) {
+                Log.f(Tag, "");
                 __next(o);
             }
 
-            @Override
-            public void onError(Throwable e) {
+            @Override public void onError(Throwable e) { Log.e(Tag, e.getMessage()); }
 
-            }
-
-            @Override
-            public void onComplete() {
-
-            }
+            @Override public void onComplete() { Log.f(Tag, ""); }
 
             @Override public void subscribe(boolean v){ __subscribe = v; }
 
@@ -41,7 +38,8 @@ public abstract class Sync<T, U> extends Operator<T, U> {
     }
 
     @Override
-    protected void in(Operator.Next<?, U> next, Operator.Task<T, U> task){
+    protected void in(Operator.Next<?, U> next, Operator.Task<T, U> task) {
+        Log.f(Tag, "");
         synchronized (__tasks){
             if(__now==null){
                 __now = task;
@@ -53,6 +51,7 @@ public abstract class Sync<T, U> extends Operator<T, U> {
     }
 
     private void __next(Operator.Task<T, U> next){
+        Log.f(Tag, "");
         synchronized (__tasks){
             if(next!=__now){
                 Log.e(Tag, "next!=__now");

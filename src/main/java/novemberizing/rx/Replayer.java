@@ -1,5 +1,7 @@
 package novemberizing.rx;
 
+import novemberizing.util.Log;
+
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -10,15 +12,20 @@ import static novemberizing.ds.Constant.Infinite;
  * @author novemberizing, me@novemberizing.net
  * @since 2017. 1. 17.
  */
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class Replayer<T> {
+    private static final String Tag = "novemberizing.rx.replayer";
 
     protected interface Play<T> { void play(Observer<T> observer); }
 
-    protected class Emits<T> implements Play<T>  {
+    protected static class Emits<T> implements Play<T>  {
+        private static final String Tag = novemberizing.rx.Replayer.Tag + ".emits";
+
         private LinkedList<T> __list = new LinkedList<>();
         private T __last = null;
 
-        public Emits(Collection<T> o){
+        public Emits(Collection<T> o) {
+            Log.f(Tag, "");
             __list.addAll(o);
             __last = __list.getLast();
         }
@@ -27,6 +34,7 @@ public class Replayer<T> {
 
         @Override
         public void play(Observer<T> observer) {
+            Log.f(Tag, "");
             Scheduler scheduler = observer.observeOn();
             if(Scheduler.Self()==scheduler) {
                 try {
@@ -42,15 +50,19 @@ public class Replayer<T> {
         }
     }
 
-    protected class Emit<T> implements Play<T> {
+    protected static class Emit<T> implements Play<T> {
+        private static final String Tag = novemberizing.rx.Replayer.Tag + ".emit";
+
         private final T __o;
 
         public Emit(T o){
+            Log.f(Tag, "");
             __o = o;
         }
 
         @Override
         public void play(Observer<T> observer) {
+            Log.f(Tag, "");
             Scheduler scheduler = observer.observeOn();
             if(Scheduler.Self()==scheduler) {
                 try {
@@ -64,15 +76,19 @@ public class Replayer<T> {
         }
     }
 
-    protected class Error<T> implements Play<T> {
+    protected static class Error<T> implements Play<T> {
+        private static final String Tag = novemberizing.rx.Replayer.Tag + ".error";
+
         private final Throwable __e;
 
         public Error(Throwable e){
+            Log.f(Tag, "");
             __e = e;
         }
 
         @Override
         public void play(Observer<T> observer) {
+            Log.f(Tag, "");
             Scheduler scheduler = observer.observeOn();
             if(Scheduler.Self()==scheduler) {
                 try {
@@ -86,15 +102,19 @@ public class Replayer<T> {
         }
     }
 
-    protected class Complete<T> implements Play<T> {
+    protected static class Complete<T> implements Play<T> {
+        private static final String Tag = novemberizing.rx.Replayer.Tag + ".complete";
+
         private final T __o;
 
-        public Complete(T o){
+        public Complete(T o) {
+            Log.f(Tag, "");
             __o = o;
         }
 
         @Override
         public void play(Observer<T> observer) {
+            Log.f(Tag, "");
             Scheduler scheduler = observer.observeOn();
             if(Scheduler.Self()==scheduler) {
                 try {
@@ -112,17 +132,22 @@ public class Replayer<T> {
     private int __limit;
     private T __last;
 
-    public void clear(){ __replays.clear(); }
+    public void clear(){
+        Log.f(Tag, "");
+        __replays.clear();
+    }
 
     public T last() { return __last; }
 
     public void limit(int limit) {
+        Log.f(Tag, "");
         __limit = limit;
         if(__limit<0){ __limit = Infinite; }
         while(__limit < __replays.size()){ __replays.pollFirst(); }
     }
 
     public void add(T o){
+        Log.f(Tag, "");
         if(__limit!=0){
             __replays.addLast(new Emit<>(o));
             __last = o;
@@ -132,7 +157,8 @@ public class Replayer<T> {
         }
     }
 
-    public void all(Collection<T> o){
+    public void all(Collection<T> o) {
+        Log.f(Tag, "");
         if(__limit!=0){
             Emits<T> emits = new Emits<>(new LinkedList<>(o));
             __replays.addLast(emits);
@@ -143,7 +169,8 @@ public class Replayer<T> {
         }
     }
 
-    public void error(Throwable e){
+    public void error(Throwable e) {
+        Log.f(Tag, "");
         if(__limit!=0){
             __replays.addLast(new Error<>(e));
         }
@@ -152,7 +179,8 @@ public class Replayer<T> {
         }
     }
 
-    public void complete(T current){
+    public void complete(T current) {
+        Log.f(Tag, "");
         if(__limit!=0){
             __replays.addLast(new Complete<>(current));
         }
@@ -162,13 +190,15 @@ public class Replayer<T> {
     }
 
 
-    public void replay(Observer<T> observer){
+    public void replay(Observer<T> observer) {
+        Log.f(Tag, "");
         for(Play<T> o : __replays){
             o.play(observer);
         }
     }
 
-    public Replayer(int limit){
+    public Replayer(int limit) {
+        Log.f(Tag, "");
         __limit = limit;
         if(__limit<0){ __limit = Infinite; }
     }

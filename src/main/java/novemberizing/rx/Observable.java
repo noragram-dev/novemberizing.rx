@@ -23,18 +23,21 @@ import java.util.LinkedList;
  */
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class Observable<T> {
-    private static final String Tag = "Observable";
+    private static final String Tag = "novemberizing.rx.observable";
 
     protected static class Emit<T> extends Task<T, T> {
+        private static final String Tag = novemberizing.rx.Observable.Tag + ".emit";
         protected Observable<T> __observable;
 
         public Emit(T in, Observable<T> observable) {
             super(in);
+            Log.f(Tag, "");
             __observable = observable;
         }
 
         @Override
         public void execute() {
+            Log.f(Tag, "");
             Scheduler current = Scheduler.Self();
             synchronized (__observable.__observers) {
                 next(__observable.__set(in));
@@ -53,6 +56,7 @@ public class Observable<T> {
                             observeOn.dispatch(new Subscriber.Observe<>(__observable.get(), observer));
                         }
                     } else {
+                        Log.d(Tag, "observer.subscribed()==false");
                         it.remove();
                     }
                 }
@@ -62,6 +66,7 @@ public class Observable<T> {
 
         @Override
         protected void complete() {
+            Log.f(Tag, "");
             if(!__completed){
                 __observable.emits.decrease();
             }
@@ -70,18 +75,20 @@ public class Observable<T> {
     }
 
     protected static class Emits<T> extends Task<Collection<T>, T> {
+        private static final String Tag = novemberizing.rx.Observable.Tag + ".emits";
         protected Observable<T> __observable;
 
         public Emits(Collection<T> in, Observable<T> observable) {
             super(in);
+            Log.f(Tag, "");
             __observable = observable;
         }
 
         @Override
         public void execute() {
+            Log.f(Tag, "");
             Scheduler current = Scheduler.Self();
             synchronized (__observable.__observers) {
-
                 for(T item : in) {
                     next(__observable.__set(item));
                     Iterator<Observer<T>> it = __observable.__observers.iterator();
@@ -99,6 +106,7 @@ public class Observable<T> {
                                 observeOn.dispatch(new Subscriber.Observe<>(__observable.get(), observer));
                             }
                         } else {
+                            Log.d(Tag, "observer.subscribed()==false");
                             it.remove();
                         }
                     }
@@ -109,6 +117,7 @@ public class Observable<T> {
 
         @Override
         protected void complete() {
+            Log.f(Tag, "");
             if(!__completed){
                 __observable.emits.decrease(in.size());
             }
@@ -118,11 +127,13 @@ public class Observable<T> {
 
     @SuppressWarnings("ThrowableNotThrown")
     protected static class Error<T> extends Task<T, T> {
+        private static final String Tag = novemberizing.rx.Observable.Tag + ".error";
         protected Observable<T> __observable;
         protected Throwable __exception;
 
         public Error(Throwable e, Observable<T> observable) {
             super(null);
+            Log.f(Tag, "");
             __observable = observable;
             __exception = e;
         }
@@ -130,6 +141,7 @@ public class Observable<T> {
 
         @Override
         public void execute() {
+            Log.f(Tag, "");
             Scheduler current = Scheduler.Self();
             synchronized (__observable.__observers) {
                 Iterator<Observer<T>> it = __observable.__observers.iterator();
@@ -143,6 +155,7 @@ public class Observable<T> {
                             observeOn.dispatch(new Subscriber.Error<>(__exception, observer));
                         }
                     } else {
+                        Log.d(Tag, "observer.subscribed()==false");
                         it.remove();
                     }
                 }
@@ -153,15 +166,18 @@ public class Observable<T> {
     }
 
     protected static class Complete<T> extends Task<T, T> {
+        private static final String Tag = novemberizing.rx.Observable.Tag + ".complete";
         protected Observable<T> __observable;
 
         public Complete(Observable<T> observable) {
             super(null);
+            Log.f(Tag, "");
             __observable = observable;
         }
 
         @Override
         public void execute() {
+            Log.f(Tag, "");
             Scheduler current = Scheduler.Self();
             synchronized (__observable.__observers) {
                 Iterator<Observer<T>> it = __observable.__observers.iterator();
@@ -175,6 +191,7 @@ public class Observable<T> {
                             observeOn.dispatch(new Subscriber.Complete<>(__observable.get(), observer));
                         }
                     } else {
+                        Log.f(Tag, "observer.subscribed()==false");
                         it.remove();
                     }
                 }
@@ -185,6 +202,7 @@ public class Observable<T> {
     }
 
     public static class Requests<T> extends Counter {
+        private static final String Tag = novemberizing.rx.Observable.Tag + ".requests";
         private boolean __once = false;
 
         public void once(boolean v){ __once = v; }
@@ -201,11 +219,13 @@ public class Observable<T> {
     protected boolean __completed = false;
 
     protected Observable(Replayer<T> replayer){
+        Log.f(Tag, "");
         __replayer = replayer;
         __current = __replayer.last();
     }
 
     public Observable(){
+        Log.f(Tag, "");
         __replayer = null;
         __current = null;
     }
@@ -219,11 +239,11 @@ public class Observable<T> {
 
     protected T snapshot(T o){ return o; }
 
-    protected T get(){ return snapshot(__current); }
-    protected T __set(T v){
+    protected T get() { return snapshot(__current); }
+    protected T __set(T v) {
+        Log.f(Tag, "");
         if(__completed) {
             if(__replayer!=null) {
-                Log.e(Tag, "= clear =");
                 __replayer.clear();
             }
             __completed = false;
@@ -235,19 +255,17 @@ public class Observable<T> {
         return snapshot(__current);
     }
 
-    protected Throwable exception(Throwable e){
+    protected Throwable exception(Throwable e) {
+        Log.f(Tag, "");
         if(__replayer!=null){
             __replayer.error(e);
         }
         __completed = true;
-        /**
-         * remove this
-         * unsubscribe();
-         */
         return e;
     }
 
-    protected T done(){
+    protected T done() {
+        Log.f(Tag, "");
         if(__replayer!=null){
             __replayer.complete(__current);
         }
@@ -257,6 +275,7 @@ public class Observable<T> {
     }
 
     private Req<T> __req(Req<T> req){
+        Log.f(Tag, "");
         requests.increase();
         req.set(this);
         Scheduler current = Scheduler.Self();
@@ -269,6 +288,7 @@ public class Observable<T> {
     }
 
     protected Req<T> req(Req<T> req){
+        Log.f(Tag, "");
         if(requests.__once){
            if(requests.get()==0) {
                req = __req(req);
@@ -285,7 +305,7 @@ public class Observable<T> {
     }
 
     protected Task<T, T> emit(T o){
-
+        Log.f(Tag, "");
         synchronized (this) {
             __current = snapshot(o);
         }
@@ -298,7 +318,7 @@ public class Observable<T> {
 
     @SafeVarargs
     private final Task<Collection<T>, T> foreach(T o, T... items){
-
+        Log.f(Tag, "");
         LinkedList<T> objects = new LinkedList<>();
         objects.addLast(o);
         for(T item : items){
@@ -312,6 +332,7 @@ public class Observable<T> {
     }
 
     private Task<Collection<T>, T> foreach(T[] items){
+        Log.f(Tag, "");
         LinkedList<T> objects = new LinkedList<>();
         for(T item : items){
             objects.addLast(item);
@@ -324,7 +345,7 @@ public class Observable<T> {
     }
 
     private Task<Collection<T>, T> bulk(Collection<T> items){
-
+        Log.f(Tag, "");
         emits.increase(items.size());
         Emits<T> task = new Emits<>(items, this);
         __observableOn.dispatch(task);
@@ -333,29 +354,33 @@ public class Observable<T> {
     }
 
     protected Task<T, T> error(Throwable e){
+        Log.f(Tag, "");
         Error<T> task = new Error<>(e, this);
         __observableOn.dispatch(task);
         return task;
     }
 
     protected Task<T, T> complete(){
+        Log.f(Tag, "");
         Complete<T> task = new Complete<>(this);
         __observableOn.dispatch(task);
         return task;
     }
 
     protected void onStart(){
-
+        Log.f(Tag, "");
     }
 
     protected void onStop(){
-
+        Log.f(Tag, "");
     }
 
-    public Observable<T> subscribe(OnNext<T> onNext){
+    public Observable<T> subscribe(OnNext<T> onNext) {
+        Log.f(Tag, "");
         return subscribe(new Subscribers.Just<T>(){
             @Override
             public void onNext(T o){
+                Log.f(Tag, "");
                 if(onNext!=null){
                     onNext.on(o);
                 }
@@ -363,16 +388,19 @@ public class Observable<T> {
         });
     }
 
-    public Observable<T> subscribe(OnNext<T> onNext, OnError onError){
+    public Observable<T> subscribe(OnNext<T> onNext, OnError onError) {
+        Log.f(Tag, "");
         return subscribe(new Subscribers.Just<T>(){
             @Override
             public void onNext(T o){
+                Log.f(Tag, "");
                 if(onNext!=null){
                     onNext.on(o);
                 }
             }
             @Override
             public void onError(Throwable e){
+                Log.f(Tag, "");
                 if(onError!=null){
                     onError.on(e);
                 }
@@ -380,41 +408,48 @@ public class Observable<T> {
         });
     }
 
-    public Observable<T> subscribe(OnNext<T> onNext, OnComplete onComplete){
+    public Observable<T> subscribe(OnNext<T> onNext, OnComplete onComplete) {
+        Log.f(Tag, "");
         return subscribe(new Subscribers.Just<T>(){
             @Override
-            public void onNext(T o){
-                if(onNext!=null){
+            public void onNext(T o) {
+                Log.f(Tag, "");
+                if(onNext!=null) {
                     onNext.on(o);
                 }
             }
             @Override
-            public void onComplete(){
-                if(onComplete!=null){
+            public void onComplete() {
+                Log.f(Tag, "");
+                if(onComplete!=null) {
                     onComplete.on();
                 }
             }
         });
     }
 
-    public Observable<T> subscribe(OnNext<T> onNext, OnError onError, OnComplete onComplete){
+    public Observable<T> subscribe(OnNext<T> onNext, OnError onError, OnComplete onComplete) {
+        Log.f(Tag, "");
         return subscribe(new Subscribers.Just<T>(){
             @Override
             public void onNext(T o){
-                if(onNext!=null){
+                Log.f(Tag, "");
+                if(onNext!=null) {
                     onNext.on(o);
                 }
             }
             @Override
-            public void onError(Throwable e){
-                if(onError!=null){
+            public void onError(Throwable e) {
+                Log.f(Tag, "");
+                if(onError!=null) {
                     onError.on(e);
                 }
             }
 
             @Override
-            public void onComplete(){
-                if(onComplete!=null){
+            public void onComplete() {
+                Log.f(Tag, "");
+                if(onComplete!=null) {
                     onComplete.on();
                 }
             }
@@ -422,6 +457,7 @@ public class Observable<T> {
     }
 
     public Observable<T> subscribe(Observer<T> observer){
+        Log.f(Tag, "");
         if(observer!=null){
             synchronized (__observers){
                 if(__observers.add(observer)){
@@ -437,16 +473,23 @@ public class Observable<T> {
                 }
             }
         } else {
-            Log.c(Tag, this, "observer==null");
+            Log.d(Tag, this, "observer==null");
         }
         return this;
     }
 
-    public <Z> Operator<T, Z> subscribe(Single<T, Z> f){ return subscribe(Operator.Op(f)); }
+    public <Z> Operator<T, Z> subscribe(Single<T, Z> f){
+        Log.f(Tag, "");
+        return subscribe(Operator.Op(f));
+    }
 
-    public <Z> Operator<T, Z> subscribe(novemberizing.ds.on.Pair<Operator.Task<T, Z>,T> f){ return subscribe(Operator.Op(f)); }
+    public <Z> Operator<T, Z> subscribe(novemberizing.ds.on.Pair<Operator.Task<T, Z>,T> f){
+        Log.f(Tag, "");
+        return subscribe(Operator.Op(f));
+    }
 
     public <Z> Operator<T, Z> subscribe(Operator<T, Z> operator){
+        Log.f(Tag, "");
         if(operator!=null){
             synchronized (__observers){
                 if(__observers.add(operator)){
@@ -462,15 +505,13 @@ public class Observable<T> {
                 }
             }
         } else {
-            Log.c(Tag, this, "observer==null");
+            Log.d(Tag, this, "observer==null");
         }
         return operator;
     }
 
-//    public Observable<T> subscribe()
-
-
     public Observable<T> unsubscribe(Observer<T> observer){
+        Log.f(Tag, "");
         if(observer!=null){
             synchronized (__observers){
                 if(__observers.remove(observer)){
@@ -480,12 +521,13 @@ public class Observable<T> {
                 }
             }
         } else {
-            Log.c(Tag, this, "observer==null");
+            Log.d(Tag, this, "observer==null");
         }
         return this;
     }
 
     public Observable<T> unsubscribe(){
+        Log.f(Tag, "");
         synchronized (__observers) {
             Iterator<Observer<T>> it = __observers.iterator();
             while(__observers.size()>0 && it.hasNext()){
@@ -498,20 +540,24 @@ public class Observable<T> {
     }
 
     public <S> Operator<S, T> previous(Operator<S, T> op){
+        Log.f(Tag, "");
         return (Operator<S, T>) op.subscribe(new Subscriber<T>() {
             private boolean __subscribe = true;
             @Override
             public void onNext(T o) {
+                Log.f(Tag, "");
                 emit(o);
             }
 
             @Override
             public void onError(Throwable e) {
+                Log.f(Tag, "");
                 error(e);
             }
 
             @Override
             public void onComplete() {
+                Log.f(Tag, "");
                 complete();
             }
 
@@ -520,20 +566,35 @@ public class Observable<T> {
         });
     }
 
-    public <S> Operator<S, T> previous(Single<S, T> f){ return previous(Operator.Op(f)); }
-
-    public <S> Operator<S, T> previous(novemberizing.ds.on.Pair<Operator.Task<S, T>, S> f){
+    public <S> Operator<S, T> previous(Single<S, T> f){
+        Log.f(Tag, "");
         return previous(Operator.Op(f));
     }
 
-    public <Z> Operator<T, Z> next(Single<T, Z> f){ return subscribe(f); }
-    public <Z> Operator<T, Z> next(Operator<T, Z> op){ return subscribe(op); }
-    public <Z> Operator<T, Z> next(novemberizing.ds.on.Pair<Operator.Task<T, Z>,T> f){ return subscribe(f); }
+    public <S> Operator<S, T> previous(novemberizing.ds.on.Pair<Operator.Task<S, T>, S> f){
+        Log.f(Tag, "");
+        return previous(Operator.Op(f));
+    }
+
+    public <Z> Operator<T, Z> next(Single<T, Z> f){
+        Log.f(Tag, "");
+        return subscribe(f);
+    }
+    public <Z> Operator<T, Z> next(Operator<T, Z> op){
+        Log.f(Tag, "");
+        return subscribe(op);
+    }
+    public <Z> Operator<T, Z> next(novemberizing.ds.on.Pair<Operator.Task<T, Z>,T> f){
+        Log.f(Tag, "");
+        return subscribe(f);
+    }
 
     public Observable<T> once(novemberizing.ds.on.Single<T> f){
+        Log.f(Tag, "");
         return subscribe(new Subscribers.Just<T>() {
             @Override
             public void onNext(T o) {
+                Log.f(Tag, "");
                 f.on(o);
                 subscribe(false);
             }
@@ -541,37 +602,51 @@ public class Observable<T> {
     }
 
     public Observable<T> on(novemberizing.ds.on.Single<T> f){
+        Log.f(Tag, "");
         return subscribe(new Subscribers.Just<T>() {
             @Override
-            public void onNext(T o) { f.on(o); }
+            public void onNext(T o) {
+                Log.f(Tag, "");
+                f.on(o);
+            }
         });
     }
 
     public Observable<T> exception(novemberizing.ds.on.Single<Throwable> f){
+        Log.f(Tag, "");
         return subscribe(new Subscribers.Just<T>() {
             @Override
-            public void onError(Throwable e) { f.on(e); }
+            public void onError(Throwable e) {
+                Log.f(Tag, "");
+                f.on(e);
+            }
         });
     }
 
-    public Observable<T> fail(novemberizing.ds.on.Single<Throwable> f){
+    public Observable<T> fail(novemberizing.ds.on.Single<Throwable> f) {
+        Log.f(Tag, "");
         return subscribe(new Subscribers.Just<T>() {
             @Override public void onError(Throwable e) {
+                Log.f(Tag, "");
                 f.on(e);
                 subscribe(false);
             }
         });
     }
 
-    public Observable<T> success(novemberizing.ds.on.Empty f){
+    public Observable<T> success(novemberizing.ds.on.Empty f) {
+        Log.f(Tag, "");
         return subscribe(new Subscribers.Just<T>(){
             private Throwable exception = null;
-            @Override public void onNext(T o) {}
+            @Override public void onNext(T o) {
+                Log.f(Tag, "");
+            }
             @Override public void onError(Throwable e){
+                Log.f(Tag, "");
                 exception = e;
-
             }
             @Override public void onComplete() {
+                Log.f(Tag, "");
                 if (exception == null) {
                     f.on();
                     subscribe(false);
@@ -580,15 +655,24 @@ public class Observable<T> {
         });
     }
 
-    public Observable<T> success(novemberizing.ds.on.Single<T> f){
+    public Observable<T> success(novemberizing.ds.on.Single<T> f) {
+        Log.f(Tag, "");
         return subscribe(new Subscribers.Just<T>(){
             private T item = null;
             private Throwable exception = null;
-            @Override public void onNext(T o) {item = o; }
-            @Override public void onError(Throwable e){
+            @Override
+            public void onNext(T o) {
+                Log.f(Tag, "");
+                item = o;
+            }
+            @Override
+            public void onError(Throwable e) {
+                Log.f(Tag, "");
                 exception = e;
             }
-            @Override public void onComplete() {
+            @Override
+            public void onComplete() {
+                Log.f(Tag, "");
                 if (exception == null) {
                     f.on(item);
                     subscribe(false);
@@ -597,17 +681,23 @@ public class Observable<T> {
         });
     }
 
-    public Observable<T> completion(novemberizing.ds.on.Empty f){
+    public Observable<T> completion(novemberizing.ds.on.Empty f) {
+        Log.f(Tag, "");
         return subscribe(new Subscribers.Just<T>() {
             @Override
-            public void onComplete() { f.on(); }
+            public void onComplete() {
+                Log.f(Tag, "");
+                f.on();
+            }
         });
     }
 
-    public Observable<T> on(novemberizing.ds.on.Single<T> f, boolean once){
+    public Observable<T> on(novemberizing.ds.on.Single<T> f, boolean once) {
+        Log.f(Tag, "");
         return subscribe(new Subscribers.Just<T>() {
             @Override
             public void onNext(T o) {
+                Log.f(Tag, "");
                 f.on(o);
                 if(once){ subscribe(false); }
             }
@@ -615,43 +705,54 @@ public class Observable<T> {
     }
 
     public Observable<T> exception(novemberizing.ds.on.Single<Throwable> f, boolean once){
+        Log.f(Tag, "");
         return subscribe(new Subscribers.Just<T>() {
             @Override
             public void onError(Throwable e) {
+                Log.f(Tag, "");
                 f.on(e);
-                /**
-                 * un
-                 *
-                 */
                 if(once){ subscribe(false); }
             }
         });
     }
 
-    public <Z> Sync<T, Z> sync(Single<T, Z> f){ return (Sync<T, Z>) subscribe(Operator.Sync(f)); }
-    public <Z> Sync<T, Z> sync(novemberizing.ds.on.Pair<Operator.Task<T, Z>,T> f){ return (Sync<T, Z>) subscribe(Operator.Sync(f)); }
+    public <Z> Sync<T, Z> sync(Single<T, Z> f){
+        Log.f(Tag, "");
+        return (Sync<T, Z>) subscribe(Operator.Sync(f));
+    }
+
+    public <Z> Sync<T, Z> sync(novemberizing.ds.on.Pair<Operator.Task<T, Z>,T> f){
+        Log.f(Tag, "");
+        return (Sync<T, Z>) subscribe(Operator.Sync(f));
+    }
 
     public <U, Z> Composer<T, U, Z> compose(Observable<U> secondary, novemberizing.ds.func.Pair<T, U, Z> f){
+        Log.f(Tag, "");
         return (Composer<T, U, Z>) subscribe(Operator.Composer(secondary,f));
     }
 
     public <U, Z> Condition<T, U, Z> condition(Observable<U> observable, novemberizing.ds.func.Pair<T, U, Boolean> condition , novemberizing.ds.func.Pair<T, U, Z> f){
+        Log.f(Tag, "");
         return (Condition<T, U, Z>) subscribe(Operator.Condition(observable,condition,f));
     }
 
     public <Z> Operator<T, Z> condition(Single<T, Boolean> condition, Single<T, Z> f){
+        Log.f(Tag, "");
         return subscribe(Operator.Condition(condition, f));
     }
 
     public <U, Z> Completion<T, U, Z> completion(Observable<U> observable, novemberizing.ds.func.Pair<T, U, Boolean> condition , novemberizing.ds.func.Pair<T, U, Z> f){
+        Log.f(Tag, "");
         return (Completion<T, U, Z>) subscribe(Operator.Completion(observable,condition,f));
     }
 
     public <U, Z> Completion<T, U, Z> completion(Observable<U> observable, novemberizing.ds.func.Pair<T, U, Z> f){
+        Log.f(Tag, "");
         return (Completion<T, U, Z>) subscribe(Operator.Completion(observable, null,f));
     }
 
     public Observable<T> replay(int limit){
+        Log.f(Tag, "");
         if(limit==0){
             __replayer = null;
         } else if(__replayer==null){
@@ -662,21 +763,40 @@ public class Observable<T> {
         return this;
     }
 
-    public static <T> Task<T, T> Emit(Observable<T> observable, T o){ return observable.emit(o); }
+    public static <T> Task<T, T> Emit(Observable<T> observable, T o){
+        Log.f(Tag, "");
+        return observable.emit(o);
+    }
 
     @SafeVarargs
-    public static <T> Task<Collection<T>, T> Foreach(Observable<T> observable, T o, T... items){ return observable.foreach(o, items); }
+    public static <T> Task<Collection<T>, T> Foreach(Observable<T> observable, T o, T... items){
+        Log.f(Tag, "");
+        return observable.foreach(o, items);
+    }
 
-    public static <T> Task<Collection<T>, T> Foreach(Observable<T> observable, T[] items){ return observable.foreach(items); }
+    public static <T> Task<Collection<T>, T> Foreach(Observable<T> observable, T[] items){
+        Log.f(Tag, "");
+        return observable.foreach(items);
+    }
 
-    public static <T> Task<Collection<T>,T> Bulk(Observable<T> observable, Collection<T> list){ return observable.bulk(list); }
+    public static <T> Task<Collection<T>,T> Bulk(Observable<T> observable, Collection<T> list){
+        Log.f(Tag, "");
+        return observable.bulk(list);
+    }
 
 
-    public static <T> Task<T, T> Complete(Observable<T> observable) { return observable.complete(); }
+    public static <T> Task<T, T> Complete(Observable<T> observable) {
+        Log.f(Tag, "");
+        return observable.complete();
+    }
 
-    public static <T> Task<T, T> Error(Observable<T> observable, Throwable e){ return observable.error(e); }
+    public static <T> Task<T, T> Error(Observable<T> observable, Throwable e){
+        Log.f(Tag, "");
+        return observable.error(e);
+    }
 
     protected static <T> void onSubscribe(Observer<T> observer, Observable<T> observable){
+        Log.f(Tag, "");
         if(observer instanceof Operator){
             Operator<T, ?> operator = (Operator<T, ?>) observer;
             operator.onSubscribe(observable);
@@ -686,7 +806,8 @@ public class Observable<T> {
         }
     }
 
-    protected static <T> void onUnsubscribe(Observer<T> observer, Observable<T> observable){
+    protected static <T> void onUnsubscribe(Observer<T> observer, Observable<T> observable) {
+        Log.f(Tag, "");
         if(observer instanceof Operator){
             Operator<T, ?> operator = (Operator<T, ?>) observer;
             operator.onUnsubscribe(observable);

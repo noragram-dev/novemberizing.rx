@@ -9,23 +9,27 @@ import novemberizing.util.Log;
  * @author novemberizing, me@novemberizing.net
  * @since 2017. 1. 17.
  */
+@SuppressWarnings({"WeakerAccess", "SameParameterValue"})
 public class While<T> extends Operator<T, T> {
-    private static final String Tag = "While";
+    private static final String Tag = "novemberizing.rx.operators.while";
 
     protected Block.Op<T, T> __block;
     protected novemberizing.ds.func.Single<T, Boolean> __condition;
 
-    public While(novemberizing.ds.func.Single<T, Boolean> condition, Block.Op<T, T> block){
+    public While(novemberizing.ds.func.Single<T, Boolean> condition, Block.Op<T, T> block) {
+        Log.f(Tag, "");
         __block = block;
         __condition = condition;
     }
 
     public While(novemberizing.ds.func.Single<T, Boolean> condition, novemberizing.ds.func.Single<T, T> f){
+        Log.f(Tag, "");
         __block = Operator.Block(f);
         __condition = condition;
     }
 
     public While(novemberizing.ds.func.Single<T, Boolean> condition, Operator<T, T> op){
+        Log.f(Tag, "");
         __block = Operator.Block(op);
         __condition = condition;
     }
@@ -43,6 +47,7 @@ public class While<T> extends Operator<T, T> {
             synchronized boolean completed(){ return __completed; }
             @Override
             public void onNext(T o) {
+                Log.f(Tag, "");
                 executed(true);
                 if(!completed()) {
                     task.next(o);
@@ -53,11 +58,7 @@ public class While<T> extends Operator<T, T> {
                 }
             }
 
-            @Override
-            public void onError(Throwable e) {
-                Log.e(Tag, e);
-                e.printStackTrace();
-            }
+            @Override public void onError(Throwable e) { Log.e(Tag, e); }
 
             @Override
             public void onComplete() {
@@ -84,6 +85,7 @@ public class While<T> extends Operator<T, T> {
 
     @Override
     protected void on(Operator.Task<T, T> task, T in) {
+        Log.f(Tag, "");
         if(__condition.call(in)){
             execute(__block, task, in);
         } else {

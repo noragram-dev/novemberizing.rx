@@ -18,11 +18,13 @@ import static novemberizing.ds.Constant.Infinite;
  */
 @SuppressWarnings({"WeakerAccess", "unused", "Convert2Lambda"})
 public class Req<Z> implements Executable {
-    private static final String Tag = "Req";
+    private static final String Tag = "novemberizing.rx.req";
 
     public interface Factory<Z> extends novemberizing.ds.func.Empty<novemberizing.rx.Req<Z>> {}
 
     public static class Chain {
+        private static final String Tag = novemberizing.rx.Req.Tag + ".chain";
+
         private novemberizing.rx.Req.Factory<?> __current = null;
         private novemberizing.ds.on.Empty onSuccess = null;
         private novemberizing.ds.on.Single<Throwable> onFail = null;
@@ -31,130 +33,138 @@ public class Req<Z> implements Executable {
         private boolean __completed = false;
         private Throwable __exception = null;
 
-        public Chain success(novemberizing.ds.on.Empty onSuccess){
+        public Chain success(novemberizing.ds.on.Empty onSuccess) {
+            Log.f(Tag, "");
             this.onSuccess = onSuccess;
-            //synchronized (this) {
-                if (__completed && __exception != null) {
-                    this.onSuccess.on();
-                }
-            //}
+            if (__completed && __exception != null) {
+                this.onSuccess.on();
+            }
             return this;
         }
 
-        public Chain fail(novemberizing.ds.on.Single<Throwable> onFail){
+        public Chain fail(novemberizing.ds.on.Single<Throwable> onFail) {
+            Log.f(Tag, "");
             this.onFail = onFail;
-            //synchronized (this) {
-                if (__exception != null) {
-                    this.onFail.on(__exception);
-                }
-            //}
+            if (__exception != null) {
+                this.onFail.on(__exception);
+            }
             return this;
         }
 
         public Chain exec(novemberizing.rx.Req.Factory<?> request, novemberizing.rx.Req.Factory<?>... requests) {
+            Log.f(Tag, "");
             __internal(request, 0, requests);
             return this;
         }
 
         public Chain exec(novemberizing.rx.Req.Factory<?>[] requests) {
+            Log.f(Tag, "");
             __internal(requests[0], 1, requests);
             return this;
         }
 
         public Chain exec(List<novemberizing.rx.Req.Factory<?>> requests){
+            Log.f(Tag, "");
             __internal(requests, 0);
             return this;
         }
 
         private void __internal(List<novemberizing.rx.Req.Factory<?>> requests, int n){
-            Log.e(Tag, "request: " + n + ", requests: " + requests.size());
+            Log.f(Tag, requests, n);
             if(n>=0 && n<requests.size()){
                 novemberizing.rx.Req.Factory<?> factory = requests.get(n);
                 __requested = factory!=null ? factory.call().success(()->__internal(requests, n+1)).fail(e->{
-                    // synchronized (this) {
-                        __exception = e;
-                        if (onFail != null) {
-                            onFail.on(__exception);
-                        }
-                    // }
-                }) : null;
-                if(__requested!=null){
-                    Log.e(Tag, "__requested!=null");
-                } else {
-                    Log.e(Tag, "__requested==null");
-                }
-            } else {
-                Log.e(Tag, "__internal");
-                // synchronized (this) {
-                    __completed = true;
-                    if (onSuccess != null) {
-                        onSuccess.on();
+                    __exception = e;
+                    if (onFail != null) {
+                        onFail.on(__exception);
                     }
-                // }
+                }) : null;
+            } else {
+                __completed = true;
+                if (onSuccess != null) {
+                    onSuccess.on();
+                }
             }
         }
 
         private void __internal(novemberizing.rx.Req.Factory<?> current, int n, novemberizing.rx.Req.Factory<?>[] next){
-            Log.e(Tag, "request: " + n + ", requests: ");
+            Log.f(Tag, current, n , next);
             __requested = current.call().success(()-> {
                     if (n < next.length) {
                         __internal(next[n],n+1,next);
                     } else {
-                        //synchronized (this) {
-                            __completed = true;
-                            if (onSuccess != null) {
-                                onSuccess.on();
-                            }
-                        //}
+                        __completed = true;
+                        if (onSuccess != null) {
+                            onSuccess.on();
+                        }
                     }
                 }).fail(e->{
-                    //synchronized (this) {
-                        __exception = e;
-                        if (onFail != null) {
-                            onFail.on(__exception);
-                        }
-                    //}
+                    __exception = e;
+                    if (onFail != null) {
+                        onFail.on(__exception);
+                    }
             });
         }
 
-        public Chain(){}
+        public Chain(){
+            Log.f(Tag, "");
+        }
     }
 
-    public static Chain Chain(novemberizing.rx.Req.Factory<?> request, novemberizing.rx.Req.Factory<?>... requests){
+    public static Chain Chain(novemberizing.rx.Req.Factory<?> request, novemberizing.rx.Req.Factory<?>... requests) {
+        Log.f(Tag, "");
         return new Chain().exec(request, requests);
     }
 
-    public static Chain Chain(novemberizing.rx.Req.Factory<?>[] requests){
+    public static Chain Chain(novemberizing.rx.Req.Factory<?>[] requests) {
         return new Chain().exec(requests);
     }
 
-    public static Chain Chain(List<novemberizing.rx.Req.Factory<?>> requests){
+    public static Chain Chain(List<novemberizing.rx.Req.Factory<?>> requests) {
+        Log.f(Tag, "");
         return new Chain().exec(requests);
     }
 
     public static class Callback<Z> implements novemberizing.ds.on.Single<Z> {
+        private static final String Tag = novemberizing.rx.Req.Tag + ".callback";
+
         private Req<Z> __req;
+
         public void next(Z o, boolean completed){
+            Log.f(Tag, "");
             __req.next(o);
             if(completed){
                 complete();
             }
         }
         public void error(Throwable e, boolean completed){
+            Log.f(Tag, "");
             __req.error(e);
             if(completed){
                 complete();
             }
         }
-        public void next(Z o){ __req.next(o); }
-        public void error(Throwable e){ __req.error(e); }
-        public void complete(){ __req.complete(); }
+        public void next(Z o){
+            Log.f(Tag, "");
+            __req.next(o);
+        }
+
+        public void error(Throwable e){
+            Log.f(Tag, "");
+            __req.error(e);
+        }
+        public void complete(){
+            Log.f(Tag, "");
+            __req.complete();
+        }
         public Callback(Req<Z> req){
+            Log.f(Tag, "");
             __req = req;
         }
 
         @Override
         public void on(Z o) {
+            Log.f(Tag, "");
             __req.next(o);
         }
     }
@@ -170,6 +180,7 @@ public class Req<Z> implements Executable {
     protected boolean __executed;
 
     public Req(){
+        Log.f(Tag, "");
         __req = null;
         __observable = null;
         __completionPort = null;
@@ -180,7 +191,8 @@ public class Req<Z> implements Executable {
         __executed = false;
     }
 
-    public Req(novemberizing.ds.on.Single<Req.Callback<Z>> on){
+    public Req(novemberizing.ds.on.Single<Req.Callback<Z>> on) {
+        Log.f(Tag, "");
         __req = new On.Exec.Empty<>(on);
         __observable = null;
         __completionPort = null;
@@ -191,7 +203,8 @@ public class Req<Z> implements Executable {
         __executed = false;
     }
 
-    public <A> Req(A first, novemberizing.ds.on.Pair<A, Req.Callback<Z>> on){
+    public <A> Req(A first, novemberizing.ds.on.Pair<A, Req.Callback<Z>> on) {
+        Log.f(Tag, "");
         __req = new On.Exec.Single<>(new novemberizing.ds.tuple.Single<>(first), on);
         __observable = null;
         __completionPort = null;
@@ -202,7 +215,8 @@ public class Req<Z> implements Executable {
         __executed = false;
     }
 
-    public <A, B> Req(A first, B second, novemberizing.ds.on.Triple<A, B, Req.Callback<Z>> on){
+    public <A, B> Req(A first, B second, novemberizing.ds.on.Triple<A, B, Req.Callback<Z>> on) {
+        Log.f(Tag, "");
         __req = new On.Exec.Pair<>(new novemberizing.ds.tuple.Pair<>(first, second), on);
         __observable = null;
         __completionPort = null;
@@ -213,7 +227,8 @@ public class Req<Z> implements Executable {
         __executed = false;
     }
 
-    public <A, B, C> Req(A first, B second, C third ,novemberizing.ds.on.Quadruple<A, B, C, Req.Callback<Z>> on){
+    public <A, B, C> Req(A first, B second, C third ,novemberizing.ds.on.Quadruple<A, B, C, Req.Callback<Z>> on) {
+        Log.f(Tag, "");
         __req = new On.Exec.Triple<>(new novemberizing.ds.tuple.Triple<>(first, second, third), on);
         __observable = null;
         __completionPort = null;
@@ -224,7 +239,8 @@ public class Req<Z> implements Executable {
         __executed = false;
     }
 
-    public <A, B, C, D> Req(A first, B second, C third, D fourth, novemberizing.ds.on.Quintuple<A, B, C, D, Req.Callback<Z>> on){
+    public <A, B, C, D> Req(A first, B second, C third, D fourth, novemberizing.ds.on.Quintuple<A, B, C, D, Req.Callback<Z>> on) {
+        Log.f(Tag, "");
         __req = new On.Exec.Quadruple<>(new novemberizing.ds.tuple.Quadruple<>(first, second, third, fourth), on);
         __observable = null;
         __completionPort = null;
@@ -235,7 +251,8 @@ public class Req<Z> implements Executable {
         __executed = false;
     }
 
-    public <A, B, C, D, E> Req(A first, B second, C third, D fourth, E fifth, novemberizing.ds.on.Sextuple<A, B, C, D, E, Req.Callback<Z>> on){
+    public <A, B, C, D, E> Req(A first, B second, C third, D fourth, E fifth, novemberizing.ds.on.Sextuple<A, B, C, D, E, Req.Callback<Z>> on) {
+        Log.f(Tag, "");
         __req = new On.Exec.Quintuple<>(new novemberizing.ds.tuple.Quintuple<>(first, second, third, fourth, fifth), on);
         __observable = null;
         __completionPort = null;
@@ -247,7 +264,7 @@ public class Req<Z> implements Executable {
     }
 
     public Req(novemberizing.ds.func.Empty<Z> func){
-
+        Log.f(Tag, "");
         __req = new Func.Exec.Empty<>(func);
         __observable = null;
         __completionPort = null;
@@ -258,8 +275,8 @@ public class Req<Z> implements Executable {
         __executed = false;
     }
 
-    public <A> Req(A first, novemberizing.ds.func.Single<A, Z> func){
-
+    public <A> Req(A first, novemberizing.ds.func.Single<A, Z> func) {
+        Log.f(Tag, "");
         __req = new Func.Exec.Single<>(new novemberizing.ds.tuple.Single<>(first), func);
         __observable = null;
         __completionPort = null;
@@ -271,7 +288,7 @@ public class Req<Z> implements Executable {
     }
 
     public <A, B> Req(A first, B second, novemberizing.ds.func.Pair<A, B, Z> func){
-
+        Log.f(Tag, "");
         __req = new Func.Exec.Pair<>(new novemberizing.ds.tuple.Pair<>(first, second), func);
         __observable = null;
         __completionPort = null;
@@ -282,8 +299,8 @@ public class Req<Z> implements Executable {
         __executed = false;
     }
 
-    public <A, B, C> Req(A first, B second, C third ,novemberizing.ds.func.Triple<A, B, C, Z> func){
-
+    public <A, B, C> Req(A first, B second, C third ,novemberizing.ds.func.Triple<A, B, C, Z> func) {
+        Log.f(Tag, "");
         __req = new Func.Exec.Triple<>(new novemberizing.ds.tuple.Triple<>(first, second, third), func);
         __observable = null;
         __completionPort = null;
@@ -294,8 +311,8 @@ public class Req<Z> implements Executable {
         __executed = false;
     }
 
-    public <A, B, C, D> Req(A first, B second, C third, D fourth ,novemberizing.ds.func.Quadruple<A, B, C, D, Z> func){
-
+    public <A, B, C, D> Req(A first, B second, C third, D fourth ,novemberizing.ds.func.Quadruple<A, B, C, D, Z> func) {
+        Log.f(Tag, "");
         __req = new Func.Exec.Quadruple<>(new novemberizing.ds.tuple.Quadruple<>(first, second, third, fourth), func);
         __observable = null;
         __completionPort = null;
@@ -307,7 +324,7 @@ public class Req<Z> implements Executable {
     }
 
     public <A, B, C, D, E> Req(A first, B second, C third, D fourth, E fifth ,novemberizing.ds.func.Quintuple<A, B, C, D, E, Z> func){
-
+        Log.f(Tag, "");
         __req = new Func.Exec.Quintuple<>(new novemberizing.ds.tuple.Quintuple<>(first, second, third, fourth,fifth), func);
         __observable = null;
         __completionPort = null;
@@ -322,6 +339,7 @@ public class Req<Z> implements Executable {
 
     @Override
     public void execute(Executor executor) {
+        Log.f(Tag, "");
         synchronized (this){
             if(__executed){
                 Log.d(Tag, "__executed==true");
@@ -340,11 +358,12 @@ public class Req<Z> implements Executable {
     public boolean completed() { return __completed; }
 
 
-    protected void set(Observable<Z> observable){
+    protected void set(Observable<Z> observable) {
         __observable = observable;
     }
 
-    protected void exec(){
+    protected void exec() {
+        Log.f(Tag, "");
         try {
             __req.exec(__callback);
         } catch(Exception e){
@@ -353,7 +372,8 @@ public class Req<Z> implements Executable {
         }
     }
 
-    protected void error(Throwable e){
+    protected void error(Throwable e) {
+        Log.f(Tag, "");
         if(!__completed) {
             if(__observable!=null) {
                 __observable.error(e);
@@ -366,7 +386,8 @@ public class Req<Z> implements Executable {
         }
     }
 
-    protected void next(Z o){
+    protected void next(Z o) {
+        Log.f(Tag, "");
         if(!__completed) {
             __out = o;
             if(__observable!=null) {
@@ -381,6 +402,7 @@ public class Req<Z> implements Executable {
     }
 
     protected void complete() {
+        Log.f(Tag, "");
         if(!__completed) {
             Executor executor = __executor;
 
@@ -408,43 +430,62 @@ public class Req<Z> implements Executable {
     }
 
 
-    public Observable<Z> subscribe(Observer<Z> observer){
+    public Observable<Z> subscribe(Observer<Z> observer) {
+        Log.f(Tag, "");
         if(__completionPort==null){
             __completionPort = new Observable<>(__replayer);
         }
         return __completionPort.subscribe(observer);
     }
 
-    public Observable<Z> unsubscribe(Observer<Z> observer){ return __completionPort!=null ? __completionPort.unsubscribe(observer) : null; }
-    public Observable<Z> unsubscribe(){ return __completionPort!=null ? __completionPort.unsubscribe() : null; }
+    public Observable<Z> unsubscribe(Observer<Z> observer){
+        Log.f(Tag, "");
+        return __completionPort!=null ? __completionPort.unsubscribe(observer) : null;
+    }
+    public Observable<Z> unsubscribe(){
+        Log.f(Tag, "");
+        return __completionPort!=null ? __completionPort.unsubscribe() : null;
+    }
 
-    public Observable<Z> once(novemberizing.ds.on.Single<Z> f){
+    public Observable<Z> once(novemberizing.ds.on.Single<Z> f) {
+        Log.f(Tag, "");
         return subscribe(new Subscribers.Just<Z>() {
             @Override
             public void onNext(Z o) {
+                Log.f(Tag, "");
                 f.on(o);
                 subscribe(false);
             }
         });
     }
 
-    public Observable<Z> on(novemberizing.ds.on.Single<Z> f){
+    public Observable<Z> on(novemberizing.ds.on.Single<Z> f) {
+        Log.f(Tag, "");
         return subscribe(new Subscribers.Just<Z>() {
             @Override
-            public void onNext(Z o) { f.on(o); }
+            public void onNext(Z o) {
+                Log.f(Tag, "");
+                f.on(o);
+            }
         });
     }
 
-    public Observable<Z> exception(novemberizing.ds.on.Single<Throwable> f){
+    public Observable<Z> exception(novemberizing.ds.on.Single<Throwable> f) {
+        Log.f(Tag, "");
         return subscribe(new Subscribers.Just<Z>() {
             @Override
-            public void onError(Throwable e) { f.on(e); }
+            public void onError(Throwable e) {
+                Log.f(Tag, "");
+                f.on(e);
+            }
         });
     }
 
     public Observable<Z> fail(novemberizing.ds.on.Single<Throwable> f){
+        Log.f(Tag, "");
         return subscribe(new Subscribers.Just<Z>() {
             @Override public void onError(Throwable e) {
+                Log.f(Tag, "");
                 f.on(e);
                 subscribe(false);
             }
@@ -452,14 +493,23 @@ public class Req<Z> implements Executable {
     }
 
     public Observable<Z> success(novemberizing.ds.on.Single<Z> f){
+        Log.f(Tag, "");
         return subscribe(new Subscribers.Just<Z>(){
             private Z item = null;
             private Throwable exception = null;
-            @Override public void onNext(Z o) {item = o; }
-            @Override public void onError(Throwable e){
+            @Override
+            public void onNext(Z o) {
+                Log.f(Tag, "");
+                item = o;
+            }
+            @Override
+            public void onError(Throwable e) {
+                Log.f(Tag, "");
                 exception = e;
             }
-            @Override public void onComplete() {
+            @Override
+            public void onComplete() {
+                Log.f(Tag, "");
                 if (exception == null) {
                     f.on(item);
                     subscribe(false);
@@ -468,22 +518,26 @@ public class Req<Z> implements Executable {
         });
     }
 
-    public Observable<Z> success(novemberizing.ds.on.Empty f){
+    public Observable<Z> success(novemberizing.ds.on.Empty f) {
+        Log.f(Tag, "");
         return subscribe(new Subscribers.Just<Z>() {
             private Throwable exception = null;
 
             @Override
             public void onNext(Z o) {
+                Log.f(Tag, "");
             }
 
             @Override
             public void onError(Throwable e) {
+                Log.f(Tag, "");
                 exception = e;
 
             }
 
             @Override
             public void onComplete() {
+                Log.f(Tag, "");
                 if (exception == null) {
                     f.on();
                     subscribe(false);
@@ -492,27 +546,35 @@ public class Req<Z> implements Executable {
         });
     }
 
-    public Observable<Z> completion(novemberizing.ds.on.Empty f){
+    public Observable<Z> completion(novemberizing.ds.on.Empty f) {
+        Log.f(Tag, "");
         return subscribe(new Subscribers.Just<Z>() {
             @Override
-            public void onComplete() { f.on(); }
+            public void onComplete() {
+                Log.f(Tag, "");
+                f.on();
+            }
         });
     }
 
-    public Observable<Z> on(novemberizing.ds.on.Single<Z> f, boolean once){
+    public Observable<Z> on(novemberizing.ds.on.Single<Z> f, boolean once) {
+        Log.f(Tag, "");
         return subscribe(new Subscribers.Just<Z>() {
             @Override
             public void onNext(Z o) {
+                Log.f(Tag, "");
                 f.on(o);
                 if(once){ subscribe(false); }
             }
         });
     }
 
-    public Observable<Z> exception(novemberizing.ds.on.Single<Throwable> f, boolean once){
+    public Observable<Z> exception(novemberizing.ds.on.Single<Throwable> f, boolean once) {
+        Log.f(Tag, "");
         return subscribe(new Subscribers.Just<Z>() {
             @Override
             public void onError(Throwable e) {
+                Log.f(Tag, "");
                 f.on(e);
                 if(once){ subscribe(false); }
             }
@@ -521,40 +583,47 @@ public class Req<Z> implements Executable {
 
 
     public <U> Sync<Z, U> sync(Single<Z, U> f){
-        if(__completionPort==null){
-            __completionPort = new Observable<>(__replayer);
-        }
-        return (Sync<Z, U>) __completionPort.subscribe(Operator.Sync(f));
-    }
-    public <U> Sync<Z, U> sync(novemberizing.ds.on.Pair<Operator.Task<Z, U>, Z> f){
+        Log.f(Tag, "");
         if(__completionPort==null){
             __completionPort = new Observable<>(__replayer);
         }
         return (Sync<Z, U>) __completionPort.subscribe(Operator.Sync(f));
     }
 
-    public <U, V> Composer<Z, U, V> compose(Observable<U> secondary, novemberizing.ds.func.Pair<Z, U, V> f){
+    public <U> Sync<Z, U> sync(novemberizing.ds.on.Pair<Operator.Task<Z, U>, Z> f) {
+        Log.f(Tag, "");
+        if(__completionPort==null){
+            __completionPort = new Observable<>(__replayer);
+        }
+        return (Sync<Z, U>) __completionPort.subscribe(Operator.Sync(f));
+    }
+
+    public <U, V> Composer<Z, U, V> compose(Observable<U> secondary, novemberizing.ds.func.Pair<Z, U, V> f) {
+        Log.f(Tag, "");
         if(__completionPort==null){
             __completionPort = new Observable<>(__replayer);
         }
         return (Composer<Z, U, V>) __completionPort.subscribe(Operator.Composer(secondary,f));
     }
 
-    public <U, V> Condition<Z, U, V> condition(Observable<U> observable, novemberizing.ds.func.Pair<Z, U, Boolean> condition , novemberizing.ds.func.Pair<Z, U, V> f){
+    public <U, V> Condition<Z, U, V> condition(Observable<U> observable, novemberizing.ds.func.Pair<Z, U, Boolean> condition , novemberizing.ds.func.Pair<Z, U, V> f) {
+        Log.f(Tag, "");
         if(__completionPort==null){
             __completionPort = new Observable<>(__replayer);
         }
         return (Condition<Z, U, V>) __completionPort.subscribe(Operator.Condition(observable,condition,f));
     }
 
-    public <U> Operator<Z, U> condition(Single<Z, Boolean> condition, Single<Z, U> f){
+    public <U> Operator<Z, U> condition(Single<Z, Boolean> condition, Single<Z, U> f) {
+        Log.f(Tag, "");
         if(__completionPort==null){
             __completionPort = new Observable<>(__replayer);
         }
         return __completionPort.subscribe(Operator.Condition(condition, f));
     }
 
-    public Observable<Z> replay(int limit){
+    public Observable<Z> replay(int limit) {
+        Log.f(Tag, "");
         if(__completionPort==null){
             __completionPort = new Observable<>(__replayer);
         }

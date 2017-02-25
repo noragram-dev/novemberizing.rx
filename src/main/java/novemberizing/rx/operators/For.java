@@ -12,14 +12,16 @@ import novemberizing.util.Log;
  * @author novemberizing, me@novemberizing.net
  * @since 2017. 1. 18.
  */
+@SuppressWarnings({"WeakerAccess", "SameParameterValue"})
 public class For<T, U> extends Operator<T, T> {
-    private static final String Tag = "For";
+    private static final String Tag = "novemberizing.rx.operators.for";
     protected Empty<U> __initializer;
     protected Single<U, U> __internal;
     protected Pair<T, U, Boolean> __condition;
     protected Block.Op<T, T> __block;
 
     public For(Empty<U> initializer,Pair<T, U, Boolean> condition, Single<U, U> internal, novemberizing.ds.func.Single<T, T> external){
+        Log.f(Tag, "");
         __initializer = initializer;
         __condition = condition;
         __internal = internal;
@@ -27,6 +29,7 @@ public class For<T, U> extends Operator<T, T> {
     }
 
     public For(Empty<U> initializer,Pair<T, U, Boolean> condition, Single<U, U> internal,Operator<T, T> external){
+        Log.f(Tag, "");
         __initializer = initializer;
         __condition = condition;
         __internal = internal;
@@ -34,6 +37,7 @@ public class For<T, U> extends Operator<T, T> {
     }
 
     public For(Empty<U> initializer,Pair<T, U, Boolean> condition, Single<U, U> internal, Block.Op<T, T> external){
+        Log.f(Tag, "");
         __initializer = initializer;
         __condition = condition;
         __internal = internal;
@@ -41,6 +45,7 @@ public class For<T, U> extends Operator<T, T> {
     }
 
     protected void execute(Task<T, T> task, novemberizing.ds.tuple.Pair<T, U> in){
+        Log.f(Tag, "");
         Exec<T, T> exec = (Exec<T, T>) __block.exec(in.first);
         exec.subscribe(new Subscriber<T>() {
             protected boolean __subscribe = true;
@@ -52,6 +57,7 @@ public class For<T, U> extends Operator<T, T> {
             synchronized boolean completed(){ return __completed; }
             @Override
             public void onNext(T o) {
+                Log.f(Tag, "");
                 executed(true);
                 if(!completed()) {
                     task.next(o);
@@ -66,7 +72,6 @@ public class For<T, U> extends Operator<T, T> {
             @Override
             public void onError(Throwable e) {
                 Log.e(Tag, e);
-                e.printStackTrace();
             }
 
             @Override
@@ -94,6 +99,7 @@ public class For<T, U> extends Operator<T, T> {
 
     @Override
     protected void on(Task<T, T> task, T in) {
+        Log.f(Tag, "");
         novemberizing.ds.tuple.Pair<T, U> pair = new novemberizing.ds.tuple.Pair<>(in, __initializer.call());
         if(__condition.call(in, pair.second)) {
             execute(task, pair);

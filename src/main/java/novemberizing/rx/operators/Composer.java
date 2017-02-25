@@ -10,8 +10,9 @@ import novemberizing.util.Log;
  * @author novemberizing, me@novemberizing.net
  * @since 2017. 1. 17.
  */
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class Composer<T, U, Z> extends Operator<T, Z> {
-    private static final String Tag = "Composer";
+    private static final String Tag = "novemberizing.rx.operators.composer";
 
     private novemberizing.ds.func.Pair<T, U, Z> __func;
     private Observable<U> __secondary;
@@ -23,6 +24,7 @@ public class Composer<T, U, Z> extends Operator<T, Z> {
 
     @Override
     protected void on(Task<T, Z> task, T in) {
+        Log.f(Tag, "");
         synchronized (__self) {
             try {
                 task.next(__func.call(__first = in, __second));
@@ -34,6 +36,7 @@ public class Composer<T, U, Z> extends Operator<T, Z> {
     }
 
     public Composer(Observable<U> secondary, novemberizing.ds.func.Pair<T, U, Z> f){
+        Log.f(Tag, "");
         __secondary = secondary;
         __func = f;
         __secondary.subscribe(new Subscriber<U>() {
@@ -41,6 +44,7 @@ public class Composer<T, U, Z> extends Operator<T, Z> {
 
             @Override
             public void onNext(U o) {
+                Log.f(Tag, "");
                 synchronized (__self) {
                     emit(__func.call(__first, __second = o));
                 }
@@ -48,13 +52,12 @@ public class Composer<T, U, Z> extends Operator<T, Z> {
 
             @Override
             public void onError(Throwable e) {
+                Log.f(Tag, "");
                 Log.d(Tag, e.getMessage());
             }
 
             @Override
-            public void onComplete() {
-                Log.d(Tag, "");
-            }
+            public void onComplete() { Log.f(Tag, ""); }
 
             @Override public void subscribe(boolean v){ __subscribe = v; }
 
