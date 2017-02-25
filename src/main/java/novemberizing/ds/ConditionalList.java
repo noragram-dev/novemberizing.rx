@@ -1,7 +1,5 @@
 package novemberizing.ds;
 
-import novemberizing.util.Log;
-
 import java.util.LinkedList;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -14,10 +12,8 @@ import static novemberizing.ds.Constant.Infinite;
  * @author novemberizing, me@novemberizing.net
  * @since 2017. 1. 17.
  */
-@SuppressWarnings({"unused", "WeakerAccess"})
+@SuppressWarnings({"unused", "WeakerAccess", "EmptyCatchBlock"})
 public class ConditionalList<T> {
-    private static final String Tag = "ConditionalList";
-
     private LinkedList<T> __o = new LinkedList<>();
     private Lock __sync = new ReentrantLock();
     private Condition __condition = __sync.newCondition();
@@ -43,13 +39,13 @@ public class ConditionalList<T> {
             try {
                 __condition.awaitNanos(nano);
             } catch (InterruptedException e) {
-                Log.d(Tag, e);
+
             }
         } else {
             try {
                 __condition.await();
             } catch (InterruptedException e) {
-                e.printStackTrace();
+
             }
         }
     }
